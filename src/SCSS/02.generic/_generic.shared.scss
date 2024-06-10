@@ -1,0 +1,35 @@
+/** 
+  ==========================================================================
+  #SHARED
+  ==========================================================================
+  
+  Ciertos elementos que comparten propiedades genericas
+
+**/
+ 
+ 
+/**
+
+  Consistent indentation for lists.
+
+**/
+
+
+*{
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+    
+  &::-webkit-scrollbar-thumb {
+    background-color: $global-primary-color;
+    border-radius: 4px;
+  }
+}
+
+dd, ol, ul {
+  margin-left: $global-spacing-unit;
+}
+
+video{
+  border-radius: 10px;
+}

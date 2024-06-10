@@ -1,0 +1,46 @@
+.c-header{
+    width: 100vw;
+    position: relative;
+    height: $global-nav-height;
+    @include flex-center-space-between();
+    padding-inline: 25px;
+    background-color: $global-primary-color;
+}
+
+.c-header__link{
+    color: white;
+    text-decoration: none;
+    margin-left: $global-spacing-unit-small;
+}
+
+.c-header__logo{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 55px;
+    height: auto;
+
+    @media (max-width: 768px) {
+        width: 80px;
+    }
+}
+
+.c-header__menu{
+    font-size: 18px;
+    color: white;
+    cursor: pointer;
+}
+
+
+.c-header__cerrarSesion{
+    font-size: 18px;
+    color: white;
+    cursor: pointer;
+}
+
+.c-header__reiniciarBase{
+    font-size: 22px;
+    color: white;
+    cursor: pointer;
+}

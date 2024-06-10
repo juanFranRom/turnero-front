@@ -1,0 +1,19 @@
+/**
+    
+    ==========================================================================
+    #RESET
+    ========================================================================== 
+
+    Iniciaremos la creacion de nuestro propio RESET, este es un concepto que
+    nace de las diferencias de estilos base que se aplican en los diferentes 
+    navegadores.
+    La idea con esto es ir eliminando, como sacar el maquillaje base que provee
+    el navegador para asi, siempre empezar desde la misma base.
+
+**/
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}

@@ -1,0 +1,113 @@
+/**
+    ==========================================================================
+    #BUTTONS
+    ========================================================================== 
+
+    Esto es un ejemplo de componente. Las clases de componentes traen como prefijo `c-`.
+**/
+
+.c-select{
+    position: relative;
+    padding: $global-spacing-unit-small $global-spacing-unit;
+    border: 1px solid $global-primary-color;
+    border-radius: 5px;
+    min-width: 150px;
+    min-height: 50px;
+    background-color: $global-primary-color;
+    color: #FFF;
+    line-height: 1.5;
+    @include font-size(16px);
+
+    .c-select__placeholder{
+        position: absolute;
+        top: 0;
+        left: 20px;
+        @include font-size(11px);
+    }
+}
+
+.c-select--placeholder{
+    height: 50px;
+
+    .c-select__text{
+        padding-top: 15px;
+    }
+}
+
+
+.c-select__dropdown{
+    max-height: 300px;
+    white-space: nowrap;
+    position: fixed;
+    top: 120%;
+    left: 0;
+    background-color: white;
+    border-radius: 8px;
+    border: 2px solid $global-secondary-color;
+    overflow: auto;
+    z-index: 3;
+    font-size: inherit;
+    color: #000;
+
+    &::-webkit-scrollbar{
+        width: 16px;
+        border-left: 1px dashed #ccc;
+    }
+
+    &::-webkit-scrollbar-thumb{
+        background-color: $global-primary-color;
+        border: 4px solid transparent;
+        background-clip: padding-box; 
+        border-radius: $global-radius;
+    }
+}
+
+.c-select__options{
+    padding: $global-spacing-unit-tiny $global-spacing-unit;
+    margin: 0 auto;
+
+    &:hover, &:focus{
+        border-bottom: 1px dashed #ccc;
+        border-top: 1px dashed #ccc;
+        background-color: $global-primary-color;
+        color: #fff;
+    
+        &:first-child{
+            border-top: none;
+        }
+    
+        &:last-child{
+            border-bottom: none;
+        }
+    }
+}
+
+.c-select__options--active{
+    border-bottom: 1px dashed #ccc;
+    border-top: 1px dashed #ccc;
+    background-color: $global-primary-color;
+    color: #fff;
+    
+    &:first-child{
+        border-top: none;
+    }
+
+    &:last-child{
+        border-bottom: none;
+    }
+}
+
+.c-select__options--hover{
+    border-bottom: 1px dashed #ccc;
+    border-top: 1px dashed #ccc;
+    background-color: $global-primary-color;
+    color: #fff;
+    
+    &:first-child{
+        border-top: none;
+    }
+
+    &:last-child{
+        border-bottom: none;
+    }
+}

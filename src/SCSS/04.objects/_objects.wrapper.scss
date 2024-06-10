@@ -1,0 +1,36 @@
+/** 
+    ==========================================================================
+    #WRAPPER
+    ==========================================================================
+
+    Wrapping elements.
+**/
+
+$wrapper-width:   1200px !default;
+$wrapper-padding: $global-spacing-unit !default;
+
+@if (type-of($wrapper-width) != number) {
+    @error "`#{$wrapper-width}` needs to be a number.";
+}
+   
+.o-wrapper {
+    @include clearfix();
+    border-radius: 30px;
+    padding-right: $wrapper-padding;
+    padding-left:  $wrapper-padding;
+    margin-right: auto;
+    margin-left:  auto;
+    max-width: $wrapper-width;
+}
+
+.o-wrapper--footer{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    background: white;
+    box-shadow: 1px 3px 13px 0px black;
+    margin: auto;
+    border-radius: 50px 50px 0 0;
+    padding: 0;
+    list-style: none;
+}

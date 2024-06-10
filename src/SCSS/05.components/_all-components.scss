@@ -1,0 +1,42 @@
+/**
+    ======================================================================
+    #Components
+    ======================================================================
+
+    Esta capa contiene estilos específicos de componentes UI individuales 
+    en nuestro proyecto.
+    Serian el ejemplo de nuestros EX styled-components:
+    - styled-button
+    - styled-select
+
+**/
+
+@import './components.buttons';
+@import './components.cards';
+@import './components.fileUpload';
+@import './components.footer';
+@import './components.form';
+@import './components.header';
+@import './components.input';
+@import './components.loader';
+@import './components.modal';
+@import './components.multiplechoice';
+@import './components.select';
+@import './components.sidebar';
+@import './components.textarea';
+@import './components.table';
+@import './components.pop_up';
+@import './components.notFound';
+@import './components.contextMenu';
+@import './components.login';
+@import './components.switch';
+@import './components.datalist';
+@import './components.venta';
+@import './components.datepicker';
+@import './components.calendar';
+@import './components.sidebarCalendar';
+@import './components.turno';
+@import './components.nuevoTurno';
+@import './components.nuevoPaciente';
+@import './components.timePicker';
+

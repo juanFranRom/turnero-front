@@ -1,0 +1,12 @@
+.c-sidebarCalendar{
+    position: fixed;
+    top: $global-nav-height;
+    bottom: 0;
+    left: -320px;
+    background-color: white;
+    transition: all ease-in-out 0.5s;
+
+    &--open{
+        left: 0;
+    }
+}

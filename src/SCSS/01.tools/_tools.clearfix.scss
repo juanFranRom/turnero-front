@@ -1,0 +1,17 @@
+// ========================================================================
+//   #CLEARFIX
+// ========================================================================
+
+// Funcion que nos ayudara a arreglar problemas con los elementos after.
+//
+// Como usar
+//   @include clearfix();
+//
+
+@mixin clearfix() {
+  &:after {
+    content: "" !important;
+    display: block !important;
+    clear: both !important;
+  }
+}

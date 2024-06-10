@@ -1,0 +1,299 @@
+/** 
+    ==========================================================================
+    #LAYOUT
+    ========================================================================== 
+   
+    Grid-like layout.
+
+    El layout object nos provee de un sistema de grilla por columnas. Este archivo
+    contiene la estructura base del mismo, pero debe de ser complementado con utilidades
+    de width, como por ejemplo:
+
+    <div class="o-layout">
+        <div class="o-layout__item  u-1/2">
+        </div>
+        <div class="o-layout__item  u-1/2">
+        </div>
+    </div>
+
+    Esto creara una estructura de dos columnas en donde cada columna va a llenar
+    fluidamente la mitad del elemento padre.
+    A partir de esto podemos generar estructuras mas complejas:
+
+    <div class="o-layout">
+        <div class="o-layout__item  u-1/1  u-1/3@medium">
+        </div>
+        <div class="o-layout__item  u-1/2  u-1/3@medium">
+        </div>
+        <div class="o-layout__item  u-1/2  u-1/3@medium">
+        </div>
+    </div>
+
+    Esto creara una estructura en donde el primer item va a ocupar el ancho entero hasta
+    que se alcance un breakpoint predispuesto en el archivo de utilidad de width, entonces
+    se hara del 33.333% de ancho, mientras que el segundo y tercero formaran dos columnas del
+    50% que luego tambien se transformaran en un ancho de 33.333%.
+**/
+
+//Variables de margenes (gutter se traduce como canal, se refiere al canal producido por los margenes entre elementos del layout)
+
+$layout-gutter:       $global-spacing-unit !default;
+$layout-tiny-gutter:  $global-spacing-unit-tiny !default;
+$layout-small-gutter: $global-spacing-unit-small !default;
+$layout-large-gutter: $global-spacing-unit-large !default;
+$layout-huge-gutter:  $global-spacing-unit-huge !default;
+   
+/* 
+    Clases por default o principales
+    ==========================================================================
+    
+    1. Nos permite usar el layout en cualquier tipo de elemento.
+    2. Reseteamos cualquier tipo de margin o padding por las dudas.
+    3. Usamos el margen negativo para que no se produzca un overflow o algun problema por el margen entre columnas,
+    es decir asi sacamos el margen del primer y ultimo elemento.
+*/
+   
+.o-layout {
+    display: block; /* [1] */
+    margin:  0; /* [2] */
+    padding: 0; /* [2] */
+    list-style: none; /* [1] */
+    margin-left: -$layout-gutter; /* [3] */
+}
+   
+/*
+    1. Requerido para combinar diferentes anchos con margenes fijos.
+
+    2. Nos permitira manipular nuestro layout verticalmente, junto con las propuedades de texto,
+    etc.
+
+    3. Tradicionalmente los grids o layout se alinean con la parte superior de los demas items.
+
+    4. Por defecto todos los item de un layout ocupan el 100% del ancho (tactica de mobile first).
+
+    5. Siempre producimos el espacio por margenes izquierdo, por esto le sacamos al layout el mismo espacio en el margen izquierdo
+*/
+   
+.o-layout__item {
+    box-sizing: border-box; /* [1] */
+    display: inline-block; /* [2] */
+    vertical-align: top; /* [3] */
+    width: 100%; /* [4] */
+    padding-left: $layout-gutter; /* [5] */
+}
+   
+   
+   
+   
+   
+/*
+    Modificadores de margenes
+    ==========================================================================
+*/
+
+   
+.o-layout--flush {
+    margin-left: 0;
+
+    > .o-layout__item {
+        padding-left: 0;
+    }
+
+}
+   
+   
+.o-layout--tiny {
+    margin-left: -$layout-tiny-gutter;
+
+    > .o-layout__item {
+        padding-left: $layout-tiny-gutter;
+    }
+
+}
+   
+   
+.o-layout--small {
+    margin-left: -$layout-small-gutter;
+
+    > .o-layout__item {
+        padding-left: $layout-small-gutter;
+    }
+
+}
+   
+   
+.o-layout--large {
+    margin-left: -$layout-large-gutter;
+
+    > .o-layout__item {
+        padding-left: $layout-large-gutter;
+    }
+
+}
+   
+   
+.o-layout--huge {
+    margin-left: -$layout-huge-gutter;
+
+    > .o-layout__item {
+        padding-left: $layout-huge-gutter;
+    }
+
+}
+   
+   
+/* 
+    Modificadores para separacion por border
+    ==========================================================================
+
+*/
+
+.o-layout__item--left-separator{
+    border-left: 1px solid $global-border-color;
+}
+   
+   
+   
+/* 
+    Modificadores de alineamiento
+    ==========================================================================
+
+    Los alinea con el centro de los demas elementos.
+*/
+   
+.o-layout--middle {
+
+    > .o-layout__item {
+        vertical-align: middle;
+    }
+
+}
+   
+   
+/*
+    Los alinea con la parte inferior de los demas elementos.
+*/
+   
+.o-layout--bottom {
+
+    > .o-layout__item {
+        vertical-align: bottom;
+    }
+
+}
+   
+   
+/*
+    Alarga todos los elementos para que compartan una misma altura.
+*/
+   
+.o-layout--stretch {
+    display: flex;
+    flex-wrap: wrap;
+
+    > .o-layout__item {
+        display: flex;
+        flex: 1;
+    }
+
+    &.o-layout--center {
+        justify-content: center;
+    }
+
+    &.o-layout--right {
+        justify-content: flex-end;
+    }
+
+    &.o-layout--left {
+        justify-content: flex-start;
+    }
+
+}
+   
+   
+   
+   
+   
+/* 
+    Modificadores de orden
+    ==========================================================================
+   
+    Llena el layout desde el centro.
+*/
+
+ 
+
+.o-layout--center {
+    text-align: center;
+
+    > .o-layout__item {
+        text-align: left;
+    }
+
+}
+  
+.o-layout__item--center.o-layout__item--center {
+    text-align: center;
+}
+   
+   
+/*
+    Llena el layout desde la derecha.
+*/
+   
+   .o-layout--right {
+     text-align: right;
+   
+     > .o-layout__item {
+       text-align: left;
+     }
+   
+   }
+   
+   
+/*
+    Llena el layout desde la izquierda. Se utilizara mayormente en conjunto con `.o-layout--reverse`.
+*/
+   
+.o-layout--left {
+    text-align: left;
+
+    > .o-layout__item {
+        text-align: left;
+    }
+
+}
+   
+   
+/*
+    Revierte el orden del layout
+    ==========================================================================
+*/
+   
+.o-layout--reverse {
+    direction: rtl;
+
+    > .o-layout__item {
+        direction: ltr;
+    }
+
+}
+   
+   
+   
+   
+   
+/* 
+    Auto-widths Modificador
+    ==========================================================================
+
+    Causa que los items en el layout no tomen un ancho predefinido.
+*/
+   
+.o-layout--auto {
+
+    > .o-layout__item {
+        width: auto;
+    }
+
+}

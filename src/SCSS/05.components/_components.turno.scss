@@ -1,0 +1,224 @@
+$turno-color-primary: #212529;
+$turno-color-secondary: rgba(108, 117, 125, 1);
+
+.c-turno{
+    width: 100%;
+    height: 100px;
+    box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .075);
+    color: $turno-color-primary;
+    @include font-size(14px);
+    @include flex-start-center();
+    text-wrap: nowrap;
+    @include font-size(13px);
+    overflow-x: hidden;
+    padding-right: 20px;
+
+    &--esperando{
+        background-color: rgba(255, 193, 7, 0.25);
+    }
+
+    &--consulta{
+        background-color: rgba(64, 158, 255, 0.25);
+    }
+
+    &--atendido{
+        background-color: rgba(25, 135, 84, 0.25);
+    }
+
+    &--ausente{
+        background-color: rgba(220, 53, 69, 0.25);
+    }
+
+    &--cancelado{
+        background-color: rgba(220, 53, 69, 0.25);
+    }
+}
+
+.c-turno__horario{
+    height: 100%;
+    @include flex-column-center-start();
+    padding-inline: 15px;
+    gap: 0;
+    margin-right: 10px;
+
+    .c-turno__hora, .c-turno__estado{
+        height: fit-content;
+        min-width: 100px;
+        width: 100%;
+        @include flex-center-center();
+        gap: 5px;
+        text-align: center;
+    }
+
+    .c-turno__hora{
+        span{
+            @include font-size(14px);
+            cursor: pointer;
+        }
+
+        svg{
+            font-size: 18px;
+            color: $turno-color-secondary;
+        }
+    }
+
+    .c-turno__div{
+        width: 100%;
+        color: $turno-color-secondary;
+        @include flex-column-center-center();
+        gap: 0px;
+    }
+    
+    .c-turno__hora--column{
+        flex-direction: column;
+        gap: 0px;
+    }
+}
+
+.c-turno__paciente{
+    min-width: 25%;
+    height: 100%;
+    @include flex-column-center-start();
+    gap: 0;
+
+    .c-turno__nombre{
+        @include font-size(15px);
+        cursor: pointer;
+    }
+
+    .c-turno__informacion{
+        @include flex-center-center();
+    }
+}
+
+
+.c-turno__telefono{
+    @include flex-center-center();
+    gap: 0.5rem;
+    color: #198754;
+    cursor: pointer;
+}
+
+.c-turno__dni{
+    color: $turno-color-secondary;
+}
+
+.c-turno__clinica{
+    min-width: 25%;
+    height: 100%;
+    @include flex-center-start();
+
+    & div{
+        width: fit-content;
+        @include flex-center-center();
+        height: 100%;
+    }
+
+    .c-turno__doctor{
+        @include flex-column-center-start();
+        gap: 0;
+
+        & div{
+            height: fit-content;
+        }
+
+        @media (max-width: 1590px) {
+            width: 0;
+            display: none;
+        }
+    }
+
+    @media (max-width: 1090px) {
+        width: 0;
+        display: none;
+    }
+}
+
+.c-turno__estado{
+    position: relative;
+    min-width: 25%;
+    height: 100%;
+    @include flex-end-center();
+    gap: 0;
+
+    & button{
+        height: 34px;
+        padding: $global-spacing-unit-tiny $global-spacing-unit-small;
+        border-top-left-radius: 5px;
+        border-bottom-left-radius: 5px;
+        border-right: none;
+        border: solid 1px $turno-color-secondary;
+        color: white;
+        background-color: $global-primary-color;
+        cursor: pointer;
+        @include flex-center-center();
+        gap: 5px;
+        @include font-size(14px);
+
+        &:last-of-type{
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+            border-top-right-radius: 5px;
+            border-bottom-right-radius: 5px;
+            border-left: none;
+        }
+
+        &,
+        &:hover,
+        &:active,
+        &:focus {
+            text-decoration: none; /* [4] */
+            color: #fff;
+        }
+
+        &:hover,
+        &:focus {
+            background-color: white;
+            color: $global-primary-color;
+            box-shadow: inset 0 0 0 1px $global-primary-color;
+        }
+    }
+}
+
+.c-turno__desplegable{
+    position: fixed;
+    display: none;
+    z-index: 1;
+
+    &--open{
+        @include flex-column-center-start();
+        background-color: white;
+        border: solid 1px #ccc;
+        border-radius: 5px;
+        gap: 0;
+    }
+
+    & .c-turno__option{
+        width: 100%;
+        padding: 5px 20px;
+        cursor: pointer;
+
+        &:first-child{
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+        }
+
+        &:last-child{
+            border-bottom-left-radius: 5px;
+            border-bottom-right-radius: 5px;
+        }
+
+        &:hover,
+        &:focus {
+            background-color: $turno-color-secondary;
+            color: white;
+            box-shadow: inset 0 0 0 1px $turno-color-secondary;
+        }
+    }
+}
+
+
+
+.c-turno__text--secondary{
+    color: $turno-color-secondary;
+}

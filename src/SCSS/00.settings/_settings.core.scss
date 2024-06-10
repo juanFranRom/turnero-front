@@ -1,0 +1,41 @@
+// ======================================================================
+//   #CORE
+// ======================================================================
+
+// Este archivo nos va a preconfigurar las unidades para utilizar en todo el proyecto
+
+
+
+// Baseline grid lines height.
+// Every spacing metric should be based on this.
+
+$global-baseline:     6px !default;
+
+
+$global-spacing-unit-factor-tiny:   1 !default;   // 6px
+$global-spacing-unit-factor-small:  2 !default;   // 12px
+$global-spacing-unit-factor:        4 !default;   // 24px
+$global-spacing-unit-factor-large:  8 !default;   // 48px
+$global-spacing-unit-factor-huge:   16 !default;  // 96px
+
+
+
+// Estas son las variables que definiran el grid y espaciamiento en nuestro proyecto.
+
+$global-spacing-unit:       $global-baseline * $global-spacing-unit-factor !default;
+$global-spacing-unit-tiny:  $global-baseline * $global-spacing-unit-factor-tiny !default;
+$global-spacing-unit-small: $global-baseline * $global-spacing-unit-factor-small !default;
+$global-spacing-unit-large: $global-baseline * $global-spacing-unit-factor-large !default;
+$global-spacing-unit-huge:  $global-baseline * $global-spacing-unit-factor-huge !default;
+
+
+
+// Configuramos el tamaño por defecto para las fuentes.
+
+$global-font-size:    16px !default;
+
+$global-font-double:    32px !default;
+
+$global-font-tiny:    12px !default;
+
+$global-line-height:  $global-spacing-unit !default;

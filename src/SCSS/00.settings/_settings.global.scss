@@ -1,0 +1,28 @@
+// ======================================================================
+//   #GLOBAL
+// ======================================================================
+
+// Aqui vamos a tener variables globales, cosas que deben estar 
+
+
+// Estandarizamos el tratamiento de elementos UI.
+$global-primary-color: rgb(0, 179, 164);
+$global-primary-color-light: rgba(0, 179, 164, 0.7);
+$global-secondary-color: rgb(77, 72, 72);
+$global-third-color: #ccc;
+$global-radius: 35px !default;
+$global-gap: 10px !default;
+$global-transition: all 500ms ease-in-out !default;
+$global-border-color: #adadad;
+$global-nav-height: 90px;
+$global-footer-height: 50px;
+$global-sidebar-min-width: 50px;
+$global-sidebar-max-width: 230px;
+
+$breakpoints: (
+  wide: 1920px,
+  desktop-wide: 1366px,
+  desktop: 1024px,
+  tablet: 768px,
+  mobile: 576px
+);

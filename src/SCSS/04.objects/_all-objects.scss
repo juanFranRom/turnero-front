@@ -1,0 +1,15 @@
+/**
+    ======================================================================
+    #Objects
+    ======================================================================
+
+    Aquí, definiremos diseño reutilizables que no son específicos de ningún 
+    componente (componentes, nos referimos a componentes de UI como un button) 
+    en particular.
+
+**/
+
+@import "./objects.layout";
+@import "./objects.wrapper";
+@import "./objects.page";
+@import "./objects.overlay";

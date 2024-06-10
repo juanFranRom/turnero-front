@@ -1,0 +1,103 @@
+/**
+    ==========================================================================
+    #Input
+    ========================================================================== 
+
+    Esto es un ejemplo de componente. Las clases de componentes traen como prefijo `c-`.
+**/
+
+$input-primary-color:            $global-primary-color;
+$input-secondary-color:          $global-secondary-color;
+
+$input-padding-vertical:         $global-spacing-unit-small !default;
+$input-padding-horizontal:       $global-spacing-unit !default;
+$input-transition:               $global-transition !default;
+$input-radius:                   5px !default;
+
+$input-small-padding-vertical:   $global-spacing-unit-tiny !default;
+$input-small-padding-horizontal: $global-spacing-unit-small !default;
+
+$input-large-padding-vertical:   $global-spacing-unit !default;
+$input-large-padding-horizontal: $global-spacing-unit-large !default;
+
+$input-ghost-border-width:       2px;
+
+
+.c-input{
+    min-width: 150px;
+    min-height: 50px;
+    position: relative;
+    padding: $input-padding-vertical $input-padding-horizontal;
+    border-radius: $input-radius;
+    overflow: hidden;
+    outline: none;
+    border: none;
+    background-color: $input-primary-color;
+    border-color: $input-primary-color;
+    color: #fff;
+    @include font-size(16px);
+
+    span{
+        transition: all ease-in-out 250ms;
+        @include font-size(16px);
+        position: absolute;
+        left: 10px;
+        top: calc(25px - 13px);
+        z-index: 2;
+        cursor: pointer;
+        color: #fff;
+    }
+
+    &[type="number"] {
+        -moz-appearance: textfield; /* Firefox */
+        appearance: textfield; /* Edge */
+    }
+
+    &[type="date"]::-webkit-calendar-picker-indicator {
+        filter: invert(1);
+    }
+    
+    &[type="number"]::-webkit-inner-spin-button,
+    &[type="number"]::-webkit-outer-spin-button {
+        -webkit-appearance: none; /* Safari y Chrome */
+        margin: 0; /* Puede necesitar ajustarse según tus necesidades */
+    }
+
+    &[readonly]{
+        background-color: grey;
+    }
+}
+
+.c-input--placeholder{
+    min-height: 50px;
+    max-height: 50px;
+}
+
+.c-input--small {
+    padding: $global-spacing-unit-small $global-spacing-unit !important;
+}
+
+
+.c-input--focused{
+    padding-bottom: 0 !important;
+
+    span{
+        @include font-size(12px);
+        left: 15px;
+        top: 4px;
+    }
+
+    input{
+        position: absolute;
+        left: 0px;
+        right: 0px;
+        bottom: 0px;
+        margin-top: 15px;
+        padding: 10px 10px;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        background-color: $input-primary-color;
+        color: #fff;
+    }
+}

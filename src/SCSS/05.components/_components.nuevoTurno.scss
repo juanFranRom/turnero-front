@@ -1,0 +1,36 @@
+.c-nuevo_turno{
+    width: 400px;
+    height: 80vh;
+    position: relative;
+    left: calc(50% - 200px);
+    top: calc(50% - 40vh);
+    background-color: white;
+    padding: 25px 15px;
+}
+
+.c-nuevo_turno__item{
+    width: 100%;
+    display: flex;
+    margin: 20px 0;
+
+    & > div{
+        width: 100%;
+    }
+
+    &--right{
+        justify-content: end;
+    }
+}
+
+.c-nuevo_turno__hora{
+    @include flex-center-space-around();
+
+    & > div{
+        width: min-content;
+        flex: 1 1 50%;
+    }
+
+    & .c-datepicker{
+        width: 100%;
+    }
+}
