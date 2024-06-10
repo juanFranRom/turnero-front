@@ -31,7 +31,7 @@ const Input = ({type, className, placeholder = false, defaultValue = undefined, 
                 if (!input.current.hasFocus) {
                     setValue({value: value.value , focus: value.value && typeof value.value !== "number" && value.value.trim() === "" ? !value.focus : true})
                     input.current.focus()
-                    if(type !== 'number' && type !== 'date')
+                    if(type !== 'number' && type !== 'date' && type !== 'time')
                         input.current.setSelectionRange(0, input.current.value.length)
                 }
             } 

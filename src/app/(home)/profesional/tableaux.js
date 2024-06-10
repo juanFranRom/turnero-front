@@ -32,16 +32,16 @@ const headers = [
     text: "Apellidos",
   },
   {
-    id: "descripcion",
-    text: "Descripcion",
-  },
-  {
     id: "genero",
     text: "Genero",
   },
   {
-    id: "obraSocial",
-    text: "Obra Social",
+    id: "obrasSocialesCant",
+    text: "Obras Sociales",
+  },
+  {
+    id: "practicasCant",
+    text: "Practicas",
   },
   {
     id: "telefono1",
@@ -59,7 +59,7 @@ const headers = [
 
 const TableAux = () => {
   const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [contextMenu, setContextMenu] = useState(null)
   const [deleting, setDeleting] = useState(null)
   const [error, setError] = useState({
@@ -69,10 +69,10 @@ const TableAux = () => {
   const { user } = useUserContext();
   const router = useRouter();
 
-  const getPacientes = async () => {
-    setLoading(true)
+  const getProfesionales = async () => {
+    /*setLoading(true)
     try {
-      const response = await fetch(`${process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL }/pacientes`,
+      const response = await fetch(`${process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL }/profesionales`,
         {
           method: "GET",
           headers: {
@@ -83,7 +83,6 @@ const TableAux = () => {
         }
       );
       const json = await response.json();
-      console.log(json);
       if(json.status === 'SUCCESS')
       {
         if(json.data.length)
@@ -97,11 +96,11 @@ const TableAux = () => {
       setLoading(false)
     } catch (error) {
       router.push("/");
-    }
+    }*/
   }
 
   useEffect(() => {
-    getPacientes();
+    getProfesionales();
   }, []);
   
   return (
@@ -137,7 +136,7 @@ const TableAux = () => {
           rowData={contextMenu.rowData}
           setContextMenu={setContextMenu}
         >
-          <div className="c-context_menu--item" onClick={() => router.push(`/proveedores/crear/${contextMenu?.rowData?.cuit}`)}>
+          <div className="c-context_menu--item" onClick={() => router.push(`/profesional/crear/${contextMenu?.rowData?.cuit}`)}>
             <FaRegEdit/>
             <span className="u-6/7">Editar</span>
           </div>
@@ -154,11 +153,14 @@ const TableAux = () => {
       {
         loading?
           <div className="u-1/1 u-flex-column-center-center">
-            <Loader text="Cargando pacientes..."/>
+            <Loader text="Cargando profesionales..."/>
           </div>
         :
           data && data.length > 0 ?
-            <Table columns={headers} rows={data} contextMenu={setContextMenu}/>
+            <>
+              <h1>Profesionales</h1>
+              <Table columns={headers} rows={data} contextMenu={setContextMenu}/>
+            </>
           :
             <div className="u-1/1 u-flex-column-center-center u-p4--vertical">
               <p>No hay informacion para mostrar</p>

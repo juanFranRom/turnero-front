@@ -56,6 +56,10 @@ $input-ghost-border-width:       2px;
     &[type="date"]::-webkit-calendar-picker-indicator {
         filter: invert(1);
     }
+
+    &[type="time"]::-webkit-calendar-picker-indicator {
+        filter: invert(1);
+    }
     
     &[type="number"]::-webkit-inner-spin-button,
     &[type="number"]::-webkit-outer-spin-button {

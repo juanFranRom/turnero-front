@@ -32,16 +32,16 @@ const headers = [
     text: "Apellidos",
   },
   {
-    id: "descripcion",
-    text: "Descripcion",
-  },
-  {
     id: "genero",
     text: "Genero",
   },
   {
     id: "obraSocial",
     text: "Obra Social",
+  },
+  {
+    id: "obraSocialNum",
+    text: "Numero Obra Social",
   },
   {
     id: "telefono1",
@@ -87,7 +87,21 @@ const TableAux = () => {
       if(json.status === 'SUCCESS')
       {
         if(json.data.length)
-          setData(json.data)
+        {
+          setData(json.data.map(el => { 
+            let telefono1 = el.contactos.find( contacto => contacto.tipo === 'telefono' )?.valor
+            let telefono2 = el.contactos.find( contacto => contacto.tipo === 'telefono' && contacto.valor !== telefono1)?.valor
+            let email = el.contactos.find( contacto => contacto.tipo === 'email' )?.valor
+            return({
+              ...el,
+              obraSocial: el.coberturas[0].nombre,
+              obraSocialNum: el.coberturas[0].numero,
+              telefono1: telefono1,
+              telefono2: telefono2,
+              email: email,
+            })
+          }))
+        }
         else
           setData([])
         setLoading(false)
