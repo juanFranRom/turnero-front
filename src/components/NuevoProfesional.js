@@ -40,8 +40,8 @@ const NuevoProfesional = ({ toClose = false }) => {
     const router = useRouter()
 
     const handleChange = (val, key) => {
-        let aux = {...paciente, [key]: val}
-        setPaciente(aux)
+        let aux = {...profesional, [key]: val}
+        setProfesional(aux)
     }
 
     const handleChangeArray = (val, key, index) => {

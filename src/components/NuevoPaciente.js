@@ -19,8 +19,8 @@ import Loader from '@/components_UI/Loader'
 
 const NuevoPaciente = ({ toClose = false }) => {
     const [paciente, setPaciente] = useState({
-        nombres: '',
-        apellidos: '',
+        nombre: '',
+        apellido: '',
         dni: null,
         fecha_nacimiento: null,
         genero: null,
@@ -80,12 +80,12 @@ const NuevoPaciente = ({ toClose = false }) => {
 
    
     const validar = (object) => {
-        if (!object.nombres) {
+        if (!object.nombre) {
             return 'El campo "Nombres" es obligatorio.'
         }
 
-        if (!object.apellidos) {
-            return 'El campo "Nombres" es obligatorio.'
+        if (!object.apellido) {
+            return 'El campo "Apellidos" es obligatorio.'
         }
 
         if (!object.dni) {
@@ -174,13 +174,10 @@ const NuevoPaciente = ({ toClose = false }) => {
                 mensaje: 'Ocurrio un error, vuelva a intentar luego.'
             })
         }
-        setError({
-            value: false,
-            mensaje: ''
-        })
         setCreando(false)
     }
 
+    console.log(error);
     return (
         <div className='c-nuevo_paciente'>
             {
@@ -191,13 +188,13 @@ const NuevoPaciente = ({ toClose = false }) => {
             <div className='c-nuevo_paciente__item'>
                 <div>
                     <span>Nombres</span>
-                    <Input defaultValue={paciente.nombres} handleChange={(val) => handleChange(val, 'nombres')}/>
+                    <Input defaultValue={paciente.nombre} handleChange={(val) => handleChange(val, 'nombre')}/>
                 </div>
             </div>
             <div className='c-nuevo_paciente__item'>
                 <div>
                     <span>Apellidos</span>
-                    <Input defaultValue={paciente.apellidos} handleChange={(val) => handleChange(val, 'apellidos')}/>
+                    <Input defaultValue={paciente.apellido} handleChange={(val) => handleChange(val, 'apellido')}/>
                 </div>
             </div>
             <div className='c-nuevo_paciente__item'>
