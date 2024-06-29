@@ -24,12 +24,12 @@ const headers = [
     text: "DNI",
   },
   {
-    id: "nombres",
+    id: "nombre",
     text: "Nombres",
   },
   {
-    id: "apellidos",
-    text: "Apellidos",
+    id: "apellido",
+    text: "Apellido",
   },
   {
     id: "genero",
@@ -70,19 +70,21 @@ const TableAux = () => {
   const router = useRouter();
 
   const getProfesionales = async () => {
-    /*setLoading(true)
+    setLoading(true)
     try {
+      console.log("llego")
       const response = await fetch(`${process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL }/profesionales`,
         {
           method: "GET",
           headers: {
             Accept: "application/json",
             "Content-Type": "application/json",
-            authorization: "Bearer " + user.token,
+            //authorization: "Bearer " + user.token,
           },
         }
       );
       const json = await response.json();
+      console.log(json)
       if(json.status === 'SUCCESS')
       {
         if(json.data.length)
@@ -92,11 +94,12 @@ const TableAux = () => {
         setLoading(false)
       }
       else
-        router.push("/")
+        //router.push("/")
       setLoading(false)
     } catch (error) {
-      router.push("/");
-    }*/
+      console.log(error);
+      //router.push("/");
+    } 
   }
 
   useEffect(() => {
