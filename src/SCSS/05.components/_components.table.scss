@@ -22,7 +22,6 @@
 }
 
 .c-table__tr {
-  padding: $global-spacing-unit-tiny $global-spacing-unit-tiny;
   display: flex;
   flex-wrap: nowrap;
   justify-content: space-around;
@@ -36,7 +35,6 @@
 }
 
 .c-table__th {
-  padding: $global-spacing-unit-tiny $global-spacing-unit-tiny;
   display: flex;
   flex-wrap: nowrap;
   justify-content: space-around;
@@ -76,7 +74,7 @@
   background-color: $global-primary-color;
   border-radius: $global-radius-small;
   color: white;
-  padding: $global-spacing-unit-tiny $global-spacing-unit;
+  padding: $global-spacing-unit-tiny $global-spacing-unit-tiny;
   @include font-size(18px);
   font-weight: 600;
   z-index: 4;

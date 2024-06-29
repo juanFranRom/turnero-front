@@ -22,10 +22,10 @@ const Select = ({ className, options = [], placeholder = null, defaultOption = n
     const [open, set_open] = useState(false)
     const [selected, set_selected] = useState(
         defaultOption !== null ? 
-            typeof defaultOption === 'object' ?
+            typeof defaultOption === 'object' && defaultOption.id ?
                 options.find(el => parseInt(el.id) === parseInt(defaultOption.id)) 
             :
-                options.find(el => String(el.value) === String(defaultOption))
+                options.find(el => String(el.value) === String(defaultOption.value))
         : 
             ''
     )
@@ -41,10 +41,10 @@ const Select = ({ className, options = [], placeholder = null, defaultOption = n
 
             if(defaultOption !== null)
             {
-                if(typeof defaultOption === 'object')
+                if(typeof defaultOption === 'object' && defaultOption.id)
                     index = options.findIndex(el => parseInt(el.id) === parseInt(defaultOption.id)) 
                 else
-                    index = options.findIndex(el => el.value === defaultOption)
+                    index = options.findIndex(el => String(el.value) === String(defaultOption.value))
             } 
             setIndexTohover(index)
         }
@@ -150,25 +150,13 @@ const Select = ({ className, options = [], placeholder = null, defaultOption = n
         if(open)
         {
             const rect = selectRef.current.getBoundingClientRect()
-            const windowHeight = window.innerHeight || document.documentElement.clientHeight
-            
-            // Verificar si el elemento está dentro del área visible de la pantalla
-            const isVisible = rect.top < windowHeight && rect.bottom >= 0
-
-            if(isVisible)
-            {
-                setStyle(
-                    {
-                        width: `${selectRef.current.offsetWidth}px`,
-                        top: `${rect.bottom + 2}px`,
-                        left:  `${rect.left}px`,
-                    }
-                )
-            }
-        }
-        else
-        {
-            setStyle(null)
+            setStyle(
+                {
+                    width: `${selectRef.current.offsetWidth}px`,
+                    top: `${rect.bottom + 2}px`,
+                    left:  `${rect.left}px`,
+                }
+            )
         }
     }, [open])
 
@@ -177,13 +165,13 @@ const Select = ({ className, options = [], placeholder = null, defaultOption = n
 
         if(defaultOption)
         {
-            if(typeof defaultOption === 'object')
+            if(typeof defaultOption === 'object' && defaultOption.id)
             {
                 aux = options.find(el => parseInt(el.id) === parseInt(defaultOption.id))
             }
             else
             {
-                aux = options.find(el => parseInt(el.id) === parseInt(defaultOption))
+                aux = options.find(el => String(el.value) === String(defaultOption.value))
             }
 
         }
@@ -191,12 +179,12 @@ const Select = ({ className, options = [], placeholder = null, defaultOption = n
         if(aux !== selected)
             set_selected(aux)
     }, [defaultOption])
-
+    
     return (
         <div 
             ref={selectRef}
             className={ 
-                `c-select u-flex-center-space-between u-cursor--pointer ${placeholder ? `c-select--placeholder` : ''} ${className}` 
+                `c-select u-flex-center-space-between u-cursor ${placeholder ? `c-select--placeholder` : ''} ${className}` 
             } 
             onClick={handleOpen}
             onFocus={handleOpen}
@@ -224,7 +212,7 @@ const Select = ({ className, options = [], placeholder = null, defaultOption = n
                         options.map( (value, index) => {
                             return(
                                 <p 
-                                    className={`c-select__options ${(selected !== null && selected !== undefined && value.id && selected.id === value.id) && 'c-select__options--active'} ${(index === indexToHover && selected.id !== value.id) && 'c-select__options--hover'}`} 
+                                    className={`c-select__options ${(selected !== null && selected !== undefined && ((value.id && selected.id === value.id) || (value.value && selected.value === value.value))) && 'c-select__options--active'} ${(selected !== null && selected !== undefined && index === indexToHover && selected.id !== value.id) && 'c-select__options--hover'}`} 
                                     key={index}
                                     onClick={() => handleSelect(index)}
                                 >
