@@ -27,6 +27,7 @@ const NuevoProfesional = ({ toClose = false }) => {
         practicas: [{nombre:'',duracion_moda:''}],
         obrasSociales: [''],
         coberturas: [''],
+        clinicas: [''],
         telefonos: [''],
         emails: [''],
     })
@@ -141,7 +142,7 @@ const NuevoProfesional = ({ toClose = false }) => {
                 ...object, 
                 genero: object.genero.value,
                 contactos: [], 
-                coberturas: [], 
+                coberturas: [],  
             }
 
             if(objectToSend.obraSocial && objectToSend.obraSocial.length > 0)
@@ -167,7 +168,7 @@ const NuevoProfesional = ({ toClose = false }) => {
             console.log(json);
             if(json.status === 'SUCCESS')
             {
-                //router.push("/paciente");
+                router.push("/profesional");
             }
             else
             {
@@ -229,6 +230,37 @@ const NuevoProfesional = ({ toClose = false }) => {
                         handleChange={(val) => handleChange(val, 'genero')}
                         defaultOption={profesional.genero}
                     />
+                </div>
+            </div><div className='c-nuevo_paciente__item c-nuevo_paciente__hora'>
+                <div>
+                    <span>Clinica</span>
+                    {
+                        producirInputs(
+                            (val, index) => handleChangeArray(val, 'clinicas', index),
+                            profesional.clinicas.length,
+                            (index) => {
+                                if(index >= profesional.clinicas.length)
+                                {
+                                    setProfesional(prev => {
+                                        let aux = [...prev.clinicas]
+                                        aux.push('')
+                                        return({ ...prev, clinicas: aux })
+                                    })
+                                }
+                                else
+                                {
+                                    setProfesional(prev =>{
+                                        let aux = [...prev.clinicas]
+                                        aux.splice(index,  1)
+                                        return({ ...prev, clinicas: aux })
+                                    })
+                                }
+                            },
+                            profesional.clinicas,
+                            '',
+                            'Clinica'
+                        )   
+                    }
                 </div>
             </div>
             <div className='c-nuevo_paciente__item c-nuevo_paciente__hora'>

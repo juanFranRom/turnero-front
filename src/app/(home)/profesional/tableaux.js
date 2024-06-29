@@ -36,26 +36,29 @@ const headers = [
     text: "Genero",
   },
   {
-    id: "obrasSocialesCant",
+    id: "obrasSociales",
     text: "Obras Sociales",
   },
   {
-    id: "practicasCant",
+    id: "practicasText",
     text: "Practicas",
   },
   {
-    id: "telefono1",
-    text: "Telefono 1",
-  },
-  {
-    id: "telefono2",
-    text: "Telefono 2",
-  },
-  {
-    id: "email",
-    text: "Email",
-  },
+    id: "contactosText",
+    text: "Contactos",
+  }, 
 ];
+
+
+const ContactListComponent = ({ contactos }) => (
+  <div style={{ display: 'flex', flexDirection: 'column' }}>
+    {contactos.map(contacto => (
+      <div key={contacto.id} style={{ marginBottom: '4px' }}>
+        <span><strong>{contacto.tipo}:</strong> {contacto.valor}</span>
+      </div>
+    ))}
+  </div>
+);
 
 const TableAux = () => {
   const [data, setData] = useState([]);
@@ -71,8 +74,7 @@ const TableAux = () => {
 
   const getProfesionales = async () => {
     setLoading(true)
-    try {
-      console.log("llego")
+    try { 
       const response = await fetch(`${process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL }/profesionales`,
         {
           method: "GET",
@@ -88,7 +90,14 @@ const TableAux = () => {
       if(json.status === 'SUCCESS')
       {
         if(json.data.length)
-          setData(json.data)
+          setData(json.data.map(profesional => {
+            return {
+              ...profesional,
+              obrasSociales: profesional.obrasSociales.join(", "),
+              practicasText: profesional.practicas.map(practica => practica.nombre).join(", "),
+              contactosText: <ContactListComponent key={profesional.dni} contactos={profesional.contactos} />
+            };
+          }));
         else
           setData([])
         setLoading(false)
