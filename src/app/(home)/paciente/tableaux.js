@@ -78,7 +78,7 @@ const TableAux = () => {
           headers: {
             Accept: "application/json",
             "Content-Type": "application/json",
-            authorization: "Bearer " + user.token,
+            authorization: "Bearer " + user?.token,
           },
         }
       );
@@ -110,13 +110,14 @@ const TableAux = () => {
         router.push("/")
       setLoading(false)
     } catch (error) {
+      console.log(error);
       router.push("/");
     }
   }
 
   useEffect(() => {
     getPacientes();
-  }, []);
+  }, [user]);
   
   return (
     <>
@@ -151,7 +152,7 @@ const TableAux = () => {
           rowData={contextMenu.rowData}
           setContextMenu={setContextMenu}
         >
-          <div className="c-context_menu--item" onClick={() => router.push(`/proveedores/crear/${contextMenu?.rowData?.cuit}`)}>
+          <div className="c-context_menu--item" onClick={() => router.push(`/paciente/crear/${contextMenu?.rowData?.id}`)}>
             <FaRegEdit/>
             <span className="u-6/7">Editar</span>
           </div>
