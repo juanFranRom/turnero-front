@@ -6,8 +6,8 @@ import Input from './Input'
 // Export elements
 import {PiMicrosoftExcelLogoFill} from 'react-icons/pi'
 import {RiArrowDownDoubleLine} from "react-icons/ri";
-//import ExcelJS from 'exceljs';
-//import {saveAs} from 'file-saver';
+import ExcelJS from 'exceljs';
+import {saveAs} from 'file-saver';
 import Loader from './Loader'
 
 const defaultColumn = [{id: 'id1', text:'column'}, {id: 'id2', text:'column'}, {id: 'id3', text:'column'}]
@@ -28,6 +28,7 @@ const Table = ({
     exportData = null,
     exportTitle = 'Exportable Tabla',
     contextMenu = null,
+    setContextMenu = null,
     onClick = null
 }) => {
     const [pagination, setPagination] = useState({
@@ -39,6 +40,7 @@ const Table = ({
     const [filter, setFilter] = useState({})
     const [openFilters, setOpenFilters] = useState(false)
     const [filteredRows, setFilteredRows] = useState([])
+    const [selectedRow, setSelectedRow] = useState(null)
     const [exportando, setExportando] = useState(false)
     const [startX, setStartX] = useState(null)
     const tableRef = useRef(null)
@@ -65,7 +67,7 @@ const Table = ({
         setStartX(null)
     }
 
-    /*const handleExport = async () => {
+    const handleExport = async () => {
         try {
             setExportando(true)
 
@@ -126,7 +128,7 @@ const Table = ({
             console.log(error);
             setExportando(false)
         }
-    }*/
+    }
 
     const nextPage = () => {
         let aux = {...pagination}
@@ -159,10 +161,11 @@ const Table = ({
     }
 
     const handleContextMenu = (e, rowData) => {
-        if(contextMenu)
+        if(setContextMenu)
         {
             e.preventDefault()
-            contextMenu({x: e.clientX, y: e.clientY, rowData})
+            setContextMenu({x: e.clientX, y: e.clientY, rowData})
+            setSelectedRow(rowData)
         }
     }
     const handleClick = (e, rowData) => {
@@ -222,6 +225,11 @@ const Table = ({
             })
     },[pagination.size, filteredRows, rows])
 
+    useEffect(() => {
+        if(!contextMenu)
+            setSelectedRow(null)
+    }, [contextMenu])
+
     return (
         <>
             {
@@ -237,9 +245,9 @@ const Table = ({
                             defaultOption={pagination.size}
                             handleChange={(newOption) => setPagination({ ...pagination, size: newOption })}
                         />
-                        <div className='u-flex-end-center u-flex-start-center@tablet u-1/1 u-cursor--pointer'>
-                            <Input className={'u-p1--horizontal@tablet u-p--vertical@tablet u-3/12 u-4/12@desktop u-7/12@tablet u-8/12@mobile'} defaultValue={globalFilter} handleChange={(val) => setGlobalFilter(val)} placeholder={'Filtro'}/>
-                            {/*<PiMicrosoftExcelLogoFill className='u-m2--left u-color--green u-text--2' onClick={handleExport}/>*/}
+                        <div className='u-flex-end-center u-flex-start-center@tablet u-1/1 u-cursor'>
+                            <Input className={'u-3/12 u-4/12@desktop u-7/12@tablet u-8/12@mobile'} defaultValue={globalFilter} handleChange={(val) => setGlobalFilter(val)} placeholder={'Filtro'}/>
+                            <PiMicrosoftExcelLogoFill className='u-m2--left u-color--green u-text--2' onClick={handleExport}/>
                         </div>
                     </div>
             }
@@ -248,7 +256,7 @@ const Table = ({
                 <div className={`c-table__filter ${openFilters ? 'c-table__filter--open' : ''}`}>
                     <div className='c-table__filter--header'>
                         <p>Filtros</p>
-                        <RiArrowDownDoubleLine className='u-cursor--pointer' onClick={ () => setOpenFilters((prevState) => !prevState) }/>
+                        <RiArrowDownDoubleLine className='u-cursor' onClick={ () => setOpenFilters((prevState) => !prevState) }/>
                     </div>
                     <div className={`c-table__filter--body ${openFilters ? 'c-table__filter--open' : ''}`}>
                         {
@@ -276,7 +284,7 @@ const Table = ({
                     handleClick ?
                         <TableBody rows={Object.keys(filter).length > 0 || globalFilter !== '' ? filteredRows : rows && rows.length ? rows : []}
                                 columns={columns} pagination={pagination} handleContextMenu={handleContextMenu}
-                                handleClick={handleClick} tableRef={tableRef}
+                                handleClick={handleClick} tableRef={tableRef} selectedRow={selectedRow}
                         />
                     :
                         <TableBody
@@ -339,7 +347,7 @@ const Paginado = ({ pagination, next, prev, goToPage = null }) => {
 }
 
 const TableHeader = ({ columns, tableRef }) => {
-    let ancho = parseInt(tableRef.current?.offsetWidth / columns.length) - 12
+    let ancho = parseInt(tableRef.current?.offsetWidth / columns.length) - 24 - 48
     return (
         <thead>
             <tr className='c-table__thead c-table__th'>
@@ -366,8 +374,8 @@ const TableHeader = ({ columns, tableRef }) => {
     )
 }
 
-const TableBody = ({rows, columns, pagination, handleContextMenu, handleClick, tableRef}) => {
-    let ancho = parseInt(tableRef?.current?.offsetWidth / columns.length) - 12
+const TableBody = ({ rows, columns, pagination, handleContextMenu, handleClick, tableRef, selectedRow }) => {
+    let ancho = parseInt(tableRef?.current?.offsetWidth / columns.length) - 24 - 48
     let start = pagination.size.value * pagination.actual
     return (
         <tbody>
@@ -375,7 +383,7 @@ const TableBody = ({rows, columns, pagination, handleContextMenu, handleClick, t
             rows.map((value, index) => {
                 if (value && index >= start && index < pagination.size.value + start) {
                     let row = <tr
-                        className='c-table__tr'
+                        className={`c-table__tr ${selectedRow === value ? 'c-table__tr--selected' : ''}`}
                         key={index}
                         onContextMenu={handleContextMenu ? (e) => handleContextMenu(e, value) : null}
                         onClick={handleClick ? (e) => handleClick(e, value) : null}
@@ -392,7 +400,7 @@ const TableBody = ({rows, columns, pagination, handleContextMenu, handleClick, t
                                             key={index}
                                         >
                                             {
-                                                !value[element.id] || value[element.id] === '' ? '-' : value[element.id]
+                                                value[element.id] === null || value[element.id] === '' ? '-' : value[element.id]
                                             }
                                         </td>
                                     )

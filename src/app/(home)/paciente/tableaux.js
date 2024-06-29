@@ -24,11 +24,11 @@ const headers = [
     text: "DNI",
   },
   {
-    id: "nombres",
+    id: "nombre",
     text: "Nombres",
   },
   {
-    id: "apellidos",
+    id: "apellido",
     text: "Apellidos",
   },
   {
@@ -172,7 +172,7 @@ const TableAux = () => {
           </div>
         :
           data && data.length > 0 ?
-            <Table columns={headers} rows={data} contextMenu={setContextMenu}/>
+            <Table columns={headers} rows={data} setContextMenu={setContextMenu} contextMenu={contextMenu}/>
           :
             <div className="u-1/1 u-flex-column-center-center u-p4--vertical">
               <p>No hay informacion para mostrar</p>
