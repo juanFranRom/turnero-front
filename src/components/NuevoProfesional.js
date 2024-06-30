@@ -19,14 +19,15 @@ import Loader from '@/components_UI/Loader'
 
 const NuevoProfesional = ({ toClose = false }) => {
     const [profesional, setProfesional] = useState({
-        nombres: '',
-        apellidos: '',
+        nombre: '',
+        apellido: '',
         dni: null,
         fecha_nacimiento: null,
         genero: null,
-        practicas: [''],
+        practicas: [{nombre:'',duracion_moda:''}],
         obrasSociales: [''],
         coberturas: [''],
+        clinicas: [''],
         telefonos: [''],
         emails: [''],
     })
@@ -45,11 +46,11 @@ const NuevoProfesional = ({ toClose = false }) => {
     }
 
     const handleChangeArray = (val, key, index) => {
-        let aux = { ...paciente }
-        let auxArray = [ ...paciente[key] ]
+        let aux = { ...profesional }
+        let auxArray = [ ...profesional[key] ]
         auxArray[index] = val
         aux[key] = auxArray
-        setPaciente(aux)
+        setProfesional(aux)
     }
 
     const producirInputs = (handleChange = null, cantInputs = 1, setCantInputs = null, values = [], type = '', placeholder = '') => {
@@ -62,8 +63,8 @@ const NuevoProfesional = ({ toClose = false }) => {
                     {
                         placeholder === 'Practica' ?
                             <>
-                                <Input className='u-1/2' type={type} placeholder={`Nombre`} handleChange={(val) => handleChange(val, i)} defaultValue={values[i] ?? null}/>
-                                <Input className='u-1/2' type={'time'} placeholder={`Duracion`} handleChange={(val) => handleChange(val, i)} defaultValue={values[i] ?? null}/>
+                                <Input className='u-1/2' type={type} placeholder={`Nombre`} handleChange={(val) => handleChange({...values[i], nombre:val}, i)} defaultValue={values[i].nombre ?? null}/>
+                                <Input className='u-1/2' type={'time'} placeholder={`Duracion`} handleChange={(val) => handleChange({...values[i], duracion_moda:val}, i)} defaultValue={values[i].duracion_moda ?? null}/>
                             </>
                         :
                             <Input className='u-1/1' type={type} placeholder={`${placeholder} ${i + 1}`} handleChange={(val) => handleChange(val, i)} defaultValue={values[i] ?? null}/>
@@ -89,12 +90,12 @@ const NuevoProfesional = ({ toClose = false }) => {
 
    
     const validar = (object) => {
-        if (!object.nombres) {
-            return 'El campo "Nombres" es obligatorio.'
+        if (!object.nombre) {
+            return 'El campo "Nombre" es obligatorio.'
         }
 
-        if (!object.apellidos) {
-            return 'El campo "Nombres" es obligatorio.'
+        if (!object.apellido) {
+            return 'El campo "Apellido" es obligatorio.'
         }
 
         if (!object.dni) {
@@ -141,7 +142,7 @@ const NuevoProfesional = ({ toClose = false }) => {
                 ...object, 
                 genero: object.genero.value,
                 contactos: [], 
-                coberturas: [], 
+                coberturas: [],  
             }
 
             if(objectToSend.obraSocial && objectToSend.obraSocial.length > 0)
@@ -152,7 +153,7 @@ const NuevoProfesional = ({ toClose = false }) => {
             objectToSend.contactos = objectToSend.contactos.concat(objectToSend.telefonos.map(el => { return({ tipo: 'telefono', valor: el }) }))
             objectToSend.contactos = objectToSend.contactos.concat(objectToSend.emails.map(el => { return({ tipo: 'email', valor: el }) }))
 
-            const response = await fetch(`${process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL }/pacientes`,
+            const response = await fetch(`${process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL }/profesionales`,
               {
                 method: "POST",
                 headers: {
@@ -167,7 +168,7 @@ const NuevoProfesional = ({ toClose = false }) => {
             console.log(json);
             if(json.status === 'SUCCESS')
             {
-                router.push("/paciente");
+                router.push("/profesional");
             }
             else
             {
@@ -199,14 +200,14 @@ const NuevoProfesional = ({ toClose = false }) => {
             <h2 className='u-color--primary'>Nuevo Profesional</h2>
             <div className='c-nuevo_paciente__item'>
                 <div>
-                    <span>Nombres</span>
-                    <Input defaultValue={profesional.nombres} handleChange={(val) => handleChange(val, 'nombres')}/>
+                    <span>Nombre</span>
+                    <Input defaultValue={profesional.nombre} handleChange={(val) => handleChange(val, 'nombre')}/>
                 </div>
             </div>
             <div className='c-nuevo_paciente__item'>
                 <div>
-                    <span>Apellidos</span>
-                    <Input defaultValue={profesional.apellidos} handleChange={(val) => handleChange(val, 'apellidos')}/>
+                    <span>Apellido</span>
+                    <Input defaultValue={profesional.apellido} handleChange={(val) => handleChange(val, 'apellido')}/>
                 </div>
             </div>
             <div className='c-nuevo_paciente__item'>
@@ -229,6 +230,37 @@ const NuevoProfesional = ({ toClose = false }) => {
                         handleChange={(val) => handleChange(val, 'genero')}
                         defaultOption={profesional.genero}
                     />
+                </div>
+            </div><div className='c-nuevo_paciente__item c-nuevo_paciente__hora'>
+                <div>
+                    <span>Clinica</span>
+                    {
+                        producirInputs(
+                            (val, index) => handleChangeArray(val, 'clinicas', index),
+                            profesional.clinicas.length,
+                            (index) => {
+                                if(index >= profesional.clinicas.length)
+                                {
+                                    setProfesional(prev => {
+                                        let aux = [...prev.clinicas]
+                                        aux.push('')
+                                        return({ ...prev, clinicas: aux })
+                                    })
+                                }
+                                else
+                                {
+                                    setProfesional(prev =>{
+                                        let aux = [...prev.clinicas]
+                                        aux.splice(index,  1)
+                                        return({ ...prev, clinicas: aux })
+                                    })
+                                }
+                            },
+                            profesional.clinicas,
+                            '',
+                            'Clinica'
+                        )   
+                    }
                 </div>
             </div>
             <div className='c-nuevo_paciente__item c-nuevo_paciente__hora'>
@@ -268,14 +300,16 @@ const NuevoProfesional = ({ toClose = false }) => {
                     <span>Practicas</span>
                     {
                         producirInputs(
-                            (val, index) => handleChangeArray(val, 'practicas', index),
+                            (val, index) => {
+                                handleChangeArray(val, 'practicas', index)
+                            },
                             profesional.practicas.length,
                             (index) => {
                                 if(index >= profesional.practicas.length)
                                 {
                                     setProfesional(prev => {
                                         let aux = [...prev.practicas]
-                                        aux.push('')
+                                        aux.push({...values[i], nombre:val})
                                         return({ ...prev, practicas: aux })
                                     })
                                 }
