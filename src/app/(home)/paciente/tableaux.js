@@ -94,8 +94,8 @@ const TableAux = () => {
             let email = el.contactos.find( contacto => contacto.tipo === 'email' )?.valor
             return({
               ...el,
-              obraSocial: el.coberturas[0].nombre,
-              obraSocialNum: el.coberturas[0].numero,
+              obraSocial: el.coberturas[0]?.nombre,
+              obraSocialNum: el.coberturas[0]?.numero,
               telefono1: telefono1,
               telefono2: telefono2,
               email: email,
@@ -105,13 +105,11 @@ const TableAux = () => {
         else
           setData([])
         setLoading(false)
-      }
-      else
-        router.push("/")
+      } 
       setLoading(false)
     } catch (error) {
       console.log(error);
-      router.push("/");
+      //router.push("/");
     }
   }
 

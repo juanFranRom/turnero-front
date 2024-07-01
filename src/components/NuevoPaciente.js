@@ -158,13 +158,12 @@ const NuevoPaciente = ({ id = null, toClose = false }) => {
                 headers: {
                   Accept: "application/json",
                   "Content-Type": "application/json",
-                  authorization: "Bearer " + user.token,
+                  //authorization: "Bearer " + user.token,
                 },
                 body: JSON.stringify(objectToSend)
               }
             );
             const json = await response.json();
-            console.log(json);
             if(json.status === 'SUCCESS')
             {
                 router.push("/paciente");
@@ -189,7 +188,6 @@ const NuevoPaciente = ({ id = null, toClose = false }) => {
         })
     }
 
-    console.log(paciente);
     const editar = async (object) => {
         setAccion({
             text: 'Editando paciente...',

@@ -117,28 +117,28 @@ const TableAux = () => {
   
   return (
     <>
-      {
-       /*deleting &&
+      { 
+      deleting &&
        <Overlay>
         <PopUp centered={true}>
           <p className='u-text--1 u-m3--bottom'>{`¿Esta seguro que desea eliminar el proveedor "${deleting.razon_social ? deleting.razon_social : `${deleting.apellido}, ${deleting.nombre}`}"?`}</p>
           <div className='u-1/1 u-flex-end-center'>
-            <Button text={'Aceptar'} clickHandler={() => deleteProveedor(deleting.cuit)}/>
+            <Button text={'Aceptar'} clickHandler={() => deleteProveedor(deleting.id)}/>
             <Button text={'Rechazar'} clickHandler={() => setDeleting(null)}/>
           </div>
         </PopUp>
-       </Overlay> */
+       </Overlay> 
       }
       {
-       /*error.value &&
-       <Overlay>
-        <PopUp centered={true}>
-          <p className='u-text--1 u-m3--bottom'>{error.message}</p>
-          <div className='u-1/1 u-flex-end-center'>
-            <Button text={'Aceptar'} clickHandler={() => setError({value: false, message: ''})}/>
-          </div>
-        </PopUp>
-       </Overlay> */
+        error.value &&
+        <Overlay>
+          <PopUp centered={true}>
+            <p className='u-text--1 u-m3--bottom'>{error.message}</p>
+            <div className='u-1/1 u-flex-end-center'>
+              <Button text={'Aceptar'} clickHandler={() => setError({value: false, message: ''})}/>
+            </div>
+          </PopUp>
+        </Overlay> 
       }
       {
         contextMenu && 
@@ -148,18 +148,14 @@ const TableAux = () => {
           rowData={contextMenu.rowData}
           setContextMenu={setContextMenu}
         >
-          <div className="c-context_menu--item" onClick={() => router.push(`/profesional/crear/${contextMenu?.rowData?.cuit}`)}>
+          <div className="c-context_menu--item" onClick={() => router.push(`/profesional/crear/${contextMenu?.rowData?.id}`)}>
             <FaRegEdit/>
             <span className="u-6/7">Editar</span>
           </div>
-          {/*<div className="c-context_menu--item" onClick={() => setDeleting(contextMenu?.rowData)}>
+          <div className="c-context_menu--item" onClick={() => setDeleting(contextMenu?.rowData)}>
             <MdDeleteForever/>
             <span className="u-6/7">Eliminar</span>
           </div>
-          <div className="c-context_menu--item">
-            <MdOutlinePaid/>
-            <span className="u-6/7">Obtener ultima cuota</span>
-          </div>*/}
         </ContextMenu>
       }
       {
@@ -171,7 +167,7 @@ const TableAux = () => {
           data && data.length > 0 ?
             <>
               <h1>Profesionales</h1>
-              <Table columns={headers} rows={data} contextMenu={setContextMenu}/>
+              <Table columns={headers} rows={data} setContextMenu={setContextMenu} contextMenu={contextMenu}/>
             </>
           :
             <div className="u-1/1 u-flex-column-center-center u-p4--vertical">

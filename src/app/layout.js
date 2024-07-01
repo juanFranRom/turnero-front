@@ -3,6 +3,7 @@ import { UserContextProvider } from '@/contexts/user'
 import { FocusProvider } from '@/contexts/navegacion'
 import { TurnoContextProvider } from "@/contexts/turno"
 import { PacienteContextProvider } from '@/contexts/paciente'
+import { ProfesionalContextProvider } from '@/contexts/profesional'
 
 // Fonts
 import { Open_Sans } from 'next/font/google'
@@ -31,7 +32,9 @@ export default function RootLayout({ children }) {
           <UserContextProvider>
             <TurnoContextProvider>
               <PacienteContextProvider>
-                {children}
+                <ProfesionalContextProvider>
+                  {children}
+                </ProfesionalContextProvider>
               </PacienteContextProvider>
             </TurnoContextProvider>
           </UserContextProvider>

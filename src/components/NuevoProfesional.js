@@ -1,10 +1,10 @@
 'use client'
 // React
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
 // context
-import { usePacienteContext } from '@/contexts/paciente'
+import { useProfesionalContext } from '@/contexts/profesional'
 import { useUserContext } from '@/contexts/user'
 
 // Icons
@@ -17,7 +17,7 @@ import Select from '@/components_UI/Select'
 import Loader from '@/components_UI/Loader'
 
 
-const NuevoProfesional = ({ toClose = false }) => {
+const NuevoProfesional = ({id = null,  toClose = false }) => {
     const [profesional, setProfesional] = useState({
         nombre: '',
         apellido: '',
@@ -35,8 +35,12 @@ const NuevoProfesional = ({ toClose = false }) => {
         value: false,
         mensaje: '',
     })
-    const [creando, setCreando] = useState(false)
-    const { openPaciente, setOpenPaciente } = usePacienteContext()
+    const [accion, setAccion] = useState({
+        text: '',
+        value: false
+    })
+    const [loading, setLoading] = useState( id ? true : false )
+    const { openProfesional, setOpenProfesional } = useProfesionalContext()
     const { user } = useUserContext()
     const router = useRouter()
 
@@ -118,14 +122,17 @@ const NuevoProfesional = ({ toClose = false }) => {
         }
 
         if (object.obraSocial && object.obraSocial.length > 0 && !object.obraSocialNum) {
-            return 'Ha ingresado que el paciente posee obra social, ingrese el numero .'
+            return 'Ha ingresado que el Profesional posee obra social, ingrese el numero .'
         }
 
         return true
     }
 
     const crear = async (object) => {
-        setCreando(true)
+        setAccion({
+            text: 'Creando profesional...',
+            value: true
+        })
         try {
             let validate = validar(object)
             if(validate !== true)
@@ -134,7 +141,10 @@ const NuevoProfesional = ({ toClose = false }) => {
                     value: true,
                     mensaje: validate
                 })
-                setCreando(false)
+                setAccion({
+                    text: '',
+                    value: false
+                })
                 return
             }
 
@@ -159,7 +169,82 @@ const NuevoProfesional = ({ toClose = false }) => {
                 headers: {
                   Accept: "application/json",
                   "Content-Type": "application/json",
-                  authorization: "Bearer " + user.token,
+                  //authorization: "Bearer " + user.token,
+                },
+                body: JSON.stringify(objectToSend)
+              }
+            );
+            const json = await response.json();
+            if(json.status === 'SUCCESS')
+            {
+                router.push("/profesional");
+            }
+            else
+            {
+                setError({
+                    value: true,
+                    mensaje: json.message
+                })
+            }
+        } catch (error) {
+            console.log(error)
+            setError({
+                value: true,
+                mensaje: 'Ocurrio un error, vuelva a intentar luego.'
+            })
+        }
+        setError({
+            value: false,
+            mensaje: ''
+        })
+        setAccion({
+            text: '',
+            value: false
+        })
+    }
+
+    const editar = async (object) => {
+        setAccion({
+            text: 'Editando profesional...',
+            value: true
+        })
+        try {
+            let validate = validar(object)
+            if(validate !== true)
+            {
+                setError({
+                    value: true,
+                    mensaje: validate
+                })
+                setAccion({
+                    text: '',
+                    value: false
+                })
+                return
+            }
+
+            let objectToSend = { 
+                ...object, 
+                genero: object.genero.value ? object.genero.value : object.genero,
+                contactos: [], 
+                coberturas: [], 
+            }
+
+            if(objectToSend.obraSocial && objectToSend.obraSocial.length > 0)
+            {
+                objectToSend.coberturas.push({ nombre: objectToSend.obraSocial, numero: objectToSend.obraSocialNum })
+            }
+
+            objectToSend.contactos = objectToSend.contactos.concat(objectToSend.telefonos.map(el => { return({ tipo: 'telefono', valor: el }) }))
+            objectToSend.contactos = objectToSend.contactos.concat(objectToSend.emails.map(el => { return({ tipo: 'email', valor: el }) }))
+
+            const response = await fetch(`${process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL }/profesionales/${profesional.id}`,
+              {
+                method: "PUT",
+                headers: {
+                  Accept: "application/json",
+                  "Content-Type": "application/json",
+                  //authorization: "Bearer " + user.token,
                 },
                 body: JSON.stringify(objectToSend)
               }
@@ -184,45 +269,88 @@ const NuevoProfesional = ({ toClose = false }) => {
                 mensaje: 'Ocurrio un error, vuelva a intentar luego.'
             })
         }
-        setError({
-            value: false,
-            mensaje: ''
+        setAccion({
+            text: '',
+            value: false
         })
-        setCreando(false)
     }
+    
+    useEffect(() => {
+        const buscarProfesional = async (id) => {
+            setLoading(true)
+
+            try {
+                const response = await fetch(`${process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL }/profesionales/${id}`,
+                    {
+                        method: "GET",
+                        headers: {
+                            Accept: "application/json",
+                            "Content-Type": "application/json",
+                            /*authorization: "Bearer " + user.token,*/
+                        },
+                    }
+                );
+                const json = await response.json();
+                if(json.status === 'SUCCESS')
+                {
+                    setProfesional({ 
+                        ...json.data, 
+                        genero: json.data.genero.charAt(0).toUpperCase() + json.data.genero.slice(1).toLowerCase(),
+                        obraSocial: json.data.coberturas[0].nombre,
+                        obraSocialNum: json.data.coberturas[0].numero,
+                        emails: json.data.contactos.filter((el) => el.tipo === 'email').map(el => el.valor),
+                        telefonos: json.data.contactos.filter((el) => el.tipo === 'telefono').map(el => el.valor),
+                    })
+                    setLoading(false)
+                }
+                else
+                {
+                    router.push("/profesional");
+                }
+            } catch (error) {
+                console.log(error);
+            }
+
+            setLoading(false)
+        }
+        if(id !== null)
+        {
+            buscarProfesional(id)
+        }
+    }, [id])
 
     return (
-        <div className='c-nuevo_paciente'>
+        <div className='c-nuevo_Profesional'>
             {
                 toClose &&
-                <IoMdClose className='u-cursor--pointer u-text--1 u-fixed--top_right' onClick={() => setOpenPaciente( prev => !prev )}/>
+                <IoMdClose className='u-cursor--pointer u-text--1 u-fixed--top_right' onClick={() => setOpenProfesional( prev => !prev )}/>
             }
             <h2 className='u-color--primary'>Nuevo Profesional</h2>
-            <div className='c-nuevo_paciente__item'>
+            <div className='c-nuevo_Profesional__item'>
                 <div>
                     <span>Nombre</span>
                     <Input defaultValue={profesional.nombre} handleChange={(val) => handleChange(val, 'nombre')}/>
                 </div>
             </div>
-            <div className='c-nuevo_paciente__item'>
+            <div className='c-nuevo_Profesional__item'>
                 <div>
                     <span>Apellido</span>
                     <Input defaultValue={profesional.apellido} handleChange={(val) => handleChange(val, 'apellido')}/>
                 </div>
             </div>
-            <div className='c-nuevo_paciente__item'>
+            <div className='c-nuevo_Profesional__item'>
                 <div>
                     <span>DNI</span>
                     <Input type={'number'} defaultValue={profesional.dni} handleChange={(val) => handleChange(val, 'dni')}/>
                 </div>
             </div>
-            <div className='c-nuevo_paciente__item'>
+            <div className='c-nuevo_Profesional__item'>
                 <div>
                     <span>Fecha de Nacimiento</span>
                     <Input type={'date'} defaultValue={profesional.fecha_nacimiento} handleChange={(val) => handleChange(val, 'fecha_nacimiento')}/>
                 </div>
             </div>
-            <div className='c-nuevo_paciente__item'>
+            <div className='c-nuevo_Profesional__item'>
                 <div>
                     <span>Genero</span>
                     <Select 
@@ -231,7 +359,7 @@ const NuevoProfesional = ({ toClose = false }) => {
                         defaultOption={profesional.genero}
                     />
                 </div>
-            </div><div className='c-nuevo_paciente__item c-nuevo_paciente__hora'>
+            </div><div className='c-nuevo_Profesional__item c-nuevo_Profesional__hora'>
                 <div>
                     <span>Clinica</span>
                     {
@@ -263,7 +391,7 @@ const NuevoProfesional = ({ toClose = false }) => {
                     }
                 </div>
             </div>
-            <div className='c-nuevo_paciente__item c-nuevo_paciente__hora'>
+            <div className='c-nuevo_Profesional__item c-nuevo_Profesional__hora'>
                 <div>
                     <span>Obras Sociales</span>
                     {
@@ -295,7 +423,7 @@ const NuevoProfesional = ({ toClose = false }) => {
                     }
                 </div>
             </div>
-            <div className='c-nuevo_paciente__item c-nuevo_paciente__hora'>
+            <div className='c-nuevo_Profesional__item c-nuevo_Profesional__hora'>
                 <div>
                     <span>Practicas</span>
                     {
@@ -329,7 +457,7 @@ const NuevoProfesional = ({ toClose = false }) => {
                     }
                 </div>
             </div>
-            <div className='c-nuevo_paciente__item c-nuevo_paciente__hora'>
+            <div className='c-nuevo_Profesional__item c-nuevo_Profesional__hora'>
                 <div>
                     <span>Telefonos</span>
                     {
@@ -361,7 +489,7 @@ const NuevoProfesional = ({ toClose = false }) => {
                     }
                 </div>
             </div>
-            <div className='c-nuevo_paciente__item c-nuevo_paciente__hora'>
+            <div className='c-nuevo_Profesional__item c-nuevo_Profesional__hora'>
                 <div>
                     <span>Emails</span>
                     {
@@ -395,17 +523,17 @@ const NuevoProfesional = ({ toClose = false }) => {
             </div>
             {
                 error.value &&
-                <div className='c-nuevo_paciente__item c-nuevo_paciente__item--right'>
+                <div className='c-nuevo_Profesional__item c-nuevo_Profesional__item--right'>
                     <p className='u-text--1 u-color--red'>{error.mensaje}</p>
                 </div>
             }
             {
                 creando ?
-                    <div className='c-nuevo_paciente__item c-nuevo_paciente__item--right'>
+                    <div className='c-nuevo_Profesional__item c-nuevo_Profesional__item--right'>
                         <Loader text='Creando profesional...'/>
                     </div>
                 :
-                    <div className='c-nuevo_paciente__item c-nuevo_paciente__item--right'>
+                    <div className='c-nuevo_Profesional__item c-nuevo_Profesional__item--right'>
                         <Button text={'Crear Profesional'} clickHandler={() => crear(profesional)}/>
                     </div>
             }
