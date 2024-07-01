@@ -22,7 +22,7 @@ export const UserContextProvider = ({ children }) => {
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
-                    'authorization': user.token
+                    //'authorization': user.token
                 }
             }
         ).catch(()=>{
