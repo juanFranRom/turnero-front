@@ -306,7 +306,7 @@ const NuevoPaciente = ({ id = null, toClose = false }) => {
 
     return (
         <div className='c-nuevo_paciente'>
-            <h2 className='u-color--primary'>Nuevo Paciente</h2>
+            <h2 className='u-color--primary'>{id!==null? 'Editar': 'Nuevo'} Paciente</h2>
             {
                 !loading ?
                     <>

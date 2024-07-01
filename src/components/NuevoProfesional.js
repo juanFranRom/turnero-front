@@ -285,9 +285,7 @@ const NuevoProfesional = ({ id = null, toClose = false }) => {
                 if (json.status === 'SUCCESS') {
                     setProfesional({
                         ...json.data,
-                        genero: json.data.genero.charAt(0).toUpperCase() + json.data.genero.slice(1).toLowerCase(),
-                        obraSocial: json.data.coberturas[0].nombre,
-                        obraSocialNum: json.data.coberturas[0].numero,
+                        obrasSociales: json.data.coberturas,
                         emails: json.data.contactos.filter((el) => el.tipo === 'email').map(el => el.valor),
                         telefonos: json.data.contactos.filter((el) => el.tipo === 'telefono').map(el => el.valor),
                     })
@@ -312,7 +310,7 @@ const NuevoProfesional = ({ id = null, toClose = false }) => {
             {
                 !loading ?
                     <>
-                        <h2 className='u-color--primary'>Nuevo Profesional</h2>
+                        <h2 className='u-color--primary'>{id!==null? 'Editar': 'Nuevo'} Profesional</h2>
                         <div className='c-nuevo_paciente__item'>
                             <div>
                                 <span>Nombre</span>

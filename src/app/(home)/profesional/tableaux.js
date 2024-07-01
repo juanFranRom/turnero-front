@@ -36,7 +36,7 @@ const headers = [
     text: "Genero",
   },
   {
-    id: "obrasSociales",
+    id: "coberturas",
     text: "Obras Sociales",
   },
   {
@@ -93,7 +93,7 @@ const TableAux = () => {
           setData(json.data.map(profesional => {
             return {
               ...profesional,
-              obrasSociales: profesional.obrasSociales.join(", "),
+              coberturas: profesional.coberturas.join(", "),
               practicasText: profesional.practicas.map(practica => practica.nombre).join(", "),
               contactosText: <ContactListComponent key={profesional.dni} contactos={profesional.contactos} />
             };

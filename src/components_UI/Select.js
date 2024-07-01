@@ -20,15 +20,7 @@ import {
 
 const Select = ({ className, options = [], placeholder = null, defaultOption = null, handleChange }) => {
     const [open, set_open] = useState(false)
-    const [selected, set_selected] = useState(
-        defaultOption !== null ? 
-            typeof defaultOption === 'object' && defaultOption.id ?
-                options.find(el => parseInt(el.id) === parseInt(defaultOption.id)) 
-            :
-                options.find(el => String(el.value) === String(defaultOption.value))
-        : 
-            ''
-    )
+    const [selected, set_selected] = useState('')
     const [indexToHover, setIndexTohover] = useState(-1)
     const [style, setStyle] = useState(null)
     const selectRef = useRef(null);
@@ -41,10 +33,12 @@ const Select = ({ className, options = [], placeholder = null, defaultOption = n
 
             if(defaultOption !== null)
             {
-                if(typeof defaultOption === 'object' && defaultOption.id)
-                    index = options.findIndex(el => parseInt(el.id) === parseInt(defaultOption.id)) 
+                if(typeof defaultOption === 'object')
+                    index = defaultOption.id?   options.findIndex(el => parseInt(el.id) === parseInt(defaultOption.id))
+                                                : 
+                                                index = options.findIndex(el => String(el.value) === String(defaultOption.value))
                 else
-                    index = options.findIndex(el => String(el.value) === String(defaultOption.value))
+                    index = options.findIndex(el => String(el.value) === String(defaultOption))
             } 
             setIndexTohover(index)
         }
@@ -59,6 +53,7 @@ const Select = ({ className, options = [], placeholder = null, defaultOption = n
     }
 
     const handleSelect = (index) => {
+        debugger;
         set_selected(options[index] ?? null)
         if(handleChange)
             handleChange(options[index] ?? null)
@@ -161,13 +156,14 @@ const Select = ({ className, options = [], placeholder = null, defaultOption = n
     }, [open])
 
     useEffect(() => {
-        let aux = ''
-
+        let aux = '' 
         if(defaultOption)
         {
-            if(typeof defaultOption === 'object' && defaultOption.id)
+            if(typeof defaultOption === 'object')
             {
-                aux = options.find(el => parseInt(el.id) === parseInt(defaultOption.id))
+                aux = defaultOption.id?  options.find(el => parseInt(el.id) === parseInt(defaultOption.id))
+                                        : 
+                                        index = options.find(el => String(el.value) === String(defaultOption.value))
             }
             else
             {
@@ -175,7 +171,7 @@ const Select = ({ className, options = [], placeholder = null, defaultOption = n
             }
 
         }
-
+        debugger;
         if(aux !== selected)
             set_selected(aux)
     }, [defaultOption])
