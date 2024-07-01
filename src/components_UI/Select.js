@@ -20,7 +20,18 @@ import {
 
 const Select = ({ className, options = [], placeholder = null, defaultOption = null, handleChange }) => {
     const [open, set_open] = useState(false)
-    const [selected, set_selected] = useState('')
+    const [selected, set_selected] = useState(
+        defaultOption !== null ? 
+            typeof defaultOption === 'object' && defaultOption.id ?
+                options.find(el => parseInt(el.id) === parseInt(defaultOption.id)) 
+            :
+            typeof defaultOption === 'object'?
+                index = options.findIndex(el => String(el.value) === String(defaultOption.value))
+                :
+                options.find(el => String(el.value) === String(defaultOption))
+        : 
+            ''
+    )
     const [indexToHover, setIndexTohover] = useState(-1)
     const [style, setStyle] = useState(null)
     const selectRef = useRef(null);
@@ -53,7 +64,6 @@ const Select = ({ className, options = [], placeholder = null, defaultOption = n
     }
 
     const handleSelect = (index) => {
-        debugger;
         set_selected(options[index] ?? null)
         if(handleChange)
             handleChange(options[index] ?? null)
@@ -171,7 +181,6 @@ const Select = ({ className, options = [], placeholder = null, defaultOption = n
             }
 
         }
-        debugger;
         if(aux !== selected)
             set_selected(aux)
     }, [defaultOption])

@@ -112,9 +112,9 @@ const TableAux = () => {
   }
 
 
-  const deleteProfesional = async (cuit) => {
+  const deleteProfesional = async (id) => {
     try {
-      const response = await fetch(`${process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL }/profesionales/delete/${cuit}`,
+      const response = await fetch(`${process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL }/profesionales/${id}`,
         {
           method: "DELETE",
           headers: {
@@ -138,8 +138,7 @@ const TableAux = () => {
       }
       setDeleting(null)
     } catch (error) {
-      console.log(error)
-      router.push("/");
+      router.push("/profesionales");
     }
   }
 
