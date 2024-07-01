@@ -111,6 +111,38 @@ const TableAux = () => {
     } 
   }
 
+
+  const deleteProfesional = async (cuit) => {
+    try {
+      const response = await fetch(`${process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL }/profesionales/delete/${cuit}`,
+        {
+          method: "DELETE",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            //authorization: "Bearer " + user.token,
+          }
+        }
+      )
+      const json = await response.json();
+      if(json.status === 'SUCCESS')
+      {
+        await getProfesionales()
+      }
+      else
+      {
+        setError({
+          value: true,
+          message: json.message
+        })
+      }
+      setDeleting(null)
+    } catch (error) {
+      console.log(error)
+      router.push("/");
+    }
+  }
+
   useEffect(() => {
     getProfesionales();
   }, []);
@@ -121,9 +153,9 @@ const TableAux = () => {
       deleting &&
        <Overlay>
         <PopUp centered={true}>
-          <p className='u-text--1 u-m3--bottom'>{`¿Esta seguro que desea eliminar el proveedor "${deleting.razon_social ? deleting.razon_social : `${deleting.apellido}, ${deleting.nombre}`}"?`}</p>
+          <p className='u-text--1 u-m3--bottom'>{`¿Esta seguro que desea eliminar el Profesional "${deleting.razon_social ? deleting.razon_social : `${deleting.apellido}, ${deleting.nombre}`}"?`}</p>
           <div className='u-1/1 u-flex-end-center'>
-            <Button text={'Aceptar'} clickHandler={() => deleteProveedor(deleting.id)}/>
+            <Button text={'Aceptar'} clickHandler={() => deleteProfesional(deleting.id)}/>
             <Button text={'Rechazar'} clickHandler={() => setDeleting(null)}/>
           </div>
         </PopUp>
