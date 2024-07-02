@@ -1,8 +1,19 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
 
-const Datalist = ({ className, list, setBlank = false, setter = null, auxRef = null }) => {
-    const [value, setValue] = useState('')
+const Datalist = ({ className, list, setBlank = false, defaultOption = null, setter = null, auxRef = null, autoSelect = false }) => {
+    const [value, setValue] = useState(
+        !defaultOption?
+            {
+                text: '',
+                object: ''
+            }
+        :
+            {
+                text: defaultOption.value,
+                object: defaultOption
+            }
+    )
     const [isDatalistVisible, setDatalistVisibility] = useState(false)
     const [filteredOptions, setFilteredOptions] = useState([])
     const [hasAutoSelected, setHasAutoSelected] = useState(false);
@@ -14,9 +25,19 @@ const Datalist = ({ className, list, setBlank = false, setter = null, auxRef = n
 
     const handleOptionClick = (option) => {
         if(setBlank)
-            setValue('')
+            setValue(
+                {
+                    text: '',
+                    object: ''
+                }
+            )
         else
-            setValue(option.value)
+            setValue(
+                {
+                    text: option.value,
+                    object: option
+                }
+            )
         if(setter)
             setter(option)
         setDatalistVisibility(false)
@@ -137,21 +158,39 @@ const Datalist = ({ className, list, setBlank = false, setter = null, auxRef = n
               option?.value?.toLowerCase().includes(value?.toLowerCase())
             )
             setFilteredOptions(filtered)
-            if(filtered && filtered.length === 1 && !hasAutoSelected)
+            if(autoSelect)
             {
-                if(setBlank)
-                    setValue('')
-                else
-                    setValue(filtered[0].value)
-                if(setter)
-                    setter(filtered[0])
-                setDatalistVisibility(false)
-                setHasAutoSelected(true)
-            } else if(filtered && filtered.length > 1) {
-                setHasAutoSelected(false)
+                if(filtered && filtered.length === 1 && !hasAutoSelected)
+                {
+                    if(setBlank)
+                        setValue('')
+                    else
+                        setValue(filtered[0].value)
+                    if(setter)
+                        setter(filtered[0])
+                    setDatalistVisibility(false)
+                    setHasAutoSelected(true)
+                } else if(filtered && filtered.length > 1) {
+                    setHasAutoSelected(false)
+                }
             }
         }
     }, [value, list])
+
+    useEffect(() => {
+        let aux = {}
+
+        if(defaultOption)
+        {
+            aux = {
+                text: defaultOption.value,
+                object: defaultOption
+            }
+        }
+
+        if(aux !== value)
+            setValue(aux)
+    }, [defaultOption])
 
     return (
         <div 
@@ -168,9 +207,12 @@ const Datalist = ({ className, list, setBlank = false, setter = null, auxRef = n
             <input 
                 ref={inputRef}
                 className={'u-1/1 c-input'} 
-                value={value} 
+                value={value.text} 
                 onChange={e => {
-                    setValue(e.target.value)
+                    setValue({
+                        text: e.target.value,
+                        object: null
+                    })
                     if(setter)
                         setter(e.target.value)
                 }} 

@@ -6,6 +6,8 @@
     top: calc(50% - 40vh);
     background-color: white;
     padding: 25px 15px;
+    overflow: auto;
+    border-radius: $global-radius-small;
 }
 
 .c-nuevo_turno__item{

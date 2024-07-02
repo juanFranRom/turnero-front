@@ -9,12 +9,12 @@
     z-index: 5;
     background: white;
     border-radius: 15px;
-    border: 2px solid $global-primary-color;
     box-shadow: 1px 3px 13px 0px black;
     min-width: 200px;
     min-height: 150px;
-    overflow-y: auto;
     padding: $global-spacing-unit;
+    overflow: auto;
+    border-radius: $global-radius-small;
 
     @media (max-width: 550px) {
         right: 0;

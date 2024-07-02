@@ -1,6 +1,6 @@
 'use client'
 // React
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 // components
 import Overlay from '@/components_UI/Overlay'
@@ -17,7 +17,28 @@ import Button from '@/components_UI/Button'
 
 
 const NuevoTurno = () => {
+    const [turno, setTurno] = useState({
+        pacienteText: '',
+        pacienteList: '',
+        paciente: null,
+        profecionalText: '',
+        profecional: null,
+        practicasList: null,
+        practica: null,
+    })
     const { openTurno, setOpenTurno } = useTurnoContext()
+
+    useEffect(() => {
+        const buscar = async () => {
+
+        }
+    }, [turno.pacienteText])
+
+    useEffect(() => {
+        const buscar = async () => {
+            
+        }
+    }, [turno.profecionalText])
 
     return (
         <>
@@ -30,7 +51,12 @@ const NuevoTurno = () => {
                         <div className='c-nuevo_turno__item'>
                             <div>
                                 <span>Paciente</span>
-                                <Datalist/>
+                                <Datalist
+                                    className={'u-1/1'}
+                                    list={ object.empleadosList } 
+                                    defaultOption={ typeof object.empleadosText === 'string' ? { value: object.empleadosText } : object.empleadosText} 
+                                    setter={(val) => handleChange(val, "empleadosText")}
+                                />
                             </div>
                         </div>
                         <div className='c-nuevo_turno__item'>
