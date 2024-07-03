@@ -21,7 +21,7 @@ const Home = ({}) => {
       </div>
       {
         loadingTurnos?
-          <div className='u-1/1 u-flex-center-center'>
+          <div className='u-1/1 u-flex-center-center u-p5--vertical'>
             <Loader text='Cargando turnos...'/>
           </div>
         :

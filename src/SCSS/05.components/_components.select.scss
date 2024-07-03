@@ -24,6 +24,10 @@
         left: 20px;
         @include font-size(11px);
     }
+
+    svg{
+        margin-left: auto;
+    }
 }
 
 .c-select--placeholder{

@@ -514,7 +514,7 @@ const NuevoProfesional = ({ id = null, toClose = false }) => {
                     :
                     !loading ?
                         <div className='c-nuevo_paciente__item c-nuevo_paciente__item--right u-m4--top'>
-                            <Button text={id ? 'Editar Paciente' : 'Crear Paciente'} clickHandler={id ? () => editar(profesional) : () => crear(profesional)} />
+                            <Button text={id ? 'Editar Profesional' : 'Crear Profesional'} clickHandler={id ? () => editar(profesional) : () => crear(profesional)} />
                         </div>
                         :
                         <></>

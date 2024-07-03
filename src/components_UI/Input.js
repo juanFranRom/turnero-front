@@ -65,13 +65,6 @@ const Input = ({type, className, placeholder = false, defaultValue = undefined, 
         }
     }, [])
 
-    useEffect(() => {
-        setValue({
-            focus: defaultValue !== "",
-            value: defaultValue ? String(defaultValue) : ''
-        })
-    }, [defaultValue])
-
     return (
         <>
             {
@@ -118,7 +111,8 @@ const Input = ({type, className, placeholder = false, defaultValue = undefined, 
                             value={ defaultValue !== undefined && defaultValue !== null ? type === 'date' ? setDateInputValue(defaultValue) : defaultValue : value.value } 
                             className={`c-input c-input--primary ${className}`} 
                             onClick={(e) => {
-                                e.target.showPicker();
+                                if(!isReadOnly && type === "date")
+                                    e.target.showPicker();
                             }}
                             onChange={(e) => {
                                 setValue({

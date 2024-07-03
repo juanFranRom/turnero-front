@@ -145,13 +145,12 @@ const NuevoPaciente = ({ id = null, toClose = false }) => {
             }
 
             if(objectToSend.obraSocial && objectToSend.obraSocial.length > 0)
-            {
                 objectToSend.coberturas.push({ nombre: objectToSend.obraSocial, numero: objectToSend.obraSocialNum })
-            }
-
+    
             objectToSend.contactos = objectToSend.contactos.concat(objectToSend.telefonos.map(el => { return({ tipo: 'telefono', valor: el }) }))
             objectToSend.contactos = objectToSend.contactos.concat(objectToSend.emails.map(el => { return({ tipo: 'email', valor: el }) }))
 
+            console.log(objectToSend);
             const response = await fetch(`${process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL }/pacientes`,
               {
                 method: "POST",
@@ -165,9 +164,7 @@ const NuevoPaciente = ({ id = null, toClose = false }) => {
             );
             const json = await response.json();
             if(json.status === 'SUCCESS')
-            {
                 router.push("/paciente");
-            }
             else
             {
                 setError({
@@ -216,9 +213,7 @@ const NuevoPaciente = ({ id = null, toClose = false }) => {
             }
 
             if(objectToSend.obraSocial && objectToSend.obraSocial.length > 0)
-            {
                 objectToSend.coberturas.push({ nombre: objectToSend.obraSocial, numero: objectToSend.obraSocialNum })
-            }
 
             objectToSend.contactos = objectToSend.contactos.concat(objectToSend.telefonos.map(el => { return({ tipo: 'telefono', valor: el }) }))
             objectToSend.contactos = objectToSend.contactos.concat(objectToSend.emails.map(el => { return({ tipo: 'email', valor: el }) }))
@@ -276,15 +271,18 @@ const NuevoPaciente = ({ id = null, toClose = false }) => {
                     }
                 );
                 const json = await response.json();
+                console.log(json);
                 if(json.status === 'SUCCESS')
                 {
+                    let emailsBD = json.data.contactos.filter((el) => el.tipo === 'email').map(el => el.valor)
+                    let telefonosBD = json.data.contactos.filter((el) => el.tipo === 'telefono').map(el => el.valor)
                     setPaciente({ 
                         ...json.data, 
-                        genero: json.data.genero.charAt(0).toUpperCase() + json.data.genero.slice(1).toLowerCase(),
+                        genero: { value: json.data.genero.charAt(0).toUpperCase() + json.data.genero.slice(1).toLowerCase() },
                         obraSocial: json.data.coberturas[0].nombre,
                         obraSocialNum: json.data.coberturas[0].numero,
-                        emails: json.data.contactos.filter((el) => el.tipo === 'email').map(el => el.valor),
-                        telefonos: json.data.contactos.filter((el) => el.tipo === 'telefono').map(el => el.valor),
+                        emails: emailsBD.length > 0 ? emailsBD : [''],
+                        telefonos: telefonosBD.length > 0 ? telefonosBD : [''],
                     })
                     setLoading(false)
                 }
@@ -344,7 +342,7 @@ const NuevoPaciente = ({ id = null, toClose = false }) => {
                                 <Select 
                                     options={[ { id:1, value: 'Masculino' }, { id:2, value: 'Femenino' }, { id:3, value: 'Otro' } ]} 
                                     handleChange={(val) => handleChange(val, 'genero')}
-                                    defaultOption={{value: paciente.genero}}
+                                    defaultOption={paciente.genero}
                                 />
                             </div>
                         </div>

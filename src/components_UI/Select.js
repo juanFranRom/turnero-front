@@ -25,10 +25,7 @@ const Select = ({ className, options = [], placeholder = null, defaultOption = n
             typeof defaultOption === 'object' && defaultOption.id ?
                 options.find(el => parseInt(el.id) === parseInt(defaultOption.id)) 
             :
-            typeof defaultOption === 'object'?
-                index = options.findIndex(el => String(el.value) === String(defaultOption.value))
-                :
-                options.find(el => String(el.value) === String(defaultOption))
+                options.find(el => String(el.value) === String(defaultOption.value))
         : 
             ''
     )
@@ -44,12 +41,10 @@ const Select = ({ className, options = [], placeholder = null, defaultOption = n
 
             if(defaultOption !== null)
             {
-                if(typeof defaultOption === 'object')
-                    index = defaultOption.id?   options.findIndex(el => parseInt(el.id) === parseInt(defaultOption.id))
-                                                : 
-                                                index = options.findIndex(el => String(el.value) === String(defaultOption.value))
+                if(typeof defaultOption === 'object' && defaultOption.id)
+                    index = options.findIndex(el => parseInt(el.id) === parseInt(defaultOption.id)) 
                 else
-                    index = options.findIndex(el => String(el.value) === String(defaultOption))
+                    index = options.findIndex(el => String(el.value) === String(defaultOption.value))
             } 
             setIndexTohover(index)
         }
@@ -166,14 +161,13 @@ const Select = ({ className, options = [], placeholder = null, defaultOption = n
     }, [open])
 
     useEffect(() => {
-        let aux = '' 
+        let aux = ''
+
         if(defaultOption)
         {
-            if(typeof defaultOption === 'object')
+            if(typeof defaultOption === 'object' && defaultOption.id)
             {
-                aux = defaultOption.id?  options.find(el => parseInt(el.id) === parseInt(defaultOption.id))
-                                        : 
-                                        index = options.find(el => String(el.value) === String(defaultOption.value))
+                aux = options.find(el => parseInt(el.id) === parseInt(defaultOption.id))
             }
             else
             {
@@ -181,6 +175,7 @@ const Select = ({ className, options = [], placeholder = null, defaultOption = n
             }
 
         }
+
         if(aux !== selected)
             set_selected(aux)
     }, [defaultOption])
