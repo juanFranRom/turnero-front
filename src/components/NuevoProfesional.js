@@ -24,7 +24,7 @@ const NuevoProfesional = ({ id = null, toClose = false }) => {
         dni: null,
         fecha_nacimiento: null,
         genero: null,
-        practicas: [{ nombre: '', duracion_moda: '' }],
+        practicas: [{ nombre: '', duracion_moda: '00:30:00' }],
         obrasSociales: [''],
         coberturas: [''],
         clinicas: [''],
@@ -283,12 +283,15 @@ const NuevoProfesional = ({ id = null, toClose = false }) => {
                 );
                 const json = await response.json();
                 if (json.status === 'SUCCESS') {
-                    setProfesional({
-                        ...json.data,
-                        obrasSociales: json.data.coberturas,
-                        emails: json.data.contactos.filter((el) => el.tipo === 'email').map(el => el.valor),
-                        telefonos: json.data.contactos.filter((el) => el.tipo === 'telefono').map(el => el.valor),
-                    })
+                    
+                    let emails= json.data.contactos.filter((el) => el.tipo === 'email').map(el => el.valor)
+                    let telefonos= json.data.contactos.filter((el) => el.tipo === 'telefono').map(el => el.valor)
+                    json.data.clinicas= json.data.clinicas.length?json.data.clinicas: ['']
+                    json.data.obrasSociales= json.data.coberturas.length?json.data.coberturas: ['']
+                    json.data.practicas= json.data.practicas.length?json.data.practicas: [{ nombre: '', duracion_moda: '' }]
+                    json.data.telefonos= telefonos.length?telefonos: ['']
+                    json.data.emails= emails.length?emails: ['']
+                    setProfesional(json.data)
                     setLoading(false)
                 }
                 else {
@@ -341,7 +344,7 @@ const NuevoProfesional = ({ id = null, toClose = false }) => {
                                 <Select
                                     options={[{ id: 1, value: 'Masculino' }, { id: 2, value: 'Femenino' }, { id: 3, value: 'Otro' }]}
                                     handleChange={(val) => handleChange(val, 'genero')}
-                                    defaultOption={profesional.genero}
+                                    defaultOption={{id:profesional.genero==='Masculino'?1:profesional.genero==='Femenino'? 2: 3}}
                                 />
                             </div>
                         </div><div className='c-nuevo_paciente__item c-nuevo_paciente__hora'>
@@ -417,7 +420,7 @@ const NuevoProfesional = ({ id = null, toClose = false }) => {
                                             if (index >= profesional.practicas.length) {
                                                 setProfesional(prev => {
                                                     let aux = [...prev.practicas]
-                                                    aux.push({ ...values[i], nombre: val })
+                                                    aux.push({ nombre: '', duracion_moda: '00:30:00' })
                                                     return ({ ...prev, practicas: aux })
                                                 })
                                             }
