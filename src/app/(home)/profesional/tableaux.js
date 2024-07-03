@@ -196,10 +196,7 @@ const TableAux = () => {
           </div>
         :
           data && data.length > 0 ?
-            <>
-              <h1>Profesionales</h1>
               <Table columns={headers} rows={data} setContextMenu={setContextMenu} contextMenu={contextMenu}/>
-            </>
           :
             <div className="u-1/1 u-flex-column-center-center u-p4--vertical">
               <p>No hay informacion para mostrar</p>

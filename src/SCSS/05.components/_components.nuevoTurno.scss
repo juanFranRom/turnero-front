@@ -1,19 +1,21 @@
 .c-nuevo_turno{
-    width: 400px;
+    width: max(400px, 40vw);
     height: 80vh;
     position: relative;
-    left: calc(50% - 200px);
+    left: calc(50% - max(400px, 40vw)/2);
     top: calc(50% - 40vh);
     background-color: white;
     padding: 25px 15px;
     overflow: auto;
     border-radius: $global-radius-small;
+    display: flex;
+    flex-direction: column;
 }
 
 .c-nuevo_turno__item{
     width: 100%;
     display: flex;
-    margin: 20px 0;
+    margin: 10px 0;
 
     & > div{
         width: 100%;
@@ -35,4 +37,8 @@
     & .c-datepicker{
         width: 100%;
     }
+}
+
+.c-nuevo_turno__end{
+    margin-top: auto;
 }

@@ -32,10 +32,12 @@
 
     &:hover {
         background-color:  $global-secondary-color;
+        color: #fff;
     }
 
     &--highlighted {
         background-color: $global-secondary-color;
+        color: #fff;
     }
 }
   

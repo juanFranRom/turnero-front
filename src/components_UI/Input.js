@@ -52,7 +52,7 @@ const Input = ({type, className, placeholder = false, defaultValue = undefined, 
                 if (!input.current.hasFocus) {
                     setValue({value: value.value , focus: value.value && typeof value.value !== "number" && value.value.trim() === "" ? !value.focus : true})
                     input.current.focus()
-                    if(type !== 'number' && type !== 'date')
+                    if(type !== 'number' && type !== "date" && type !== "time")
                         input.current.setSelectionRange(0, input.current.value.length)
                 }
             } 
@@ -96,7 +96,8 @@ const Input = ({type, className, placeholder = false, defaultValue = undefined, 
                                         handleChange(type === 'date' ? new Date(e.target.value.split('-')[0], e.target.value.split('-')[1] - 1, e.target.value.split('-')[2].split('T')[0]) : e.target.value)
                                 }}
                                 onClick={(e) => {
-                                    e.target.showPicker();
+                                    if(!isReadOnly && (type === "date" || type === "time"))
+                                        e.target.showPicker();
                                 }}
                                 readOnly={isReadOnly}
                                 {...props}
@@ -111,7 +112,7 @@ const Input = ({type, className, placeholder = false, defaultValue = undefined, 
                             value={ defaultValue !== undefined && defaultValue !== null ? type === 'date' ? setDateInputValue(defaultValue) : defaultValue : value.value } 
                             className={`c-input c-input--primary ${className}`} 
                             onClick={(e) => {
-                                if(!isReadOnly && type === "date")
+                                if(!isReadOnly && (type === "date" || type === "time"))
                                     e.target.showPicker();
                             }}
                             onChange={(e) => {
