@@ -163,16 +163,17 @@ const NuevoTurno = () => {
                     }
                 )
                 const json = await response.json()
+                setLoading(false)
                 if (json.status === "SUCCESS") 
-                    router.push('/')
+                    setOpenTurno( prev => !prev )
                 else
                 {
                     setError({
                         value: true,
                         mensaje: json.mensaje
                     })
-                    setLoading(false)
                 }
+
             } catch (error) {
                 setError({
                     value: true,
@@ -225,6 +226,17 @@ const NuevoTurno = () => {
             )
     }, [turno.profesionalText])
 
+    const minutesToTime = (duracion) => {
+        let hours = Math.floor( duracion/60);
+        if(hours <= 9){
+            hours = "0"+hours
+        }
+        let minutes = duracion%60;
+        if(minutes <= 9){
+            minutes= "0"+minutes
+        }
+        return `${hours}:${minutes}`;
+    }
     return (
         <>
             {
@@ -251,7 +263,7 @@ const NuevoTurno = () => {
                                         <span>Practica</span>
                                         <Datalist
                                             className={'u-1/1'}
-                                            list={ turno.profesional.practicas.map((el) => { return ({ ...el.practica, value: `${el.practica.nombre} (${el.practica.duracion_moda.slice(3)})` }) }) } 
+                                            list={ turno.profesional.practicas.map((el) => { return ({ ...el.practica, value: `${el.practica.nombre} (${minutesToTime(el.duracion)})` }) }) } 
                                             defaultOption={ { value: turno.practicaText } } 
                                             setter={(val) => handleDatalist(val, "practica")}
                                         />
