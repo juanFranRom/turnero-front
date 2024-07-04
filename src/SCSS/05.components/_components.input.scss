@@ -9,8 +9,8 @@
 $input-primary-color:            $global-primary-color;
 $input-secondary-color:          $global-secondary-color;
 
-$input-padding-vertical:         $global-spacing-unit-small !default;
-$input-padding-horizontal:       $global-spacing-unit !default;
+$input-padding-vertical:         $global-spacing-unit-small  !default;
+$input-padding-horizontal:       $global-spacing-unit-small !default;
 $input-transition:               $global-transition !default;
 $input-radius:                   5px !default;
 
@@ -25,7 +25,6 @@ $input-ghost-border-width:       2px;
 
 .c-input{
     min-width: 150px;
-    min-height: 50px;
     position: relative;
     padding: $input-padding-vertical $input-padding-horizontal;
     border-radius: $input-radius;

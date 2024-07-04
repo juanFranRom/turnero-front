@@ -20,8 +20,38 @@ export const TurnoContextProvider = ({ children }) => {
     const mes = lenguaje === 'español' ? mesesEspañol[date.getMonth()] : mesesIngles[date.getMonth()]
     const fechaFormateada = diaSemana + ' ' + date.getDate() + ' - ' + mes + ' ' + date.getFullYear()
 
+
+    const buscarTurnos = async ( dia ) => {
+        try {
+        
+            const response = await fetch(`${ process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL}/calendario/disponibilidad/dia?fecha=${dia.getFullYear()}-${dia.getMonth() + 1}-${dia.getDate()}`,
+                {
+                    method: "GET",
+                    headers: {
+                        Accept: "application/json",
+                        "Content-Type": "application/json",
+                        /*authorization: "Bearer " + user.token,*/
+                    }
+                }
+            )
+            const json = await response.json()
+            console.log(json);
+            if (json.status === "SUCCESS") 
+                setTurnos([...json.data[0].turnos])
+            else
+                setTurnos([])
+            
+            setLoadingTurnos(false)
+        } catch (error) {
+            setTurnos([])
+            setLoadingTurnos(false)
+            console.log(error);
+        }
+    }
+
+
     useEffect(() => {
-        setLoadingTurnos(false)
+        buscarTurnos( date )
     }, [date])
 
     return (
@@ -36,6 +66,7 @@ export const TurnoContextProvider = ({ children }) => {
             lenguaje,
             openTurno,
             loadingTurnos,
+            turnos,
             setLoadingTurnos,
             setOpenCalendar,
             setDate,

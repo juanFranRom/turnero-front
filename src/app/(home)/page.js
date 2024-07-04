@@ -26,8 +26,14 @@ const Home = ({}) => {
           </div>
         :
           <>
-            <Turno/>
-            <Turno/>
+            {
+              turnos && turnos.length > 0 &&
+              turnos.map(( turno ) => {
+                return(
+                  <Turno data={turno}/>
+                )
+              })
+            }
           </>
       }
     </div>
