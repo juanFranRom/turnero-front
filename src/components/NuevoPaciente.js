@@ -278,7 +278,7 @@ const NuevoPaciente = ({ id = null, toClose = false }) => {
                     let telefonosBD = json.data.contactos.filter((el) => el.tipo === 'telefono').map(el => el.valor)
                     setPaciente({ 
                         ...json.data, 
-                        genero: { value: json.data.genero.charAt(0).toUpperCase() + json.data.genero.slice(1).toLowerCase() },
+                        genero: { value: json.data.genero ? json.data.genero.charAt(0).toUpperCase() + json.data.genero.slice(1).toLowerCase() : ""},
                         obraSocial: json.data.coberturas[0].nombre,
                         obraSocialNum: json.data.coberturas[0].numero,
                         emails: emailsBD.length > 0 ? emailsBD : [''],
