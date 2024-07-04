@@ -138,7 +138,6 @@ const NuevoTurno = () => {
         return true
     }
 
-    console.log(error);
     const crearTurno = () => {
         const crear = async () => {
             try {
@@ -170,7 +169,7 @@ const NuevoTurno = () => {
                 {
                     setError({
                         value: true,
-                        mensaje: json.mensaje
+                        mensaje: json.message ?? 'Ocurrio un erro al crear el turno.'
                     })
                 }
 
@@ -180,7 +179,6 @@ const NuevoTurno = () => {
                     mensaje: 'Ocurrio un error, vuelva a intentar luego.'
                 })
                 setLoading(false)
-                console.log(error)
             }
         }
         crear()
