@@ -180,6 +180,10 @@ const NuevoProfesional = ({ id = null, toClose = false }) => {
                     value: true,
                     mensaje: json.message
                 })
+                setAccion({
+                    text: '',
+                    value: false
+                })
             }
         } catch (error) {
             console.log(error)
@@ -187,15 +191,11 @@ const NuevoProfesional = ({ id = null, toClose = false }) => {
                 value: true,
                 mensaje: 'Ocurrio un error, vuelva a intentar luego.'
             })
+            setAccion({
+                text: '',
+                value: false
+            })
         }
-        setError({
-            value: false,
-            mensaje: ''
-        })
-        setAccion({
-            text: '',
-            value: false
-        })
     }
 
     const editar = async (object) => {
@@ -283,14 +283,14 @@ const NuevoProfesional = ({ id = null, toClose = false }) => {
                 );
                 const json = await response.json();
                 if (json.status === 'SUCCESS') {
-                    
                     let emails= json.data.contactos.filter((el) => el.tipo === 'email').map(el => el.valor)
                     let telefonos= json.data.contactos.filter((el) => el.tipo === 'telefono').map(el => el.valor)
-                    json.data.clinicas= json.data.clinicas.length?json.data.clinicas: ['']
-                    json.data.obrasSociales= json.data.coberturas.length?json.data.coberturas: ['']
-                    json.data.practicas= json.data.practicas.length?json.data.practicas: [{ nombre: '', duracion_moda: '' }]
-                    json.data.telefonos= telefonos.length?telefonos: ['']
-                    json.data.emails= emails.length?emails: ['']
+                    json.data.clinicas = json.data.clinicas.length ? json.data.clinicas : ['']
+                    json.data.obrasSociales = json.data.coberturas.length ? json.data.coberturas : ['']
+                    json.data.practicas = json.data.practicas.length ? json.data.practicas : [{ nombre: '', duracion_moda: '' }]
+                    json.data.telefonos = telefonos.length ? telefonos : ['']
+                    json.data.emails = emails.length ? emails : ['']
+                    json.data.genero = { value: json.data.genero ? json.data.genero.charAt(0).toUpperCase() + json.data.genero.slice(1).toLowerCase() : ""},
                     setProfesional(json.data)
                     setLoading(false)
                 }
@@ -344,7 +344,7 @@ const NuevoProfesional = ({ id = null, toClose = false }) => {
                                 <Select
                                     options={[{ id: 1, value: 'Masculino' }, { id: 2, value: 'Femenino' }, { id: 3, value: 'Otro' }]}
                                     handleChange={(val) => handleChange(val, 'genero')}
-                                    defaultOption={{id:profesional.genero==='Masculino'?1:profesional.genero==='Femenino'? 2: 3}}
+                                    defaultOption={profesional.genero}
                                 />
                             </div>
                         </div><div className='c-nuevo_paciente__item c-nuevo_paciente__hora'>
