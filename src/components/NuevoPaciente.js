@@ -276,11 +276,12 @@ const NuevoPaciente = ({ id = null, toClose = false }) => {
                 {
                     let emailsBD = json.data.contactos.filter((el) => el.tipo === 'email').map(el => el.valor)
                     let telefonosBD = json.data.contactos.filter((el) => el.tipo === 'telefono').map(el => el.valor)
+                    
                     setPaciente({ 
                         ...json.data, 
                         genero: { value: json.data.genero ? json.data.genero.charAt(0).toUpperCase() + json.data.genero.slice(1).toLowerCase() : ""},
-                        obraSocial: json.data.coberturas[0].nombre,
-                        obraSocialNum: json.data.coberturas[0].numero,
+                        obraSocial: json.data.coberturas && json.data.coberturas.length > 0? json.data.coberturas[0].nombre :"",
+                        obraSocialNum: json.data.coberturas && json.data.coberturas.length > 0? json.data.coberturas[0].numero :"",
                         emails: emailsBD.length > 0 ? emailsBD : [''],
                         telefonos: telefonosBD.length > 0 ? telefonosBD : [''],
                     })
