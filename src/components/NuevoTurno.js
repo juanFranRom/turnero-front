@@ -90,7 +90,7 @@ const NuevoTurno = () => {
         turnoParaEnviar.cobertura_id = turno.cobertura ? turno.cobertura.id : null
         turnoParaEnviar.clinica_id = turno.profesional ? turno.profesional.clinica.id : null
         turnoParaEnviar.practica_id = turno.practica ? turno.practica.id : null
-        turnoParaEnviar.duracion = turno.practica ? timeToMinutes(turno.practica.duracion_moda.slice(3)) : null
+        turnoParaEnviar.duracion = turno.practica ? timeToMinutes(turno.practica.duracion_moda) : null
         turnoParaEnviar.fecha_hora = turno.fecha && turno.hora ? new Date(turno.fecha.getFullYear(), turno.fecha.getMonth(), turno.fecha.getDate(), turno.hora.split(':')[0], turno.hora.split(':')[1]) : null
        
         return turnoParaEnviar
