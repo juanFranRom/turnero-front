@@ -15,6 +15,7 @@ import Button from '@/components_UI/Button'
 import Input from '@/components_UI/Input'
 import Select from '@/components_UI/Select'
 import Loader from '@/components_UI/Loader'
+import HorariosSemanales from './HorarioSemanal'
 
 
 const NuevoProfesional = ({ id = null, toClose = false }) => {
@@ -503,6 +504,12 @@ const NuevoProfesional = ({ id = null, toClose = false }) => {
                     :
                     <></>
             }
+            <div className='u-1/1'>
+                <div className='u-m3--bottom'>
+                    <span className='u-text--1'>Horario Semanal</span>
+                </div>
+                <HorariosSemanales/>
+            </div>
             {
                 error.value &&
                 <div className='c-nuevo_paciente__item c-nuevo_paciente__item--right'>

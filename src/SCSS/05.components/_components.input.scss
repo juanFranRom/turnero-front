@@ -52,6 +52,11 @@ $input-ghost-border-width:       2px;
         appearance: textfield; /* Edge */
     }
 
+    &[type="time"] {
+        min-width: fit-content;
+        font-size: small;
+    }
+
     &[type="date"]::-webkit-calendar-picker-indicator {
         filter: invert(1);
     }
