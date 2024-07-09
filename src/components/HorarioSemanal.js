@@ -1,16 +1,22 @@
 import Input from '@/components_UI/Input'
 import React, { useState } from 'react'
 
-const HorariosSemanales = () => {
-    const [programacion, setProgramacion] = useState({})
-    const [diasSeleccionados, setDiasSeleccionados] = useState([])
-
+const HorariosSemanales = ({programacionDefault,actualizarProgramacion}) => {
+    const [programacion, setProgramacion] = useState(programacionDefault ?? {})
+    const [diasSeleccionados, setDiasSeleccionados] = useState(programacionDefault? Object.keys(programacionDefault).reduce((list,key)=>programacionDefault[key].length>0? [...list,key]:list,[]):[])
+    console.log(programacion)
+    console.log(programacionDefault)
+    console.log(programacionDefault)
     const manejoCambioDia = (day) => {
         if (diasSeleccionados.includes(day)) {
             setDiasSeleccionados(diasSeleccionados.filter(d => d !== day))
             const nuevaProgramacion = { ...programacion }
             delete nuevaProgramacion[day]
             setProgramacion(nuevaProgramacion)
+            //Actualizo porque elimina la programacion
+            if(actualizarProgramacion){
+                actualizarProgramacion(nuevaProgramacion)
+            }
         } else {
             setDiasSeleccionados([...diasSeleccionados, day])
             setProgramacion({
@@ -33,6 +39,13 @@ const HorariosSemanales = () => {
             ...programacion,
             [dia]: nuevoTiempo
         })
+        //Actualizo porque elimina una franja horaria
+        if(actualizarProgramacion){
+            actualizarProgramacion({
+                ...programacion,
+                [dia]: nuevoTiempo
+            })
+        }
     }
 
     const manejoCambioTiempo = (dia, indice, tipo, valor) => {
@@ -43,6 +56,13 @@ const HorariosSemanales = () => {
             ...programacion,
             [dia]: nuevoTiempo
         })
+        //Actualizo si se cambia un horario
+        if(actualizarProgramacion){
+            actualizarProgramacion({
+                ...programacion,
+                [dia]: nuevoTiempo
+            })
+        }
     }
 
     const dias = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
@@ -89,7 +109,7 @@ const HorariosSemanales = () => {
                                         <Input
                                             type="time"
                                             defaultValue={slot.end}
-                                            handleChange={(val) => manejoCambioTiempo(dia, index, 'start', val)}
+                                            handleChange={(val) => manejoCambioTiempo(dia, index, 'end', val)}
                                         />
                                         {
                                             index === programacion[dia].length - 1 && (
