@@ -1,5 +1,9 @@
-import Input from '@/components_UI/Input'
+// React
 import React, { useState } from 'react'
+
+// Components
+import Input from '@/components_UI/Input'
+
 
 const HorariosSemanales = () => {
     const [programacion, setProgramacion] = useState({})
