@@ -29,6 +29,7 @@ const NuevoProfesional = ({ id = null, toClose = false }) => {
         obrasSociales: [''],
         coberturas: [''],
         clinicas: [''],
+        horarios: null,
         telefonos: [''],
         emails: [''],
     })
@@ -92,6 +93,10 @@ const NuevoProfesional = ({ id = null, toClose = false }) => {
         return result
     }
 
+    const timeToMinutes = (time) => {
+        const [hours, minutes, seconds] = time.split(':').map(Number);
+        return hours * 60 + minutes;
+    }
 
     const validar = (object) => {
         if (!object.nombre) {
@@ -123,6 +128,18 @@ const NuevoProfesional = ({ id = null, toClose = false }) => {
 
         if (object.obraSocial && object.obraSocial.length > 0 && !object.obraSocialNum) {
             return 'Ha ingresado que el Profesional posee obra social, ingrese el numero .'
+        }
+        if (object.horarios) {
+            let vls = Object.values(object.horarios);
+            for (const v of vls) {
+                if(!v.every(time=>time.start!==''&&time.end!==''))
+                    return 'Completá hora de inicio y hora de fin para todos los dias que seleccionaeste.'
+                debugger;
+                let x = v.find(time => timeToMinutes(time.start) > timeToMinutes(time.end))
+                if(x != undefined)
+                    return `Formato incorrecto para el horario: ${time.start.slice(0,5)} a ${time.end.slice(0,5)} el horario de inicio es posterior al horario de fin`
+            
+            }
         }
 
         return true
@@ -508,7 +525,7 @@ const NuevoProfesional = ({ id = null, toClose = false }) => {
                 <div className='u-m3--bottom'>
                     <span className='u-text--1'>Horario Semanal</span>
                 </div>
-                <HorariosSemanales/>
+                <HorariosSemanales programacionDefault={profesional.horarios?profesional.horarios:null} actualizarProgramacion={(programacion)=>{setProfesional(prev=>{prev.horarios=programacion; return prev;})}}/>
             </div>
             {
                 error.value &&
