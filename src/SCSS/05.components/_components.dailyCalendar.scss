@@ -1,0 +1,70 @@
+.c-daily_calendar {
+    display: flex;
+    flex-direction: column;
+}
+  
+.c-daily_calendar__header {
+    display: flex;
+}
+  
+.c-daily_calendar__day_header {
+    min-height: 40px;
+    flex: 1;
+    background-color: #f0f0f0;
+    text-align: center;
+    border: 1px solid #ddd;
+    color: $global-primary-color;
+    min-width: 200px; /* Ancho mínimo para las columnas */
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+
+    & div{
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: start;
+        gap: 5px;
+        padding: 5px 0;
+    }
+}
+  
+.c-daily_calendar__body {
+    display: flex;
+    flex-direction: row; /* Cambiado a fila para alinear las columnas de días */
+}
+
+.c-daily_calendar__day_column {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 200px; /* Ancho mínimo para las columnas */
+}
+
+.c-daily_calendar__time_cell {
+    min-height: 40px;
+    max-height: 40px;
+    width: 70px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: $global-primary-color;
+}
+
+.c-daily_calendar__day_cell {
+    flex: 1;
+    min-height: 60px;
+    max-height: 60px;
+    border: 1px solid #ddd;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding-left: 5px;
+
+    &:hover {
+        background-color: #f9f9f9;
+    }
+}

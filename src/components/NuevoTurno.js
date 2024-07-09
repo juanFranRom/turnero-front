@@ -18,27 +18,12 @@ import { IoMdClose } from "react-icons/io"
 
 
 const NuevoTurno = () => {
-    const [turno, setTurno] = useState({
-        pacienteText: '',
-        pacienteList: [],
-        paciente: null,
-        profesionalText: '',
-        profesionalList: [],
-        profesional: null,
-        practicasText: '',
-        practicaText: '',
-        practica: null,
-        coberturaText: '',
-        cobertura: null,
-        fecha: null,
-        hora: null
-    })
     const [error, setError] = useState({
         value: false,
         mensaje: ''
     })
     const [loading, setLoading] = useState(false)
-    const { openTurno, setOpenTurno } = useTurnoContext()
+    const { turno, setTurno, openTurno, setOpenTurno } = useTurnoContext()
     const router = useRouter()
 
     const handleDatalist = (val, key) => {
@@ -53,6 +38,23 @@ const NuevoTurno = () => {
                 [`${key}Text`]: val.value,
                 [`${key}`]: val,
             })
+    }
+    
+    const minutesToTime = (duracion) => {
+        let hours = Math.floor( duracion/60);
+        if(hours <= 9){
+            hours = "0"+hours
+        }
+        let minutes = duracion%60;
+        if(minutes <= 9){
+            minutes= "0"+minutes
+        }
+        return `${hours}:${minutes}`;
+    }
+    
+    const timeToMinutes = (time) => {
+        const [hours, minutes, seconds] = time.split(':').map(Number);
+        return hours * 60 + minutes;
     }
 
     const buscar = async ( ruta, searchValue, setter = null ) => {
@@ -77,11 +79,6 @@ const NuevoTurno = () => {
         }
     }
 
-    const timeToMinutes = (time) => {
-        const [hours, minutes, seconds] = time.split(':').map(Number);
-        return hours * 60 + minutes;
-    }
-
     const turnoParaEnviar = ( turno ) => {
         let turnoParaEnviar = {}
         
@@ -95,7 +92,6 @@ const NuevoTurno = () => {
        
         return turnoParaEnviar
     }
-
     
     const validar = ( turno ) => {
         
@@ -224,24 +220,18 @@ const NuevoTurno = () => {
             )
     }, [turno.profesionalText])
 
-    const minutesToTime = (duracion) => {
-        let hours = Math.floor( duracion/60);
-        if(hours <= 9){
-            hours = "0"+hours
-        }
-        let minutes = duracion%60;
-        if(minutes <= 9){
-            minutes= "0"+minutes
-        }
-        return `${hours}:${minutes}`;
-    }
     return (
         <>
             {
                 openTurno &&
                 <Overlay>
                     <div className='c-nuevo_turno'>
-                        <IoMdClose className='u-cursor--pointer u-text--1 u-fixed--top_right' onClick={() => setOpenTurno( prev => !prev )}/>
+                        <IoMdClose 
+                            className='u-cursor--pointer u-text--1 u-fixed--top_right' 
+                            onClick={() => {
+                                setOpenTurno( prev => !prev ) 
+                            }}
+                        />
                         <h2 className='u-color--primary'>Turno</h2>
                         <div className='c-nuevo_turno__item'>
                             <div className='u-flex-column-center-start'>
@@ -255,20 +245,18 @@ const NuevoTurno = () => {
                             </div>
                         </div>
                         {
-                            turno.profesional ?
-                                <div className='c-nuevo_turno__item'>
-                                    <div className='u-flex-column-center-start'>
-                                        <span>Practica</span>
-                                        <Datalist
-                                            className={'u-1/1'}
-                                            list={ turno.profesional.practicas.map((el) => { return ({ ...el.practica, value: `${el.practica.nombre} (${minutesToTime(el.duracion)})` }) }) } 
-                                            defaultOption={ { value: turno.practicaText } } 
-                                            setter={(val) => handleDatalist(val, "practica")}
-                                        />
-                                    </div>
+                            turno.profesional &&
+                            <div className='c-nuevo_turno__item'>
+                                <div className='u-flex-column-center-start'>
+                                    <span>Practica</span>
+                                    <Datalist
+                                        className={'u-1/1'}
+                                        list={ turno.profesional.practicas.map((el) => { return ({ ...el.practica, value: `${el.practica.nombre} (${minutesToTime(el.duracion)})` }) }) } 
+                                        defaultOption={ { value: turno.practicaText } } 
+                                        setter={(val) => handleDatalist(val, "practica")}
+                                    />
                                 </div>
-                            :
-                                <></>
+                            </div>
                         }
                         <div className='c-nuevo_turno__item'>
                             <div className='u-flex-column-center-start'>

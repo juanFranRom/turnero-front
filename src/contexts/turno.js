@@ -1,5 +1,6 @@
 'use client'
 import { createContext, useContext, useEffect, useState } from 'react'
+import { usePathname } from 'next/navigation'
 
 const TurnoContext = createContext([])
 
@@ -8,11 +9,31 @@ export const useTurnoContext = () => useContext(TurnoContext)
 const lenguaje = 'español'
 
 export const TurnoContextProvider = ({ children }) => {
+    const [turno, setTurno] = useState({
+        pacienteText: '',
+        pacienteList: [],
+        paciente: null,
+        profesionalText: '',
+        profesionalList: [],
+        profesional: null,
+        practicasText: '',
+        practicaText: '',
+        practica: null,
+        coberturaText: '',
+        cobertura: null,
+        fecha: null,
+        hora: null
+    })
+    const [filtros, setFiltros] = useState({
+        profesional: null,
+        practica: null
+    })
     const [openTurno, setOpenTurno] = useState(false)
     const [loadingTurnos, setLoadingTurnos] = useState(true)
     const [turnos, setTurnos] = useState([])
     const [openCalendar, setOpenCalendar] = useState(false)
     const [date, setDate] = useState(new Date())
+    const pathname = usePathname()
     const diaSemana = lenguaje === 'español' ? 
             ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'][date.getDay()] 
         :
@@ -23,7 +44,6 @@ export const TurnoContextProvider = ({ children }) => {
 
     const buscarTurnos = async ( dia ) => {
         try {
-        
             const response = await fetch(`${ process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL}/calendario/disponibilidad/dia?fecha=${dia.getFullYear()}-${dia.getMonth() + 1}-${dia.getDate()}`,
                 {
                     method: "GET",
@@ -49,9 +69,9 @@ export const TurnoContextProvider = ({ children }) => {
         }
     }
 
-
     useEffect(() => {
-        buscarTurnos( date )
+        if(!pathname.includes('calendario'))
+            buscarTurnos( date )
     }, [date])
 
     return (
@@ -67,6 +87,10 @@ export const TurnoContextProvider = ({ children }) => {
             openTurno,
             loadingTurnos,
             turnos,
+            turno,
+            filtros,
+            setFiltros,
+            setTurno,
             setLoadingTurnos,
             setOpenCalendar,
             setDate,

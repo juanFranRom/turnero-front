@@ -10,3 +10,12 @@
         left: 0;
     }
 }
+
+.c-sidebarCalendar__item{
+    width: 100%;
+    padding: 0 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-block: 10px;
+}

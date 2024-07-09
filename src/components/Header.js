@@ -33,7 +33,7 @@ const Header = ( ) => {
     const pathname = usePathname()
 
     useEffect(() => {
-        if(pathname.length > 1)
+        if(pathname.length > 1 && !pathname.includes('calendario'))
             setOpenCalendar(false)
         else
             setOpenCalendar(true)
@@ -43,7 +43,7 @@ const Header = ( ) => {
         <header className='c-header'>
             <div className='u-flex-center-center'>
                 {
-                    pathname.length <= 1 &&
+                    (pathname.length > 1 || !pathname.includes('calendario')) &&
                     <ToggleSwitch setEstado={setOpenCalendar} estado={ openCalendar }/>
                 }
                 <FaPlusSquare 
@@ -60,6 +60,9 @@ const Header = ( ) => {
                 />
                 <Link className='c-header__link' href={'/'}>
                     <span>Inicio</span>
+                </Link>
+                <Link className='c-header__link' href={'/calendario'}>
+                    <span>Calendario</span>
                 </Link>
                 <Link className='c-header__link' href={'/paciente'}>
                     <span>Pacientes</span>
