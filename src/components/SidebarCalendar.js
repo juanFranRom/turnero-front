@@ -5,6 +5,9 @@ import { useEffect } from 'react'
 // Contexts
 import { useTurnoContext } from '@/contexts/turno'
 
+// Icons
+import { IoMdClose } from "react-icons/io"
+
 // Components
 import Calendar from '@/components_UI/Calendar'
 import Datalist from '@/components_UI/Datalist'
@@ -80,6 +83,18 @@ const SidebarCalendar = ({  }) => {
     }
   }
 
+  const limpiarDatalist = (key) => {
+      setTurno({
+        ...turno,
+        [`${key}Text`]: '',
+        [`${key}`]: null,
+      })
+      setFiltros({
+        ...filtros,
+        [`${key}`]: null,
+      })
+  }
+
   useEffect(() => {
     if(turno.profesionalText.length > 2)
       buscar()
@@ -92,25 +107,30 @@ const SidebarCalendar = ({  }) => {
       <Calendar/>
       <div className='c-sidebarCalendar__item'>
         <span>Profesional</span>
-        <Datalist
-          className={'u-1/1'}
-          list={ turno.profesionalList } 
-          defaultOption={ typeof turno.profesionalText === 'string' ? { value: turno.profesionalText } : turno.profesionalText} 
-          setter={(val) => handleDatalist(val, "profesional")}
-        />
+        <div className={'u-1/1 u-flex-center-center'}>
+          <Datalist
+            list={ turno.profesionalList } 
+            defaultOption={ typeof turno.profesionalText === 'string' ? { value: turno.profesionalText } : turno.profesionalText} 
+            setter={(val) => handleDatalist(val, "profesional")}
+          />
+          <IoMdClose className='u-color--red u-cursor--pointer' onClick={() => limpiarDatalist("profesional")}/>
+        </div>
       </div>
-      {
+      {/*
         turno.profesional &&
         <div className='c-sidebarCalendar__item'>
           <span>Practica</span>
-          <Datalist
-            className={'u-1/1'}
-            list={ turno.profesional.practicas.map((el) => { return ({ ...el.practica, value: `${el.practica.nombre} (${minutesToTime(el.duracion)})` }) }) } 
-            defaultOption={ { value: turno.practicaText } } 
-            setter={(val) => handleDatalist(val, "practica")}
-          />
+          <div className={'u-1/1 u-flex-center-center'}>
+            <Datalist
+              className={'u-1/1'}
+              list={ turno.profesional.practicas.map((el) => { return ({ ...el.practica, value: `${el.practica.nombre} (${minutesToTime(el.duracion)})` }) }) } 
+              defaultOption={ { value: turno.practicaText } } 
+              setter={(val) => handleDatalist(val, "practica")}
+            />
+            <IoMdClose className='u-color--red u-cursor--pointer' onClick={() => limpiarDatalist("practica")}/>
+          </div>
         </div>
-      }
+      */}
     </div>
   )
 }

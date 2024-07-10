@@ -8,13 +8,13 @@
 }
   
 .c-daily_calendar__day_header {
-    min-height: 40px;
+    min-height: 60px;
     flex: 1;
     background-color: #f0f0f0;
     text-align: center;
     border: 1px solid #ddd;
     color: $global-primary-color;
-    min-width: 200px; /* Ancho mínimo para las columnas */
+    min-width: 220px; /* Ancho mínimo para las columnas */
     display: flex;
     justify-content: center;
     gap: 15px;
@@ -32,37 +32,72 @@
   
 .c-daily_calendar__body {
     display: flex;
-    flex-direction: row; /* Cambiado a fila para alinear las columnas de días */
+    flex-direction: row;
 }
 
 .c-daily_calendar__day_column {
     display: flex;
     flex-direction: column;
     flex: 1;
-    min-width: 200px; /* Ancho mínimo para las columnas */
+    min-width: 220px;
+    box-sizing: border-box;
 }
 
 .c-daily_calendar__time_cell {
-    min-height: 40px;
-    max-height: 40px;
-    width: 70px;
+    min-height: 60px;
+    max-height: 60px;
+    min-width: 40px;
+    max-width: 40px;
     text-align: center;
     display: flex;
     justify-content: center;
     align-items: center;
     color: $global-primary-color;
+    margin-right: 5px;
+    box-sizing: border-box;
+    @include font-size(14px);
+    padding: 0 5px;
+    
+    &--sobreturno{
+        color: red;
+    }
+}
+
+.c-daily_calendar__data_cell {
+    min-height: 60px;
+    max-height: 60px;
+    width: 100%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: start;
+    @include font-size(12px);
+    box-sizing: border-box;
+
+    & div{
+        display: flex;
+    }
+    
+    & p{
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: calc(100% - 45px);
+    }
 }
 
 .c-daily_calendar__day_cell {
-    flex: 1;
     min-height: 60px;
     max-height: 60px;
+    width: 100%;
     border: 1px solid #ddd;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: flex-start;
     padding-left: 5px;
+    box-sizing: border-box;
 
     &:hover {
         background-color: #f9f9f9;

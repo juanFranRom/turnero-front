@@ -1,5 +1,8 @@
 // React
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+
+// Components
+import Input from '@/components_UI/Input'
 
 const HorariosSemanales = ({ programacionDefault, actualizarProgramacion }) => {
     const [programacion, setProgramacion] = useState(programacionDefault ?? {})
@@ -9,7 +12,7 @@ const HorariosSemanales = ({ programacionDefault, actualizarProgramacion }) => {
         :
             []
     )
-    
+    console.log(programacion);
     
     const manejoCambioDia = (day) => {
         if (diasSeleccionados.includes(day)) {
@@ -80,6 +83,18 @@ const HorariosSemanales = ({ programacionDefault, actualizarProgramacion }) => {
         'D': 'Domingo'
     };
 
+    useEffect(() => {
+        if(programacionDefault)
+        {
+            setProgramacion(programacionDefault ?? {})
+            setDiasSeleccionados(
+                programacionDefault ? 
+                    Object.keys(programacionDefault).reduce(( list, key ) => programacionDefault[key].length > 0 ? [...list,key] : list, [])
+                :
+                    []
+            )
+        }
+    }, [programacionDefault])
 
     return (
         <div className="c-horario_semanal">

@@ -15,6 +15,7 @@ import { useTurnoContext } from '@/contexts/turno'
 
 // Icons
 import { IoMdClose } from "react-icons/io"
+import Textarea from '@/components_UI/Textarea'
 
 
 const NuevoTurno = () => {
@@ -80,7 +81,7 @@ const NuevoTurno = () => {
     }
 
     const turnoParaEnviar = ( turno ) => {
-        let turnoParaEnviar = {}
+        let turnoParaEnviar = {  }
         
         turnoParaEnviar.profesional_id = turno.profesional ? turno.profesional.id : null
         turnoParaEnviar.paciente_id = turno.paciente ? turno.paciente.id : null
@@ -89,7 +90,9 @@ const NuevoTurno = () => {
         turnoParaEnviar.practica_id = turno.practica ? turno.practica.id : null
         turnoParaEnviar.duracion = turno.practica ? timeToMinutes(turno.practica.duracion_moda) : null
         turnoParaEnviar.fecha_hora = turno.fecha && turno.hora ? new Date(turno.fecha.getFullYear(), turno.fecha.getMonth(), turno.fecha.getDate(), turno.hora.split(':')[0], turno.hora.split(':')[1]) : null
-       
+        turnoParaEnviar.nota = turno.nota ? turno.nota : null
+        turnoParaEnviar.tipo = turno.tipo ? turno.tipo : 'turno'
+        
         return turnoParaEnviar
     }
     
@@ -220,6 +223,7 @@ const NuevoTurno = () => {
             )
     }, [turno.profesionalText])
 
+    console.log(turno);
     return (
         <>
             {
@@ -293,6 +297,18 @@ const NuevoTurno = () => {
                             <div className='u-flex-column-center-start'>
                                 <span>Hora</span>
                                 <Input className={'u-1/1'} type={'time'} defaultValue={turno.hora} handleChange={(val) => setTurno({...turno, hora: val})}/>
+                            </div>
+                        </div>
+                        <div className='c-nuevo_turno__item c-nuevo_turno__hora'>
+                            <div className='u-flex-column-center-start'>
+                                <span>Nota</span>
+                                <Textarea className={'u-1/1'} defaultValue={turno.nota} handleChange={(val) => setTurno({...turno, nota: val})}/>
+                            </div>
+                        </div>
+                        <div className='c-nuevo_turno__item c-nuevo_turno__hora'>
+                            <div className='u-flex-end-start'>
+                                <Input className={'u-m2--right'} type={'checkbox'} defaultChecked={turno.tipo === 'sobreturno'} handleChange={(val) => setTurno({...turno, tipo: val ? 'sobreturno' : 'turno'})}/>
+                                <span className='u-cursor--pointer' onClick={() => setTurno({...turno, tipo: turno.tipo === 'turno' ? 'sobreturno' : 'turno'})}>Sobreturno</span>
                             </div>
                         </div>
                         {

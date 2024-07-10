@@ -6,6 +6,14 @@ import { MdInsertComment } from "react-icons/md"
 import { GiInfo } from "react-icons/gi"
 import { IoMdArrowDropright } from "react-icons/io"
 import { IoMdArrowDropdown } from "react-icons/io"
+import Tooltip from '@/components_UI/Tooltip'
+import PopUp from '@/components_UI/PopUp'
+import Overlay from '@/components_UI/Overlay'
+import Button from '@/components_UI/Button'
+import { useTurnoContext } from '@/contexts/turno'
+
+// Components
+
 
 const estados = [
     'reservado',
@@ -17,23 +25,21 @@ const estados = [
 ]
 
 const Turno = ({ data = null }) => {
-    const [turno, setTurno] = useState( !data ? {
-        nombre: 'chulia, victor',
-        horario: '08:00',
-        telefono: '+54 266 400 4568',
-        dni: '13.608.654',
-        obraSocial: 'DOSEP - Inclusion Social',
-        tipo: 'Consulta',
-        practica: 'CONSULTA ODONTOLOGICA (INCLUYE FICHADO Y PRIMERA CONSULTA)',
-        doctor: 'Portela, Judith Lilian',
-        estado: 'ausente',
-        ultimaModificacion: new Date(2024, 4, 16, 19, 18, 0)
-    } : data )
     const [desplegable, setDesplegable] = useState(false)
     const [desplegableCSS, setDesplegableCSS] = useState({});
+    const [currentTime, setCurrentTime] = useState(new Date());
     const botonRef = useRef(null);
     const desplegableRef = useRef(null);
+    const { /*turno, setTurno,*/ setOpenTurno } = useTurnoContext()
 
+    const primeraLetraMayus = (string) => {
+        let result = ''
+
+        for(let palabra of string.split(' '))
+            result += `${palabra.slice(0,1).toUpperCase()}${palabra.slice(1)} `
+
+        return result.trim()
+    }
 
     const haceTanto = (date) => {
         const now = new Date();
@@ -93,55 +99,69 @@ const Turno = ({ data = null }) => {
 
     }, [desplegable]);
 
+    /*useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentTime(new Date());
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, []);*/
+
     return (
         <>
             <div 
                 className={`
                     c-turno 
-                    ${turno.estado.toLowerCase() === 'esperando' ? 'c-turno--esperando' : ''}
-                    ${turno.estado.toLowerCase() === 'consulta' ? 'c-turno--consulta' : ''}
-                    ${turno.estado.toLowerCase() === 'atendido' ? 'c-turno--atendido' : ''}
-                    ${turno.estado.toLowerCase() === 'ausente' ? 'c-turno--ausente' : ''}
-                    ${turno.estado.toLowerCase() === 'cancelado' ? 'c-turno--cancelado' : ''}
+                    ${data.estado.toLowerCase() === 'esperando' ? 'c-turno--esperando' : ''}
+                    ${data.estado.toLowerCase() === 'consulta' ? 'c-turno--consulta' : ''}
+                    ${data.estado.toLowerCase() === 'atendido' ? 'c-turno--atendido' : ''}
+                    ${data.estado.toLowerCase() === 'ausente' ? 'c-turno--ausente' : ''}
+                    ${data.estado.toLowerCase() === 'cancelado' ? 'c-turno--cancelado' : ''}
                 `}
             >
                 <div className='c-turno__horario'>
-                    <div className='c-turno__hora'>
+                    <div className={`c-turno__hora ${ data.tipo==="sobreturno" ? 'c-turno__hora--sobreturno' : '' } `}>
                         <GiInfo className='u-cursor'/>
-                        <MdInsertComment className='u-cursor'/>
-                        <span>{turno.horario}</span>
+                        {
+                            data.nota &&
+                            <Tooltip className={'u-flex-center-center'} text={data.nota}>
+                                <MdInsertComment className='u-cursor'/>
+                            </Tooltip>
+                        }
+                        <span onClick={ null }>{data.horario}</span>
                     </div>
                     <div className='c-turno__div c-turno__informacion--column'>
-                        <span>{haceTanto(turno.ultimaModificacion)}</span>
-                        <span>{turno.estado}</span>
+                        <span>{haceTanto(data.ultimaModificacion)}</span>
+                        <span>{data.estado}</span>
                     </div>
                 </div>
                 <div className='c-turno__paciente'>
-                    <span className='c-turno__nombre'>{turno.nombre}</span>
+                    <span className='c-turno__nombre'>{primeraLetraMayus(data.nombre)}</span>
                     <div className='c-turno__informacion'>
-                        <span className='c-turno__telefono'>{turno.telefono}</span>
-                        <span className='c-turno__dni'>{turno.dni}</span>
+                        {
+                            data.telefono &&
+                            <>
+                                <a class="c-turno__telefono" href={`http://web.whatsapp.com/send?phone=${data.telefono}`} target="_blank">{data.telefono}</a>
+                                <a class="c-turno__telefono--mobile" href={`whatsapp://send?phone=${data.telefono}`} target="_blank">{data.telefono}</a>
+                            </>
+                        }
+                        <span className='c-turno__dni'>{data.dni}</span>
                     </div>
                 </div>
                 <div className='c-turno__clinica'>
                     <div className='u-m3--right'>
-                        <span className='c-turno__obra'>{turno.obraSocial}</span>
+                        <span className='c-turno__obra'>{primeraLetraMayus(data.obraSocial)}</span>
                     </div>
                     <div className='c-turno__doctor'>
                         <div className='c-turno__hora'>
-                            <span className='u-text--bold'>{turno.tipo}</span>
-                            <span className='c-turno__text--secondary'>{turno.practica}</span>
+                            <span className='u-text--bold'>{primeraLetraMayus(data.practica)}</span>
                         </div>
                         <div className='c-turno__div c-turno__informacion--column'>
-                            <span className='u-text--bold'>{turno.doctor}</span>
+                            <span className='u-text--bold'>{primeraLetraMayus(data.doctor)}</span>
                         </div>
                     </div>
                 </div>
                 <div className='c-turno__estado'>
-                    <button>
-                        Siguiente estado
-                        <IoMdArrowDropright/>
-                    </button>
                     <button ref={botonRef} onClick={() => setDesplegable( (prev) => !prev )}>
                         <IoMdArrowDropdown/>
                     </button>

@@ -64,14 +64,14 @@ const NuevoProfesional = ({ id = null, toClose = false }) => {
 
         for (let i = 0; i < cantInputs; i++) {
             result.push(
-                <div className='u-1/1 u-flex-start-center u-m2--vertical' key={i}>
+                <div className='u-1/1 u-flex-start-center u-m3--vertical' key={i}>
                     {
                         placeholder === 'Practica' ?
                             <>
                                 <Input className='u-1/2' type={type} placeholder={`Nombre`} handleChange={(val) => handleChange({ ...values[i], nombre: val }, i)} defaultValue={values[i].nombre ?? null} />
                                 <Input className='u-1/2' type={'time'} placeholder={`Duracion`} handleChange={(val) => handleChange({ ...values[i], duracion_moda: val }, i)} defaultValue={values[i].duracion_moda ?? null} />
                             </>
-                            :
+                        :
                             <Input className='u-1/1' type={type} placeholder={`${placeholder} ${i + 1}`} handleChange={(val) => handleChange(val, i)} defaultValue={values[i] ?? null} />
                     }
                     <div style={{ width: '75px' }}>
@@ -134,7 +134,6 @@ const NuevoProfesional = ({ id = null, toClose = false }) => {
             for (const v of vls) {
                 if(!v.every(time=>time.start!==''&&time.end!==''))
                     return 'Completá hora de inicio y hora de fin para todos los dias que seleccionaeste.'
-                debugger;
                 let x = v.find(time => timeToMinutes(time.start) > timeToMinutes(time.end))
                 if(x != undefined)
                     return `Formato incorrecto para el horario: ${time.start.slice(0,5)} a ${time.end.slice(0,5)} el horario de inicio es posterior al horario de fin`
@@ -334,31 +333,31 @@ const NuevoProfesional = ({ id = null, toClose = false }) => {
                         <h2 className='u-color--primary'>{id!==null? 'Editar': 'Nuevo'} Profesional</h2>
                         <div className='c-nuevo_paciente__item'>
                             <div>
-                                <span>Nombre</span>
+                                <span className='u-m2--bottom'>Nombre</span>
                                 <Input defaultValue={profesional.nombre} handleChange={(val) => handleChange(val, 'nombre')} />
                             </div>
                         </div>
                         <div className='c-nuevo_paciente__item'>
                             <div>
-                                <span>Apellido</span>
+                                <span className='u-m2--bottom'>Apellido</span>
                                 <Input defaultValue={profesional.apellido} handleChange={(val) => handleChange(val, 'apellido')} />
                             </div>
                         </div>
                         <div className='c-nuevo_paciente__item'>
                             <div>
-                                <span>DNI</span>
+                                <span className='u-m2--bottom'>DNI</span>
                                 <Input type={'number'} defaultValue={profesional.dni} handleChange={(val) => handleChange(val, 'dni')} />
                             </div>
                         </div>
                         <div className='c-nuevo_paciente__item'>
                             <div>
-                                <span>Fecha de Nacimiento</span>
+                                <span className='u-m2--bottom'>Fecha de Nacimiento</span>
                                 <Input type={'date'} defaultValue={profesional.fecha_nacimiento} handleChange={(val) => handleChange(val, 'fecha_nacimiento')} />
                             </div>
                         </div>
                         <div className='c-nuevo_paciente__item'>
                             <div>
-                                <span>Genero</span>
+                                <span className='u-m2--bottom'>Genero</span>
                                 <Select
                                     options={[{ id: 1, value: 'Masculino' }, { id: 2, value: 'Femenino' }, { id: 3, value: 'Otro' }]}
                                     handleChange={(val) => handleChange(val, 'genero')}
@@ -367,7 +366,7 @@ const NuevoProfesional = ({ id = null, toClose = false }) => {
                             </div>
                         </div><div className='c-nuevo_paciente__item c-nuevo_paciente__hora'>
                             <div>
-                                <span>Clinica</span>
+                                <span className='u-m2--bottom'>Clinica</span>
                                 {
                                     producirInputs(
                                         (val, index) => handleChangeArray(val, 'clinicas', index),
@@ -397,7 +396,7 @@ const NuevoProfesional = ({ id = null, toClose = false }) => {
                         </div>
                         <div className='c-nuevo_paciente__item c-nuevo_paciente__hora'>
                             <div>
-                                <span>Obras Sociales</span>
+                                <span className='u-m2--bottom'>Obras Sociales</span>
                                 {
                                     producirInputs(
                                         (val, index) => handleChangeArray(val, 'obrasSociales', index),
@@ -427,7 +426,7 @@ const NuevoProfesional = ({ id = null, toClose = false }) => {
                         </div>
                         <div className='c-nuevo_paciente__item c-nuevo_paciente__hora'>
                             <div>
-                                <span>Practicas</span>
+                                <span className='u-m2--bottom'>Practicas</span>
                                 {
                                     producirInputs(
                                         (val, index) => {
@@ -459,7 +458,7 @@ const NuevoProfesional = ({ id = null, toClose = false }) => {
                         </div>
                         <div className='c-nuevo_paciente__item c-nuevo_paciente__hora'>
                             <div>
-                                <span>Telefonos</span>
+                                <span className='u-m2--bottom'>Telefonos</span>
                                 {
                                     producirInputs(
                                         (val, index) => handleChangeArray(val, 'telefonos', index),
@@ -489,7 +488,7 @@ const NuevoProfesional = ({ id = null, toClose = false }) => {
                         </div>
                         <div className='c-nuevo_paciente__item c-nuevo_paciente__hora'>
                             <div>
-                                <span>Emails</span>
+                                <span className='u-m2--bottom'>Emails</span>
                                 {
                                     producirInputs(
                                         (val, index) => handleChangeArray(val, 'emails', index),
@@ -523,7 +522,7 @@ const NuevoProfesional = ({ id = null, toClose = false }) => {
             }
             <div className='u-1/1'>
                 <div className='u-m3--bottom'>
-                    <span className='u-text--1'>Horario Semanal</span>
+                    <span  className='u-m2--bottom u-text--1'>Horario Semanal</span>
                 </div>
                 <HorariosSemanales programacionDefault={profesional.horarios?profesional.horarios:null} actualizarProgramacion={(programacion)=>{setProfesional(prev=>{prev.horarios=programacion; return prev;})}}/>
             </div>

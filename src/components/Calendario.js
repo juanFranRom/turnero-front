@@ -4,11 +4,13 @@ import React, { useState, useRef, useEffect } from 'react'
 
 // Contexts
 import { useTurnoContext } from '@/contexts/turno'
-import Loader from '@/components_UI/Loader'
+
+// Icons
+import { CiLock } from "react-icons/ci"
 
 // Components
+import Loader from '@/components_UI/Loader'
 
-import { CiLock } from "react-icons/ci";
 const generateIntervals = (start, end, interval) => {
     const times = []
     let currentTime = new Date(start.getTime())
@@ -16,7 +18,7 @@ const generateIntervals = (start, end, interval) => {
     while (currentTime <= end) {
         const hours = String(currentTime.getHours()).padStart(2, '0')
         const minutes = String(currentTime.getMinutes()).padStart(2, '0')
-        times.push(`${hours}:${minutes}`)
+        times.push({ tipo: 'disponibilidad', text: `${hours}:${minutes}` })
         currentTime.setMinutes(currentTime.getMinutes() + interval)
     }
 
@@ -52,6 +54,7 @@ const Calendario = () => {
     const { date, mesesEspañol, turno, setTurno, openTurno, setOpenTurno, filtros, setFiltros } = useTurnoContext()
 
     const handleTurno = (day, interval) => {
+        console.log(day, interval);
         setTurno((prev) => {
             return(
                 {
@@ -73,9 +76,20 @@ const Calendario = () => {
         const handleResize = () => {
             if (calendarRef.current && dias) {
                 const calendarWidth = calendarRef.current.offsetWidth
-                const minWidthPerDay = 200 + 70 // Ancho mínimo por columna
+                const minWidthPerDay = 220 + 70 // Ancho mínimo por columna
                 const maxVisibleDays = Math.floor(calendarWidth / minWidthPerDay)
-                setVisibleDays(dias.slice(0, maxVisibleDays))
+                let aux = []
+
+                for(let dia of dias)
+                {
+                    if(dia.intervalos && dia.intervalos.length > 0)
+                        aux.push(dia)
+                    
+                    if(maxVisibleDays === aux.length)
+                        break
+                }
+
+                setVisibleDays(aux)
             }
         }
 
@@ -87,7 +101,7 @@ const Calendario = () => {
     useEffect(() => {
         const buscarTurnos = async ( dia, profesional ) => {
             try {
-                const response = await fetch(`${ process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL}/calendario/disponibilidad/semana?fecha=${dia.getFullYear()}-${dia.getMonth() + 1}-${dia.getDate()}&profesionales=${profesional.id}`,
+                const response = await fetch(`${ process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL}/calendario/disponibilidad/mes?fecha=${dia.getFullYear()}-${dia.getMonth() + 1}-${dia.getDate()}&profesionales=${profesional.id}`,
                     {
                         method: "GET",
                         headers: {
@@ -99,6 +113,7 @@ const Calendario = () => {
                 )
                 const json = await response.json()
                 if (json.status === "SUCCESS") {
+                    console.log(json);
                     let option =  { weekday: 'long' };
                     let aux = json.data.map(day=>{
                         let [year,month,dia] = day.dia.split('-');
@@ -107,108 +122,108 @@ const Calendario = () => {
                         return{
                             nombre:dayName,
                             fecha,
-                            intervalos:day.list
+                            intervalos: day.list.sort((a, b) => {
+                                if (a.hora < b.hora) return -1;
+                                if (a.hora > b.hora) return 1;
+                                // Si las horas son iguales, ordenamos por tipo
+                                if (a.hora === b.hora) {
+                                    if (a.tipo === 'turno' && b.tipo === 'sobreturno') return -1;
+                                    if (a.tipo === 'sobreturno' && b.tipo === 'turno') return 1;
+                                }
+                                return 0;
+                            })
                         }
                     });
-                    setDias(aux);
-
+                    setDias(aux)
                 }
             } catch (error) {
                 console.log(error);
             }
         }
-        if(filtros.profesional && date)
+        if(filtros.profesional)
         {
             buscarTurnos(date, filtros.profesional)
         }
+        else
+            setDias(getWeekDays(date ?? new Date()))
     },[date, filtros])
+    
     return (
         <div className='c-daily_calendar' ref={calendarRef}>
             {
                 dias && visibleDays ?
                     <>
                         <div className="c-daily_calendar__header">
-                            {visibleDays.map((day, index) => (
-                                <div key={index} className="c-daily_calendar__day_header">
-                                    <div>
-                                        {day.fecha.getDate()} 
-                                    </div>
-                                    <div className='u-flex-column-center-start'>
-                                        <p>
-                                            {`${day.nombre.charAt(0).toUpperCase()}${day.nombre.slice(1)}`}
-                                        </p>
-                                        <p>
-                                        {`${mesesEspañol[day.fecha.getMonth()].charAt(0).toUpperCase()}${mesesEspañol[day.fecha.getMonth()].slice(1)}`}{}
-                                        </p>
-                                    </div>
-                                </div>
-                            ))}
+                            {
+                                visibleDays.map((day, index) => (
+                                    day.intervalos && day.intervalos.length > 0 ?
+                                        <div key={index} className="c-daily_calendar__day_header">
+                                            <div>
+                                                {day.fecha.getDate()} 
+                                            </div>
+                                            <div className='u-flex-column-center-start'>
+                                                <p>
+                                                    {`${day.nombre.charAt(0).toUpperCase()}${day.nombre.slice(1)}`}
+                                                </p>
+                                                <p>
+                                                {`${mesesEspañol[day.fecha.getMonth()].charAt(0).toUpperCase()}${mesesEspañol[day.fecha.getMonth()].slice(1)}`}{}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    :
+                                        <></>
+                                ))
+                            }
                         </div>
                         <div className="c-daily_calendar__body">
                             {visibleDays.map((day, dayIndex) => (
-                                <div key={dayIndex} className="c-daily_calendar__day_column">
-                                    {day.intervalos.map((interval, index) => {
-                                        if(interval.tipo==="disponibilidad"){
-                                            return (
-                                                <div key={index} className="c-daily_calendar__day_cell" onClick={() => handleTurno(day, interval)}>
-                                                    <div className="c-daily_calendar__time_cell">
-                                                        {interval.text} 
-                                                    </div>
-                                                    <div className="c-daily_calendar__time_cell">
-                                                        ( {interval.duracion} min)
-                                                    </div>
-                                                </div>
-                                            )
+                                day.intervalos && day.intervalos.length > 0 ?
+                                    <div key={dayIndex} className="c-daily_calendar__day_column">
+                                        {
+                                                day.intervalos.map((interval, index) => {
+                                                    if(interval.tipo==="disponibilidad"){
+                                                        return (
+                                                            <div key={index} className="c-daily_calendar__day_cell" onClick={() => handleTurno(day, interval)}>
+                                                                <div className="c-daily_calendar__time_cell">
+                                                                    {interval.text.slice(0, 5)} 
+                                                                </div>
+                                                            </div>
+                                                        )
+                                                    }
+                                                    else if(interval.tipo==="bloqueo"){
+                                                        //ponerle un colorcito rojo
+                                                        return (
+                                                            <div key={index} className="c-daily_calendar__day_cell" onClick={() => handleTurno(day, interval)}>
+                                                                <div className="c-daily_calendar__time_cell">
+                                                                    <CiLock/>
+                                                                </div>
+                                                                <div className="c-daily_calendar__time_cell">
+                                                                    {interval.horario}
+                                                                </div>
+                                                                <div className="c-daily_calendar__time_cell">
+                                                                    {interval.duracion}
+                                                                </div>
+                                                            </div>
+                                                        )
+                                                    } 
+                                                    else {
+                                                        return (
+                                                            <div key={index} className="c-daily_calendar__day_cell" onClick={() => handleTurno(day, interval)}>
+                                                                <div className={`c-daily_calendar__time_cell ${ interval.tipo==="sobreturno" ? 'c-daily_calendar__time_cell--sobreturno' : '' } `}>
+                                                                    {interval.text.slice(0, 5)} 
+                                                                </div>
+                                                                <div className="c-daily_calendar__data_cell">
+                                                                    <p>{interval.nombre}</p>
+                                                                    <p>{interval.duracion}' - {interval.practica}</p>
+                                                                </div> 
+                                                            </div>
+                                                        )
+                                                    }
+                                                })
                                         }
-                                        if(interval.tipo==="bloqueo"){
-                                            //ponerle un colorcito rojo
-                                            return (
-                                                <div key={index} className="c-daily_calendar__day_cell" onClick={() => handleTurno(day, interval)}>
-                                                    <div className="c-daily_calendar__time_cell">
-                                                        <CiLock/>
-                                                    </div>
-                                                    <div className="c-daily_calendar__time_cell">
-                                                        {interval.horario}
-                                                    </div>
-                                                    <div className="c-daily_calendar__time_cell">
-                                                        {interval.duracion}
-                                                    </div>
-                                                </div>
-                                            )
-                                        } 
-                                        if(interval.tipo==="turno"){
-                                            return (
-                                                <div key={index} className="c-daily_calendar__day_cell" onClick={() => handleTurno(day, interval)}>
-                                                    <div className="c-daily_calendar__time_cell">
-                                                        {interval.nombre}
-                                                        {interval.estado}
-                                                    </div>
-                                                    <div className="c-daily_calendar__time_cell">
-                                                        {interval.horario}
-                                                        {interval.duracion}
-                                                        {interval.estado}
-                                                    </div> 
-                                                </div>
-                                            )
-                                        }
-                                        if(interval.tipo==="sobreturno"){
-                                            //ponerle un colorcito amarillo o algo qcio
-                                            return (
-                                                <div key={index} className="c-daily_calendar__day_cell" onClick={() => handleTurno(day, interval)}>
-                                                    <div className="c-daily_calendar__time_cell">
-                                                        {interval.nombre}
-                                                        {interval.estado}
-                                                    </div>
-                                                    <div className="c-daily_calendar__time_cell">
-                                                        {interval.horario}
-                                                        {interval.duracion}
-                                                        {interval.estado}
-                                                    </div> 
-                                                </div>
-                                            )
-                                        }
-                                        })}
-                                </div>
+                                    </div>
+                                :
+                                    <></>
                             ))}
                         </div>
                     </>

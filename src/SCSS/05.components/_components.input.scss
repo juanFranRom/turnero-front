@@ -9,7 +9,7 @@
 $input-primary-color:            $global-primary-color;
 $input-secondary-color:          $global-secondary-color;
 
-$input-padding-vertical:         $global-spacing-unit-small  !default;
+$input-padding-vertical:         $global-spacing-unit-tiny !default;
 $input-padding-horizontal:       $global-spacing-unit-small !default;
 $input-transition:               $global-transition !default;
 $input-radius:                   5px !default;
@@ -25,10 +25,11 @@ $input-ghost-border-width:       2px;
 
 .c-input{
     min-width: 150px;
+    min-height: 40px;
+    max-height: 40px;
     position: relative;
     padding: $input-padding-vertical $input-padding-horizontal;
     border-radius: $input-radius;
-    overflow: hidden;
     outline: none;
     border: none;
     background-color: $input-primary-color;
@@ -38,13 +39,13 @@ $input-ghost-border-width:       2px;
 
     span{
         transition: all ease-in-out 250ms;
-        @include font-size(16px);
+        @include font-size(12px);
         position: absolute;
         left: 10px;
-        top: calc(25px - 13px);
+        top: calc(20px - 10px);
         z-index: 2;
         cursor: pointer;
-        color: #fff;
+        color: white;
     }
 
     &[type="number"] {
@@ -52,16 +53,17 @@ $input-ghost-border-width:       2px;
         appearance: textfield; /* Edge */
     }
 
+    &[type="checkbox"] {
+        min-height: unset;
+        min-width: unset;
+    }
+
     &[type="time"] {
-        min-width: fit-content;
-        font-size: small;
+        min-height: unset;
+        min-width: unset;
     }
 
     &[type="date"]::-webkit-calendar-picker-indicator {
-        filter: invert(1);
-    }
-
-    &[type="time"]::-webkit-calendar-picker-indicator {
         filter: invert(1);
     }
     
@@ -77,8 +79,8 @@ $input-ghost-border-width:       2px;
 }
 
 .c-input--placeholder{
-    min-height: 50px;
-    max-height: 50px;
+    min-height: 40px;
+    max-height: 40px;
 }
 
 .c-input--small {
@@ -91,8 +93,9 @@ $input-ghost-border-width:       2px;
 
     span{
         @include font-size(12px);
-        left: 15px;
-        top: 4px;
+        left: 0px;
+        top: -18px;
+        color: black;
     }
 
     input{
@@ -100,7 +103,7 @@ $input-ghost-border-width:       2px;
         left: 0px;
         right: 0px;
         bottom: 0px;
-        margin-top: 15px;
+        top: 0px;
         padding: 10px 10px;
         border: none;
         outline: none;
