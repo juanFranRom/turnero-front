@@ -24,15 +24,23 @@ export const TurnoContextProvider = ({ children }) => {
         fecha: null,
         hora: null
     })
-    const [filtros, setFiltros] = useState({
-        profesional: null,
-        practica: null
-    })
+    const [filtros, setFiltros] = useState(window.localStorage.getItem('filtros') ?
+            JSON.parse(window.localStorage.getItem('filtros'))
+        :
+            {
+                profesional: null,
+                practica: null
+            }
+    )
     const [openTurno, setOpenTurno] = useState(false)
     const [loadingTurnos, setLoadingTurnos] = useState(true)
     const [turnos, setTurnos] = useState([])
     const [openCalendar, setOpenCalendar] = useState(false)
-    const [date, setDate] = useState(new Date())
+    const [date, setDate] = useState(window.localStorage.getItem('date') ?
+            new Date(window.localStorage.getItem('date'))
+        :
+            new Date()
+    )
     const pathname = usePathname()
     const diaSemana = lenguaje === 'español' ? 
             ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'][date.getDay()] 
@@ -42,9 +50,10 @@ export const TurnoContextProvider = ({ children }) => {
     const fechaFormateada = diaSemana + ' ' + date.getDate() + ' - ' + mes + ' ' + date.getFullYear()
 
 
-    const buscarTurnos = async ( dia ) => {
+    const buscarTurnos = async ( dia, profesional = null ) => {
         try {
-            const response = await fetch(`${ process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL}/calendario/disponibilidad/dia?fecha=${dia.getFullYear()}-${dia.getMonth() + 1}-${dia.getDate()}`,
+            setLoadingTurnos(true)
+            const response = await fetch(`${ process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL}/calendario/disponibilidad/dia?fecha=${dia.getFullYear()}-${dia.getMonth() + 1}-${dia.getDate()}${profesional ? `&profesionales=${profesional.id}` : ''}`,
                 {
                     method: "GET",
                     headers: {
@@ -55,7 +64,6 @@ export const TurnoContextProvider = ({ children }) => {
                 }
             )
             const json = await response.json()
-            console.log(json);
             if (json.status === "SUCCESS") 
                 setTurnos([...json.data[0].turnos])
             else
@@ -71,8 +79,13 @@ export const TurnoContextProvider = ({ children }) => {
 
     useEffect(() => {
         if(!pathname.includes('calendario'))
-            buscarTurnos( date )
-    }, [date])
+            buscarTurnos( date, filtros.profesional ?? null )
+    }, [date, filtros])
+
+    useEffect(() => {
+        window.localStorage.setItem('date', date)
+        window.localStorage.setItem('filtros', JSON.stringify(filtros))
+    }, [date, filtros])
 
     return (
         <TurnoContext.Provider value={{

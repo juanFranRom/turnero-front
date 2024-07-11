@@ -74,6 +74,7 @@
     align-items: start;
     @include font-size(12px);
     box-sizing: border-box;
+    margin-left: 5px;
 
     & div{
         display: flex;

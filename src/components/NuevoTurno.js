@@ -40,6 +40,8 @@ const NuevoTurno = () => {
                 [`${key}`]: val,
             })
     }
+
+    console.log(turno);
     
     const minutesToTime = (duracion) => {
         let hours = Math.floor( duracion/60);
@@ -80,25 +82,28 @@ const NuevoTurno = () => {
         }
     }
 
-    const turnoParaEnviar = ( turno ) => {
-        let turnoParaEnviar = {  }
+    const turnoParaEnviar = ( turno, crear = true ) => {
+        let turnoParaEnviar = { }
         
-        turnoParaEnviar.profesional_id = turno.profesional ? turno.profesional.id : null
-        turnoParaEnviar.paciente_id = turno.paciente ? turno.paciente.id : null
-        turnoParaEnviar.cobertura_id = turno.cobertura ? turno.cobertura.id : null
-        turnoParaEnviar.clinica_id = turno.profesional ? turno.profesional.clinica.id : null
-        turnoParaEnviar.practica_id = turno.practica ? turno.practica.id : null
-        turnoParaEnviar.duracion = turno.practica ? timeToMinutes(turno.practica.duracion_moda) : null
+        if(crear)
+        {
+            turnoParaEnviar.profesional_id = turno.profesional ? turno.profesional.id : null
+            turnoParaEnviar.paciente_id = turno.paciente ? turno.paciente.id : null
+            turnoParaEnviar.cobertura_id = turno.cobertura ? turno.cobertura.id : null
+            turnoParaEnviar.clinica_id = turno.profesional ? turno.profesional.clinica.id : null
+            turnoParaEnviar.practica_id = turno.practica ? turno.practica.id : null
+            turnoParaEnviar.duracion = turno.practica ? timeToMinutes(turno.practica.duracion_moda) : null
+        }
         turnoParaEnviar.fecha_hora = turno.fecha && turno.hora ? new Date(turno.fecha.getFullYear(), turno.fecha.getMonth(), turno.fecha.getDate(), turno.hora.split(':')[0], turno.hora.split(':')[1]) : null
         turnoParaEnviar.nota = turno.nota ? turno.nota : null
         turnoParaEnviar.tipo = turno.tipo ? turno.tipo : 'turno'
-        
+
         return turnoParaEnviar
     }
     
-    const validar = ( turno ) => {
+    const validar = ( turno, crear = true ) => {
         
-        if (!turno.profesional_id)
+        if (!turno.profesional_id && crear)
         {
             setError({
                 value: true,
@@ -107,7 +112,7 @@ const NuevoTurno = () => {
             return false
         }
         
-        if (!turno.paciente_id)
+        if (!turno.paciente_id && crear)
         {
             setError({
                 value: true,
@@ -116,7 +121,7 @@ const NuevoTurno = () => {
             return false
         }
 
-        if (!turno.practica_id)
+        if (!turno.practica_id && crear)
         {
             setError({
                 value: true,
@@ -163,7 +168,10 @@ const NuevoTurno = () => {
                 const json = await response.json()
                 setLoading(false)
                 if (json.status === "SUCCESS") 
+                {
                     setOpenTurno( prev => !prev )
+                    window.location.reload()
+                }
                 else
                 {
                     setError({
@@ -181,6 +189,76 @@ const NuevoTurno = () => {
             }
         }
         crear()
+    }
+
+    const editarTurno = () => {
+        const editar = async () => {
+            try {
+                setLoading(true)
+                let turnoListo = turnoParaEnviar(turno, false)
+    
+                if(!validar(turnoListo, false))
+                {
+                    setLoading(false)
+                    return
+                }
+    
+                const response = await fetch(`${ process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL}/turnos/${turno.id}`,
+                    {
+                        method: "PUT",
+                        headers: {
+                            Accept: "application/json",
+                            "Content-Type": "application/json",
+                            /*authorization: "Bearer " + user.token,*/
+                        },
+                        body: JSON.stringify(turnoListo)
+                    }
+                )
+                const json = await response.json()
+                setLoading(false)
+                if (json.status === "SUCCESS")
+                {
+                    setOpenTurno( prev => !prev )
+                    window.location.reload()
+                }
+                else
+                {
+                    setError({
+                        value: true,
+                        mensaje: json.message ?? 'Ocurrio un erro al crear el turno.'
+                    })
+                }
+
+            } catch (error) {
+                setError({
+                    value: true,
+                    mensaje: 'Ocurrio un error, vuelva a intentar luego.'
+                })
+                setLoading(false)
+            }
+        }
+        editar()
+    }
+
+    const cancelarTurno = () => {
+        const cancelar = async () => {
+            try {
+                const response = await fetch(`${ process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL}/turnos/${turno.id}`,
+                    {
+                        method: "PUT",
+                        headers: {
+                            Accept: "application/json",
+                            "Content-Type": "application/json",
+                            /*authorization: "Bearer " + user.token,*/
+                        },
+                        body: JSON.stringify({ estado: 'Cancelado' })
+                    }
+                )
+                await response.json()
+                window.location.reload()
+            } catch (error) { }
+        }
+        cancelar( )
     }
 
     useEffect(() => {
@@ -240,41 +318,56 @@ const NuevoTurno = () => {
                         <div className='c-nuevo_turno__item'>
                             <div className='u-flex-column-center-start'>
                                 <span>Profesional</span>
-                                <Datalist
-                                    className={'u-1/1'}
-                                    list={ turno.profesionalList } 
-                                    defaultOption={ typeof turno.profesionalText === 'string' ? { value: turno.profesionalText } : turno.profesionalText} 
-                                    setter={(val) => handleDatalist(val, "profesional")}
-                                />
+                                {
+                                    turno.id ?
+                                        <Input className={'u-1/1'} defaultValue={turno.nombreProfesional} isReadOnly={true}/>
+                                    :
+                                        <Datalist
+                                            className={'u-1/1'}
+                                            list={ turno.profesionalList } 
+                                            defaultOption={ typeof turno.profesionalText === 'string' ? { value: turno.profesionalText } : turno.profesionalText} 
+                                            setter={(val) => handleDatalist(val, "profesional")}
+                                        />
+                                }
                             </div>
                         </div>
                         {
-                            turno.profesional &&
+                            (turno.profesional || turno.id) &&
                             <div className='c-nuevo_turno__item'>
                                 <div className='u-flex-column-center-start'>
                                     <span>Practica</span>
-                                    <Datalist
-                                        className={'u-1/1'}
-                                        list={ turno.profesional.practicas.map((el) => { return ({ ...el.practica, value: `${el.practica.nombre} (${minutesToTime(el.duracion)})` }) }) } 
-                                        defaultOption={ { value: turno.practicaText } } 
-                                        setter={(val) => handleDatalist(val, "practica")}
-                                    />
+                                    {
+                                        turno.id ?
+                                            <Input className={'u-1/1'} defaultValue={turno.nombrePractica} isReadOnly={true}/>
+                                        :
+                                            <Datalist
+                                                className={'u-1/1'}
+                                                list={ turno.profesional.practicas.map((el) => { return ({ ...el.practica, value: `${el.practica.nombre} (${minutesToTime(el.duracion)})` }) }) } 
+                                                defaultOption={ { value: turno.practicaText } } 
+                                                setter={(val) => handleDatalist(val, "practica")}
+                                            />
+                                    }
                                 </div>
                             </div>
                         }
                         <div className='c-nuevo_turno__item'>
                             <div className='u-flex-column-center-start'>
                                 <span>Paciente</span>
-                                <Datalist
-                                    className={'u-1/1'}
-                                    list={ turno.pacienteList } 
-                                    defaultOption={ { value: turno.pacienteText } } 
-                                    setter={(val) => handleDatalist(val, "paciente")}
-                                />
+                                {
+                                    turno.id ?
+                                        <Input className={'u-1/1'} defaultValue={turno.nombrePaciente} isReadOnly={true}/>
+                                    :
+                                        <Datalist
+                                            className={'u-1/1'}
+                                            list={ turno.pacienteList } 
+                                            defaultOption={ { value: turno.pacienteText } } 
+                                            setter={(val) => handleDatalist(val, "paciente")}
+                                        />
+                                }
                             </div>
                         </div>
                         {
-                            turno.paciente && turno.paciente.coberturas.length > 0 ?
+                            !turno.id && turno.paciente && turno.paciente.coberturas.length > 0 ?
                                 <div className='c-nuevo_turno__item'>
                                     <div className='u-flex-column-center-start'>
                                         <span>Obra Social</span>
@@ -324,7 +417,11 @@ const NuevoTurno = () => {
                                             <p className='u-color--red'>{error.mensaje}</p>
                                         </div>
                                     }
-                                    <Button text={'Dar turno'} clickHandler={crearTurno}/>
+                                    {
+                                        turno.id &&
+                                        <Button text={'Cancelar turno'} clickHandler={cancelarTurno}/>
+                                    }
+                                    <Button text={turno.id ? 'Cambiar turno' : 'Dar turno'} clickHandler={turno.id ? editarTurno : crearTurno}/>
                                 </div>
                         }
                         {/*<div className='c-nuevo_turno__item c-nuevo_turno__item--right'>

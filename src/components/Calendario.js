@@ -46,6 +46,15 @@ const getWeekDays = (fecha) => {
     return days
 }
 
+const primeraLetraMayus = (string) => {
+    let result = ''
+
+    for(let palabra of string.split(' '))
+        result += `${palabra.slice(0,1).toUpperCase()}${palabra.slice(1)} `
+
+    return result.trim()
+}
+
 
 const Calendario = () => {
     const [dias, setDias] = useState(null)
@@ -54,13 +63,18 @@ const Calendario = () => {
     const { date, mesesEspañol, turno, setTurno, openTurno, setOpenTurno, filtros, setFiltros } = useTurnoContext()
 
     const handleTurno = (day, interval) => {
-        console.log(day, interval);
         setTurno((prev) => {
             return(
                 {
                     ...prev,
                     fecha: day.fecha,
-                    hora: interval.hora
+                    hora: interval.hora,
+                    id: interval.id,
+                    nombrePaciente: primeraLetraMayus(interval.nombre),
+                    nombreProfesional: primeraLetraMayus(interval.doctor),
+                    nombrePractica:  `${interval.duracion}' - ${primeraLetraMayus(interval.practica)}`,
+                    nota: interval.nota,
+                    tipo: interval.tipo,
                 }
             )
         })
@@ -213,8 +227,8 @@ const Calendario = () => {
                                                                     {interval.text.slice(0, 5)} 
                                                                 </div>
                                                                 <div className="c-daily_calendar__data_cell">
-                                                                    <p>{interval.nombre}</p>
-                                                                    <p>{interval.duracion}' - {interval.practica}</p>
+                                                                    <p>{primeraLetraMayus(interval.nombre)}</p>
+                                                                    <p>{interval.duracion}' - {primeraLetraMayus(interval.practica)}</p>
                                                                 </div> 
                                                             </div>
                                                         )

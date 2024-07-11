@@ -16,12 +16,12 @@ import { useTurnoContext } from '@/contexts/turno'
 
 
 const estados = [
-    'reservado',
-    'esperando',
-    'en consulta',
-    'atendido',
-    'cancelado',
-    'ausente',
+    'Reservado',
+    'Esperando',
+    'En Consulta',
+    'Atendido',
+    'Cancelado',
+    'Ausente',
 ]
 
 const Turno = ({ data = null }) => {
@@ -30,7 +30,7 @@ const Turno = ({ data = null }) => {
     const [currentTime, setCurrentTime] = useState(new Date());
     const botonRef = useRef(null);
     const desplegableRef = useRef(null);
-    const { /*turno, setTurno,*/ setOpenTurno } = useTurnoContext()
+    const { date, turno, setTurno, setOpenTurno } = useTurnoContext()
 
     const primeraLetraMayus = (string) => {
         let result = ''
@@ -79,6 +79,46 @@ const Turno = ({ data = null }) => {
         }
     }
 
+    const editarEstado = ( nuevoEstado ) => {
+        const editar = async (nuevoEstado) => {
+            try {
+                const response = await fetch(`${ process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL}/turnos/${data.id}`,
+                    {
+                        method: "PUT",
+                        headers: {
+                            Accept: "application/json",
+                            "Content-Type": "application/json",
+                            /*authorization: "Bearer " + user.token,*/
+                        },
+                        body: JSON.stringify({ estado: nuevoEstado })
+                    }
+                )
+                await response.json()
+                window.location.reload()
+            } catch (error) { }
+        }
+        editar( nuevoEstado )
+    }
+
+    const handleModificarTurno = () => {
+        setTurno((prev) => {
+            return(
+                {
+                    ...prev,
+                    fecha: date,
+                    hora: data.horario,
+                    id: data.id,
+                    nombrePaciente: primeraLetraMayus(data.nombre),
+                    nombreProfesional: primeraLetraMayus(data.doctor),
+                    nombrePractica:  `${data.duracion}' - ${primeraLetraMayus(data.practica)}`,
+                    nota: data.nota,
+                    tipo: data.tipo,
+                }
+            )
+        })
+        setOpenTurno(true)
+    }
+
     useEffect(() => {
 
         if (desplegable && botonRef.current && desplegableRef.current) 
@@ -125,10 +165,10 @@ const Turno = ({ data = null }) => {
                         {
                             data.nota &&
                             <Tooltip className={'u-flex-center-center'} text={data.nota}>
-                                <MdInsertComment className='u-cursor'/>
+                                <MdInsertComment onClick={ handleModificarTurno } className='u-cursor'/>
                             </Tooltip>
                         }
-                        <span onClick={ null }>{data.horario}</span>
+                        <span onClick={ handleModificarTurno }>{data.horario}</span>
                     </div>
                     <div className='c-turno__div c-turno__informacion--column'>
                         <span>{haceTanto(data.ultimaModificacion)}</span>
@@ -176,7 +216,7 @@ const Turno = ({ data = null }) => {
                     estados.map( (ele, index) => {
 
                         return(
-                            <div className='c-turno__option' key={index}>
+                            <div className='c-turno__option' key={index} onClick={ () => editarEstado(ele) }>
                                 {ele.slice(0, 1).toUpperCase()}{ele.slice(1)}
                             </div>
                         )
