@@ -237,6 +237,7 @@ const NuevoTurno = () => {
                         value: true,
                         mensaje: json.message ?? 'Ocurrio un erro al crear el turno.'
                     })
+                    setAccion({ value: false, text: '', accion: null })
                 }
 
             } catch (error) {
@@ -245,6 +246,7 @@ const NuevoTurno = () => {
                     mensaje: 'Ocurrio un error, vuelva a intentar luego.'
                 })
                 setLoading(false)
+                setAccion({ value: false, text: '', accion: null })
             }
         }
         editar()
@@ -266,7 +268,7 @@ const NuevoTurno = () => {
                 )
                 await response.json()
                 if(window) window.location.reload()
-            } catch (error) { }
+            } catch (error) { setAccion({ value: false, text: '', accion: null }) }
         }
         cancelar( )
     }
