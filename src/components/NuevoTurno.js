@@ -98,7 +98,13 @@ const NuevoTurno = () => {
             turnoParaEnviar.practica_id = turno.practica ? turno.practica.id : null
             turnoParaEnviar.duracion = turno.practica ? timeToMinutes(turno.practica.duracion_moda) : null
         }
-        turnoParaEnviar.fecha_hora = turno.fecha && turno.hora ? new Date(turno.fecha.getFullYear(), turno.fecha.getMonth(), turno.fecha.getDate(), turno.hora.split(':')[0], turno.hora.split(':')[1]) : null
+        turnoParaEnviar.fecha_hora = null
+        if(turno.fecha && turno.hora)
+        {
+            let aux = new Date(turno.fecha.getFullYear(), turno.fecha.getMonth(), turno.fecha.getDate(), turno.hora.split(':')[0], turno.hora.split(':')[1])
+            aux.setHours(fecha.getHours() - 3)
+            turnoParaEnviar.fecha_hora = aux.toISOString()
+        }
         turnoParaEnviar.nota = turno.nota ? turno.nota : null
         turnoParaEnviar.tipo = turno.tipo ? turno.tipo : 'turno'
 
@@ -206,7 +212,7 @@ const NuevoTurno = () => {
                     setLoading(false)
                     return
                 }
-    
+                
                 const response = await fetch(`${ process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL}/turnos/${turno.id}`,
                     {
                         method: "PUT",
@@ -446,7 +452,7 @@ const NuevoTurno = () => {
                         {
                             loading ?
                                 <div className='c-nuevo_turno__item c-nuevo_turno__end c-nuevo_turno__item--right'>
-                                    <Loader text='Creando...'/>
+                                    <Loader text={turno.id ? 'Editando...' : 'Creando...'} />
                                 </div>
                             :
                                 <div className='c-nuevo_turno__item c-nuevo_turno__end c-nuevo_turno__item--right u-flex-column-center-end'>
