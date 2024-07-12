@@ -102,7 +102,6 @@ const NuevoTurno = () => {
         if(turno.fecha && turno.hora)
         {
             let aux = new Date(turno.fecha.getFullYear(), turno.fecha.getMonth(), turno.fecha.getDate(), turno.hora.split(':')[0], turno.hora.split(':')[1])
-            aux.setHours(turno.fecha.getHours() - 3)
             turnoParaEnviar.fecha_hora = aux.toISOString()
         }
         turnoParaEnviar.nota = turno.nota ? turno.nota : null
