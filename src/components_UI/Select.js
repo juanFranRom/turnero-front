@@ -146,19 +146,6 @@ const Select = ({ className, options = [], placeholder = null, defaultOption = n
         }
     }, [selectRef.current, set_open])
 
-    useEffect(() => {
-        if(open)
-        {
-            const rect = selectRef.current.getBoundingClientRect()
-            setStyle(
-                {
-                    width: `${selectRef.current.offsetWidth}px`,
-                    top: `${rect.bottom + 2}px`,
-                    left:  `${rect.left}px`,
-                }
-            )
-        }
-    }, [open])
 
     useEffect(() => {
         let aux = ''

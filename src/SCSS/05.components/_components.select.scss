@@ -42,9 +42,10 @@
 .c-select__dropdown{
     max-height: 300px;
     white-space: nowrap;
-    position: fixed;
-    top: 120%;
+    position: absolute;
+    top: 110%;
     left: 0;
+    right: 0;
     background-color: white;
     border-radius: 8px;
     border: 2px solid $global-secondary-color;

@@ -147,7 +147,6 @@ const NuevoPaciente = ({ id = null, toClose = false }) => {
             objectToSend.contactos = objectToSend.contactos.concat(objectToSend.telefonos.map(el => { return({ tipo: 'telefono', valor: el }) }))
             objectToSend.contactos = objectToSend.contactos.concat(objectToSend.emails.map(el => { return({ tipo: 'email', valor: el }) }))
 
-            console.log(objectToSend);
             const response = await fetch(`${process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL }/pacientes`,
               {
                 method: "POST",
@@ -161,7 +160,10 @@ const NuevoPaciente = ({ id = null, toClose = false }) => {
             );
             const json = await response.json();
             if(json.status === 'SUCCESS')
+            {
+                setOpenPaciente(false)
                 router.push("/paciente");
+            }
             else
             {
                 setError({
