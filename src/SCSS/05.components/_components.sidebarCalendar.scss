@@ -9,6 +9,10 @@
     &--open{
         left: 0;
     }
+
+    @media (max-width: 763px) {
+        width: 100vw;
+    }
 }
 
 .c-sidebarCalendar__item{

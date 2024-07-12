@@ -21,12 +21,12 @@ import { useTurnoContext } from '@/contexts/turno'
 import { usePacienteContext } from '@/contexts/paciente'
 
 const Header = ( ) => {
+    const [open, setOpen] = useState(false)
     const [menuTurno, setMenuTurno] = useState(false)
     const [coordenadas, setCoordenadas] = useState({
         x: null,
         y: null
     })
-    const { setOpen } = useSideBarContext()
     const { logOut } = useUserContext()
     const { setOpenTurno, setOpenCalendar, openCalendar } = useTurnoContext()
     const { setOpenPaciente } = usePacienteContext()
@@ -58,18 +58,20 @@ const Header = ( ) => {
                         setMenuTurno(prev => !prev)
                     }}
                 />
-                <Link className='c-header__link' href={'/'}>
-                    <span>Inicio</span>
-                </Link>
-                <Link className='c-header__link' href={'/calendario'}>
-                    <span>Calendario</span>
-                </Link>
-                <Link className='c-header__link' href={'/paciente'}>
-                    <span>Pacientes</span>
-                </Link>
-                <Link className='c-header__link' href={'/profesional'}>
-                    <span>Profesionales</span>
-                </Link>
+                <div className={`c-header__links ${open ? 'c-header__links--open' : ''}`}>
+                    <Link className='c-header__link' href={'/'}>
+                        <span>Inicio</span>
+                    </Link>
+                    <Link className='c-header__link' href={'/calendario'}>
+                        <span>Calendario</span>
+                    </Link>
+                    <Link className='c-header__link' href={'/paciente'}>
+                        <span>Pacientes</span>
+                    </Link>
+                    <Link className='c-header__link' href={'/profesional'}>
+                        <span>Profesionales</span>
+                    </Link>
+                </div>
                 {
                     menuTurno &&
                     <ContextMenu x={coordenadas.x} y={coordenadas.y} setContextMenu={setMenuTurno}>

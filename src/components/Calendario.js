@@ -63,21 +63,32 @@ const Calendario = () => {
     const { date, mesesEspañol, turno, setTurno, openTurno, setOpenTurno, filtros, setFiltros } = useTurnoContext()
 
     const handleTurno = (day, interval) => {
-        setTurno((prev) => {
-            return(
-                {
-                    ...prev,
-                    fecha: day.fecha,
-                    hora: interval.hora,
-                    id: interval.id,
-                    nombrePaciente: primeraLetraMayus(interval.nombre),
-                    nombreProfesional: primeraLetraMayus(interval.doctor),
-                    nombrePractica:  `${interval.duracion}' - ${primeraLetraMayus(interval.practica)}`,
-                    nota: interval.nota,
-                    tipo: interval.tipo,
-                }
-            )
-        })
+        if(interval.tipo === 'disponibilidad')
+            setTurno((prev) => {
+                return(
+                    {
+                        ...prev,
+                        fecha: day.fecha,
+                        hora: interval.hora,
+                    }
+                )
+            })
+        else
+            setTurno((prev) => {
+                return(
+                    {
+                        ...prev,
+                        fecha: day.fecha,
+                        hora: interval.hora,
+                        id: interval.id,
+                        nombrePaciente: primeraLetraMayus(interval.nombre),
+                        nombreProfesional: primeraLetraMayus(interval.doctor),
+                        nombrePractica:  `${interval.duracion}' - ${primeraLetraMayus(interval.practica)}`,
+                        nota: interval.nota,
+                        tipo: interval.tipo,
+                    }
+                )
+            })
         setOpenTurno(true)
     }
 
