@@ -49,6 +49,24 @@ export const TurnoContextProvider = ({ children }) => {
     const mes = lenguaje === 'español' ? mesesEspañol[date.getMonth()] : mesesIngles[date.getMonth()]
     const fechaFormateada = diaSemana + ' ' + date.getDate() + ' - ' + mes + ' ' + date.getFullYear()
 
+    const reiniciarTurno = () => {
+        setTurno({
+            pacienteText: '',
+            pacienteList: [],
+            paciente: null,
+            profesionalText: '',
+            profesionalList: [],
+            profesional: null,
+            practicasText: '',
+            practicaText: '',
+            practica: null,
+            coberturaText: '',
+            cobertura: null,
+            fecha: null,
+            hora: null
+        })
+    }
+
 
     const buscarTurnos = async ( dia, profesional = null ) => {
         try {
@@ -111,6 +129,7 @@ export const TurnoContextProvider = ({ children }) => {
             setOpenCalendar,
             setDate,
             setOpenTurno,
+            reiniciarTurno,
         }}>
             { children }
         </TurnoContext.Provider>

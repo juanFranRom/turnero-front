@@ -84,15 +84,15 @@ const SidebarCalendar = ({  }) => {
   }
 
   const limpiarDatalist = (key) => {
-      setTurno({
-        ...turno,
-        [`${key}Text`]: '',
-        [`${key}`]: null,
-      })
-      setFiltros({
-        ...filtros,
-        [`${key}`]: null,
-      })
+    setTurno({
+      ...turno,
+      [`${key}Text`]: '',
+      [`${key}`]: null,
+    })
+    setFiltros({
+      ...filtros,
+      [`${key}`]: null,
+    })
   }
 
   useEffect(() => {

@@ -60,19 +60,22 @@ const Calendario = () => {
     const [dias, setDias] = useState(null)
     const [visibleDays, setVisibleDays] = useState(null)
     const calendarRef = useRef(null)
-    const { date, mesesEspañol, turno, setTurno, openTurno, setOpenTurno, filtros, setFiltros } = useTurnoContext()
+    const { date, mesesEspañol, setTurno, openTurno, setOpenTurno, filtros, reiniciarTurno } = useTurnoContext()
 
     const handleTurno = (day, interval) => {
         if(interval.tipo === 'disponibilidad')
+        {
             setTurno((prev) => {
                 return(
                     {
                         ...prev,
                         fecha: day.fecha,
                         hora: interval.hora,
+                        id: null,
                     }
                 )
             })
+        }
         else
             setTurno((prev) => {
                 return(
@@ -83,7 +86,7 @@ const Calendario = () => {
                         id: interval.id,
                         nombrePaciente: primeraLetraMayus(interval.nombre),
                         nombreProfesional: primeraLetraMayus(interval.doctor),
-                        nombrePractica:  `${interval.duracion}' - ${primeraLetraMayus(interval.practica)}`,
+                        nombrePractica: `${interval.duracion}' - ${primeraLetraMayus(interval.practica)}`,
                         nota: interval.nota,
                         tipo: interval.tipo,
                     }

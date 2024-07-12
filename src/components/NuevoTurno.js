@@ -325,7 +325,6 @@ const NuevoTurno = () => {
         }
     }, [filtros])
 
-    console.log(accion);
 
     return (
         <>

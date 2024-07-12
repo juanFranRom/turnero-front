@@ -28,7 +28,7 @@ const Header = ( ) => {
         y: null
     })
     const { logOut } = useUserContext()
-    const { setOpenTurno, setOpenCalendar, openCalendar } = useTurnoContext()
+    const { setOpenTurno, setOpenCalendar, openCalendar, reiniciarTurno } = useTurnoContext()
     const { setOpenPaciente } = usePacienteContext()
     const pathname = usePathname()
 
@@ -75,7 +75,7 @@ const Header = ( ) => {
                 {
                     menuTurno &&
                     <ContextMenu x={coordenadas.x} y={coordenadas.y} setContextMenu={setMenuTurno}>
-                        <div className="c-context_menu--item" onClick={() => { setOpenTurno(prev => !prev); setMenuTurno(prev => !prev); }}>
+                        <div className="c-context_menu--item" onClick={() => { setOpenTurno(prev => !prev); reiniciarTurno(); setMenuTurno(prev => !prev); }}>
                             <span className="u-6/7">Nuevo Turno</span>
                         </div>
                         <div className="c-context_menu--item" onClick={() => { setOpenPaciente(prev => !prev); setMenuTurno(prev => !prev); }}>
