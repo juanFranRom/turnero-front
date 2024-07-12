@@ -91,9 +91,6 @@ const NuevoPaciente = ({ id = null, toClose = false }) => {
             return 'El campo "Apellidos" es obligatorio.'
         }
 
-        if (!object.dni) {
-            return 'El campo "DNI" es obligatorio.'
-        }
         if (!object.genero) {
             return 'El campo "Genero" es obligatorio.'
         }
