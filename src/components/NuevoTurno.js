@@ -16,6 +16,7 @@ import { useTurnoContext } from '@/contexts/turno'
 // Icons
 import { IoMdClose } from "react-icons/io"
 import Textarea from '@/components_UI/Textarea'
+import PopUp from '@/components_UI/PopUp'
 
 
 const NuevoTurno = () => {
@@ -24,6 +25,11 @@ const NuevoTurno = () => {
         mensaje: ''
     })
     const [loading, setLoading] = useState(false)
+    const [accion, setAccion] = useState({
+        value: false,
+        mensaje: '',
+        accion: null
+    })
     const { turno, setTurno, openTurno, setOpenTurno, filtros } = useTurnoContext()
     const router = useRouter()
 
@@ -300,21 +306,37 @@ const NuevoTurno = () => {
     }, [turno.profesionalText])
 
     useEffect(() => {
-        if(typeof filtros.profesional === 'object')
+        if(typeof filtros.profesional === 'object' && filtros.profesional !== null)
+        {
             setTurno({
                 ...turno,
                 profesional: filtros.profesional,
                 profesionalText: filtros.profesional.value,
             })
+        }
     }, [filtros])
 
-    console.log(turno);
+    console.log(accion);
 
     return (
         <>
             {
                 openTurno &&
                 <Overlay>
+                    {
+                        accion.value &&
+                        <Overlay>
+                            <PopUp centered={true}>
+                                <div className='u-1/1 u-flex-column-start-center u-p3--vertical'>
+                                    <p className='u-text--1 u-m2--bottom'>{accion.text}</p>
+                                    <div className='u-1/1 u-flex-end-center'>
+                                        <Button text={'Aceptar'} clickHandler={accion.accion}/>
+                                        <Button text={'Cancelar'} clickHandler={() => setAccion({ value: false, text: '', accion: null })}/>
+                                    </div>
+                                </div>
+                            </PopUp>
+                        </Overlay>
+                    }
                     <div className='c-nuevo_turno'>
                         <IoMdClose 
                             className='u-cursor--pointer u-text--1 u-fixed--top_right' 
@@ -436,9 +458,17 @@ const NuevoTurno = () => {
                                     }
                                     {
                                         turno.id &&
-                                        <Button text={'Cancelar turno'} clickHandler={cancelarTurno}/>
+                                        <Button text={'Cancelar turno'} clickHandler={() => setAccion({ value: true, text: '¿Estas seguro que deseas cancelar el turno?', accion: cancelarTurno})}/>
                                     }
-                                    <Button text={turno.id ? 'Cambiar turno' : 'Dar turno'} clickHandler={turno.id ? editarTurno : crearTurno}/>
+                                    <Button 
+                                        text={turno.id ? 'Cambiar turno' : 'Dar turno'} 
+                                        clickHandler={
+                                            turno.id ? 
+                                                () => setAccion({ value: true, text: '¿Estas seguro que deseas editar el turno?', accion: editarTurno})
+                                            : 
+                                                crearTurno
+                                        }
+                                    />
                                 </div>
                         }
                         {/*<div className='c-nuevo_turno__item c-nuevo_turno__item--right'>
