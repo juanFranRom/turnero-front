@@ -339,7 +339,15 @@ const NuevoTurno = () => {
                                 <div className='u-1/1 u-flex-column-start-center u-p3--vertical'>
                                     <p className='u-text--1 u-m2--bottom'>{accion.text}</p>
                                     <div className='u-1/1 u-flex-end-center'>
-                                        <Button text={'Aceptar'} clickHandler={accion.accion}/>
+                                        <Button 
+                                            text={'Aceptar'} 
+                                            clickHandler={
+                                                () => {
+                                                    setAccion({ value: false, text: '', accion: null })
+                                                    accion.accion()
+                                                }
+                                            }
+                                        />
                                         <Button text={'Cancelar'} clickHandler={() => setAccion({ value: false, text: '', accion: null })}/>
                                     </div>
                                 </div>
