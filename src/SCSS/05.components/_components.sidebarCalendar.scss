@@ -5,6 +5,7 @@
     left: -320px;
     background-color: white;
     transition: all ease-in-out 0.5s;
+    z-index: 2;
 
     &--open{
         left: 0;
@@ -12,6 +13,11 @@
 
     @media (max-width: 763px) {
         width: 100vw;
+        left: -100vw;
+        
+        &--open{
+            left: 0;
+        }
     }
 }
 

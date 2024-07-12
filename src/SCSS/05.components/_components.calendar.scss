@@ -3,6 +3,10 @@
     @include font-size(12px);
     background-color: white;
     color: $global-primary-color;
+
+    @media (max-width: 763px) {
+        width: 100vw;
+    }
 }
 
 .c-calendar__header{
