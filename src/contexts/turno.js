@@ -24,8 +24,8 @@ export const TurnoContextProvider = ({ children }) => {
         fecha: null,
         hora: null
     })
-    const [filtros, setFiltros] = useState(typeof window !== 'undefined' && window.sessionStorage.getItem('filtros') ?
-            JSON.parse(window.sessionStorage.getItem('filtros'))
+    const [filtros, setFiltros] = useState(typeof window !== 'undefined' && window.localStorage.getItem('filtros') ?
+            JSON.parse(window.localStorage.getItem('filtros'))
         :
             {
                 profesional: null,
@@ -36,8 +36,8 @@ export const TurnoContextProvider = ({ children }) => {
     const [loadingTurnos, setLoadingTurnos] = useState(true)
     const [turnos, setTurnos] = useState([])
     const [openCalendar, setOpenCalendar] = useState(false)
-    const [date, setDate] = useState(typeof window !== 'undefined' && window.sessionStorage.getItem('date') ?
-        new Date(window.sessionStorage.getItem('date'))
+    const [date, setDate] = useState(typeof window !== 'undefined' && window.localStorage.getItem('date') ?
+        new Date(window.localStorage.getItem('date'))
     :
         new Date()
     )
@@ -103,8 +103,8 @@ export const TurnoContextProvider = ({ children }) => {
     useEffect(() => {
         if(window) 
         {
-            window.sessionStorage.setItem('date', date)
-            window.sessionStorage.setItem('filtros', JSON.stringify(filtros))
+            window.localStorage.setItem('date', date)
+            window.localStorage.setItem('filtros', JSON.stringify(filtros))
         }
     }, [date, filtros])
 
