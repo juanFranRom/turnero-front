@@ -24,7 +24,7 @@ const NuevoTurno = () => {
         mensaje: ''
     })
     const [loading, setLoading] = useState(false)
-    const { turno, setTurno, openTurno, setOpenTurno } = useTurnoContext()
+    const { turno, setTurno, openTurno, setOpenTurno, filtros } = useTurnoContext()
     const router = useRouter()
 
     const handleDatalist = (val, key) => {
@@ -36,12 +36,10 @@ const NuevoTurno = () => {
         else
             setTurno({
                 ...turno,
-                [`${key}Text`]: val.value,
+                [`${key}Text`]: val ? val.value : '',
                 [`${key}`]: val,
             })
     }
-
-    console.log(turno);
     
     const minutesToTime = (duracion) => {
         let hours = Math.floor( duracion/60);
@@ -301,7 +299,17 @@ const NuevoTurno = () => {
             )
     }, [turno.profesionalText])
 
+    useEffect(() => {
+        if(typeof filtros.profesional === 'object')
+            setTurno({
+                ...turno,
+                profesional: filtros.profesional,
+                profesionalText: filtros.profesional.value,
+            })
+    }, [filtros])
+
     console.log(turno);
+
     return (
         <>
             {
@@ -322,12 +330,15 @@ const NuevoTurno = () => {
                                     turno.id ?
                                         <Input className={'u-1/1'} defaultValue={turno.nombreProfesional} isReadOnly={true}/>
                                     :
-                                        <Datalist
-                                            className={'u-1/1'}
-                                            list={ turno.profesionalList } 
-                                            defaultOption={ typeof turno.profesionalText === 'string' ? { value: turno.profesionalText } : turno.profesionalText} 
-                                            setter={(val) => handleDatalist(val, "profesional")}
-                                        />
+                                        <div className='u-1/1 u-flex-center-center'>
+                                            <Datalist
+                                                className={'u-1/1'}
+                                                list={ turno.profesionalList } 
+                                                defaultOption={ typeof turno.profesionalText === 'string' ? { value: turno.profesionalText } : turno.profesionalText} 
+                                                setter={(val) => handleDatalist(val, "profesional")}
+                                            />
+                                            <IoMdClose className='u-color--red u-cursor--pointer' onClick={() => handleDatalist(null, "profesional")}/>
+                                        </div>
                                 }
                             </div>
                         </div>
@@ -340,12 +351,15 @@ const NuevoTurno = () => {
                                         turno.id ?
                                             <Input className={'u-1/1'} defaultValue={turno.nombrePractica} isReadOnly={true}/>
                                         :
-                                            <Datalist
-                                                className={'u-1/1'}
-                                                list={ turno.profesional.practicas.map((el) => { return ({ ...el.practica, value: `${el.practica.nombre} (${minutesToTime(el.duracion)})` }) }) } 
-                                                defaultOption={ { value: turno.practicaText } } 
-                                                setter={(val) => handleDatalist(val, "practica")}
-                                            />
+                                            <div className='u-1/1 u-flex-center-center'>
+                                                <Datalist
+                                                    className={'u-1/1'}
+                                                    list={ turno.profesional.practicas.map((el) => { return ({ ...el.practica, value: `${el.practica.nombre} (${minutesToTime(el.duracion)})` }) }) } 
+                                                    defaultOption={ { value: turno.practicaText } } 
+                                                    setter={(val) => handleDatalist(val, "practica")}
+                                                />
+                                                <IoMdClose className='u-color--red u-cursor--pointer' onClick={() => handleDatalist(null, "practica")}/>
+                                            </div>
                                     }
                                 </div>
                             </div>
@@ -357,12 +371,15 @@ const NuevoTurno = () => {
                                     turno.id ?
                                         <Input className={'u-1/1'} defaultValue={turno.nombrePaciente} isReadOnly={true}/>
                                     :
-                                        <Datalist
-                                            className={'u-1/1'}
-                                            list={ turno.pacienteList } 
-                                            defaultOption={ { value: turno.pacienteText } } 
-                                            setter={(val) => handleDatalist(val, "paciente")}
-                                        />
+                                        <div className='u-1/1 u-flex-center-center'>
+                                            <Datalist
+                                                className={'u-1/1'}
+                                                list={ turno.pacienteList } 
+                                                defaultOption={ { value: turno.pacienteText } } 
+                                                setter={(val) => handleDatalist(val, "paciente")}
+                                            />
+                                            <IoMdClose className='u-color--red u-cursor--pointer' onClick={() => handleDatalist(null, "paciente")}/>
+                                        </div>
                                 }
                             </div>
                         </div>

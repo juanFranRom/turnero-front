@@ -110,7 +110,7 @@ const SidebarCalendar = ({  }) => {
         <div className={'u-1/1 u-flex-center-center'}>
           <Datalist
             list={ turno.profesionalList } 
-            defaultOption={ typeof turno.profesionalText === 'string' ? { value: turno.profesionalText } : turno.profesionalText} 
+            defaultOption={ typeof filtros.profesional === 'string' ? { value: filtros.profesional } : filtros.profesional} 
             setter={(val) => handleDatalist(val, "profesional")}
           />
           <IoMdClose className='u-color--red u-cursor--pointer' onClick={() => limpiarDatalist("profesional")}/>

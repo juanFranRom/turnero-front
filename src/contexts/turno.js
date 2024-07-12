@@ -24,15 +24,23 @@ export const TurnoContextProvider = ({ children }) => {
         fecha: null,
         hora: null
     })
-    const [filtros, setFiltros] = useState({
-        profesional: null,
-        practica: null
-    })
+    const [filtros, setFiltros] = useState(typeof window !== 'undefined' && window.localStorage.getItem('filtros') ?
+            JSON.parse(window.localStorage.getItem('filtros'))
+        :
+            {
+                profesional: null,
+                practica: null
+            }
+    )
     const [openTurno, setOpenTurno] = useState(false)
     const [loadingTurnos, setLoadingTurnos] = useState(true)
     const [turnos, setTurnos] = useState([])
     const [openCalendar, setOpenCalendar] = useState(false)
-    const [date, setDate] = useState(new Date())
+    const [date, setDate] = useState(typeof window !== 'undefined' && window.localStorage.getItem('date') ?
+        new Date(window.localStorage.getItem('date'))
+    :
+        new Date()
+    )
     const pathname = usePathname()
     const diaSemana = lenguaje === 'español' ? 
             ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'][date.getDay()] 
