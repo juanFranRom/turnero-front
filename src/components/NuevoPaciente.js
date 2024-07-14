@@ -310,7 +310,7 @@ const NuevoPaciente = ({ id = null, toClose = false }) => {
                     <>
                         {
                             toClose &&
-                            <IoMdClose className='u-cursor--pointer u-text--1 u-fixed--top_right' onClick={() => setOpenPaciente( prev => !prev )}/>
+                            <IoMdClose className='u-cursor--pointer u-text--1 u-absolute--top_right' onClick={() => setOpenPaciente( prev => !prev )}/>
                         }
                         <div className='c-nuevo_paciente__item'>
                             <div>

@@ -122,6 +122,7 @@ const Input = ({ type, className, placeholder = false, defaultValue = undefined,
                                     e.target.showPicker();
                             }}
                             onChange={(e) => {
+                                e.target.value
                                 setValue({
                                     value: type === 'date' ? new Date(e.target.value.split('-')[0], e.target.value.split('-')[1] - 1, e.target.value.split('-')[2].split('T')[0]) : e.target.value,
                                     focus: value.value && (typeof value.value !== "number" && type !== 'date') && value.value?.trim() === "" ? false : true,

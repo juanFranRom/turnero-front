@@ -14,6 +14,8 @@
     @media (max-width: 763px) {
         width: 100vw;
         left: -100vw;
+        bottom: unset;
+        background-color: #f0f0f0;
         
         &--open{
             left: 0;

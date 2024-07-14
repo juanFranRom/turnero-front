@@ -6,6 +6,7 @@
 
     @media (max-width: 763px) {
         width: 100vw;
+        background-color: #f0f0f0;
     }
 }
 
@@ -49,6 +50,10 @@
 
     &:hover{
         background-color: #ccc;
+    }
+
+    @media (max-width: 763px) {
+        background-color: #f0f0f0;
     }
 }
 

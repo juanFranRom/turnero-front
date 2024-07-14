@@ -60,10 +60,10 @@ const Header = ( ) => {
                 />
                 <div className={`c-header__links ${open ? 'c-header__links--open' : ''}`}>
                     <Link className='c-header__link' href={'/'} onClick={() => setOpen((prevState) => !prevState)}>
-                        <span>Inicio</span>
-                    </Link>
-                    <Link className='c-header__link' href={'/calendario'} onClick={() => setOpen((prevState) => !prevState)}>
                         <span>Calendario</span>
+                    </Link>
+                    <Link className='c-header__link' href={'/agenda'} onClick={() => setOpen((prevState) => !prevState)}>
+                        <span>Agenda</span>
                     </Link>
                     <Link className='c-header__link' href={'/paciente'} onClick={() => setOpen((prevState) => !prevState)}>
                         <span>Pacientes</span>

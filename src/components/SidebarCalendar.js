@@ -30,7 +30,7 @@ const SidebarCalendar = ({  }) => {
 
   const buscar = async ( ) => {
     try {
-      const response = await fetch(`${ process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL}/profesionales/search?searchValue=${turno.profesionalText}`,
+      const response = await fetch(`${ process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL}/profesionales`,
         {
           method: "GET",
           headers: {
@@ -50,12 +50,14 @@ const SidebarCalendar = ({  }) => {
                 const newProfessional = {
                   ...profesional,
                   clinica: clinica,
-                  value: `${profesional.apellido}, ${profesional.nombre} (${clinica.nombre})`
+                  value: `${profesional.apellido}, ${profesional.nombre} (${clinica})`
                 }
                 acc.push(newProfessional)
               })
               return acc
-            }, [])
+            }, []).sort((a, b) => {
+              return a.value.localeCompare(b.value);
+            })
           })
       } 
     } catch (error) {
@@ -96,8 +98,7 @@ const SidebarCalendar = ({  }) => {
   }
 
   useEffect(() => {
-    if(turno.profesionalText.length > 2)
-      buscar()
+    buscar()
   }, [turno.profesionalText])
 
   return (

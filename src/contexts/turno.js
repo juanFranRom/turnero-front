@@ -24,6 +24,16 @@ export const TurnoContextProvider = ({ children }) => {
         fecha: null,
         hora: null
     })
+    const [bloqueo, setBloqueo] = useState({
+        profesionalText: '',
+        profesionalList: [],
+        profesional: null,
+        fechaDesde: null,
+        horaDesde: null,
+        fechaHasta: null,
+        horaHasta: null,
+    })
+    const [cancelandoBloqueo, setCancelandoBloqueo] = useState(null)
     const [filtros, setFiltros] = useState(typeof window !== 'undefined' && window.localStorage.getItem('filtros') ?
             JSON.parse(window.localStorage.getItem('filtros'))
         :
@@ -33,6 +43,7 @@ export const TurnoContextProvider = ({ children }) => {
             }
     )
     const [openTurno, setOpenTurno] = useState(false)
+    const [openBloqueo, setOpenBloqueo] = useState(false)
     const [loadingTurnos, setLoadingTurnos] = useState(true)
     const [turnos, setTurnos] = useState([])
     const [openCalendar, setOpenCalendar] = useState(false)
@@ -71,7 +82,7 @@ export const TurnoContextProvider = ({ children }) => {
     const buscarTurnos = async ( dia, profesional = null ) => {
         try {
             setLoadingTurnos(true)
-            const response = await fetch(`${ process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL}/calendario/disponibilidad/dia?fecha=${dia.getFullYear()}-${dia.getMonth() + 1}-${dia.getDate()}${profesional ? `&profesionales=${profesional.id}` : ''}`,
+            const response = await fetch(`${ process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL}/calendario/disponibilidad/1?fecha=${dia.getFullYear()}-${dia.getMonth() + 1}-${dia.getDate()}${profesional ? `&profesionales=${profesional.id}` : ''}`,
                 {
                     method: "GET",
                     headers: {
@@ -123,6 +134,12 @@ export const TurnoContextProvider = ({ children }) => {
             turnos,
             turno,
             filtros,
+            bloqueo,
+            openBloqueo,
+            cancelandoBloqueo,
+            setCancelandoBloqueo,
+            setOpenBloqueo,
+            setBloqueo,
             setFiltros,
             setTurno,
             setLoadingTurnos,

@@ -324,7 +324,7 @@ const NuevoTurno = () => {
         }
     }, [filtros])
 
-
+    console.log(turno);
     return (
         <>
             {
@@ -354,7 +354,7 @@ const NuevoTurno = () => {
                     }
                     <div className='c-nuevo_turno'>
                         <IoMdClose 
-                            className='u-cursor--pointer u-text--1 u-fixed--top_right' 
+                            className='u-cursor--pointer u-text--1 u-absolute--top_right' 
                             onClick={() => {
                                 setOpenTurno( prev => !prev ) 
                             }}
@@ -391,7 +391,7 @@ const NuevoTurno = () => {
                                             <div className='u-1/1 u-flex-center-center'>
                                                 <Datalist
                                                     className={'u-1/1'}
-                                                    list={ turno.profesional.practicas.map((el) => { return ({ ...el.practica, value: `${el.practica.nombre} (${minutesToTime(el.duracion)})` }) }) } 
+                                                    list={ turno.profesional.practicas.map((el) => { return ({ ...el, value: `${el.nombre} (${minutesToTime(el.duracion)})` }) }) } 
                                                     defaultOption={ { value: turno.practicaText } } 
                                                     setter={(val) => handleDatalist(val, "practica")}
                                                 />

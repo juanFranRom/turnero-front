@@ -9,3 +9,9 @@
 .u-position--sticky{
     position: sticky !important;
 }
+
+.u-absolute--top_right{
+    position: absolute;
+    top: $global-spacing-unit;
+    right: $global-spacing-unit;
+}

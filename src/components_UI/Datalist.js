@@ -114,32 +114,6 @@ const Datalist = ({ className, list, setBlank = false, defaultOption = null, set
             document.removeEventListener('scroll', handleScroll, true)
         }
     }, [datalistRef.current, setDatalistVisibility])
-
-    useEffect(() => {
-        if(isDatalistVisible)
-        {
-            const rect = datalistRef.current.getBoundingClientRect()
-            const windowHeight = window.innerHeight || document.documentElement.clientHeight
-            
-            // Verificar si el elemento está dentro del área visible de la pantalla
-            const isVisible = rect.top < windowHeight && rect.bottom >= 0
-
-            if(isVisible)
-            {
-                setStyle(
-                    {
-                        width: `${datalistRef.current.offsetWidth}px`,
-                        top: `${rect.bottom + 2}px`,
-                        left:  `${rect.left}px`,
-                    }
-                )
-            }
-        }
-        else
-        {
-            setStyle(null)
-        }
-    }, [isDatalistVisible])
     
     useEffect(() => {
         if (auxRef) {
@@ -150,12 +124,12 @@ const Datalist = ({ className, list, setBlank = false, defaultOption = null, set
     
     useEffect(() => {
         // Filtrar opciones cuando el valor del input cambia
-        if(value !== '')
+        if(value.text === '')
             setFilteredOptions(list)
-        else
+        else if(value.text)
         {
             const filtered = list?.filter((option) =>
-              option?.value?.toLowerCase().includes(value?.toLowerCase())
+              option?.value.text?.toLowerCase().includes(value.text?.toLowerCase())
             )
             setFilteredOptions(filtered)
             if(autoSelect)
@@ -163,9 +137,15 @@ const Datalist = ({ className, list, setBlank = false, defaultOption = null, set
                 if(filtered && filtered.length === 1 && !hasAutoSelected)
                 {
                     if(setBlank)
-                        setValue('')
+                        setValue({
+                            text: '',
+                            object: ''
+                        })
                     else
-                        setValue(filtered[0].value)
+                        setValue({
+                            text: filtered[0].value,
+                            object: filtered[0]
+                        })
                     if(setter)
                         setter(filtered[0])
                     setDatalistVisibility(false)
@@ -181,15 +161,17 @@ const Datalist = ({ className, list, setBlank = false, defaultOption = null, set
         let aux = {}
 
         if(defaultOption)
-        {
             aux = {
                 text: defaultOption.value,
                 object: defaultOption
             }
-        }
-
-        if(aux !== value)
-            setValue(aux)
+        else
+            aux = {
+                text: '',
+                object: ''
+            }
+        
+        setValue(aux)
     }, [defaultOption])
 
     return (
@@ -220,7 +202,7 @@ const Datalist = ({ className, list, setBlank = false, defaultOption = null, set
                 onKeyDown={handleKeyDown}
             />
             {
-                list && list[0]?.value && isDatalistVisible && style &&
+                list && list[0]?.value && isDatalistVisible &&
                 <ul 
                     className="c-datalist__list"
                     ref={divRef}
@@ -228,16 +210,24 @@ const Datalist = ({ className, list, setBlank = false, defaultOption = null, set
                         style
                     }
                 >
-                    {           
-                        filteredOptions?.map((option, index) => (
+                    {        
+                        filteredOptions && filteredOptions.length > 0 ?   
+                            filteredOptions.map((option, index) => (
+                                <li 
+                                    className={`c-datalist__li ${highlightedIndex === index ? 'c-datalist__li--highlighted' : ''}`}
+                                    key={index} 
+                                    onClick={() => handleOptionClick(option)}
+                                >
+                                    {option.value}
+                                </li>
+                            ))
+                        :
                             <li 
-                                className={`c-datalist__li ${highlightedIndex === index ? 'c-datalist__li--highlighted' : ''}`}
-                                key={index} 
+                                className={`c-datalist__li`}
                                 onClick={() => handleOptionClick(option)}
                             >
-                                {option.value}
+                                No se encontraron datos.
                             </li>
-                        ))
                     }
                 </ul>
             }
