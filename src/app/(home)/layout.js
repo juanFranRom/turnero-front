@@ -11,6 +11,7 @@ import { IoMdClose } from "react-icons/io"
 import Header from "@/components/Header"
 import SidebarCalendar from "@/components/SidebarCalendar"
 import Page from "@/components/Page"
+import ProtectedPath from "@/components/ProtectedPath"
 import NuevoTurno from "@/components/NuevoTurno"
 import NuevoBloqueo from "@/components/NuevoBloqueo"
 import NuevoPaciente from "@/components/NuevoPaciente"
@@ -23,7 +24,7 @@ export default function RootLayout({ children }) {
   const { openPaciente } = usePacienteContext()
 
   return (
-    <>
+    <ProtectedPath>
       <Header/>
       { openTurno && <NuevoTurno/> }
       { openBloqueo && <NuevoBloqueo/> }
@@ -39,6 +40,6 @@ export default function RootLayout({ children }) {
       <Page>
         {children}
       </Page>
-    </>
+    </ProtectedPath>
   )
 }

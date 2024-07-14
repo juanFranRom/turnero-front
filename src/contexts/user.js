@@ -78,6 +78,7 @@ export const UserContextProvider = ({ children }) => {
                 console.log(json);
                 if(json.status === 'SUCCESS')
                 {
+                    debugger;
                     let userRef = {
                         ...user,
                         ...json.data
