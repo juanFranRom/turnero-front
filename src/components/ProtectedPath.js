@@ -34,7 +34,10 @@ const ProtectedPath = ({ permisos =  null, children }) => {
             // Si le falta alguno de los permisos lo mandamos al home segun el tipo
             if (permisos.filter(element => user['permisos'].includes(element)).length !== permisos.length)
             {
-                redirect('/')
+                if(user.permisos.includes('ver_turnos'))
+                    redirect('/')
+                else
+                    redirect('/agenda')
             }
         }
     }

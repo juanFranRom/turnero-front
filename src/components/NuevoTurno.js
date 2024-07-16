@@ -73,7 +73,7 @@ const NuevoTurno = () => {
                     headers: {
                         Accept: "application/json",
                         "Content-Type": "application/json",
-                        /*authorization: "Bearer " + user.token,*/
+                        authorization: "Bearer " + user.token,
                     },
                 }
             )
@@ -171,7 +171,7 @@ const NuevoTurno = () => {
                         headers: {
                             Accept: "application/json",
                             "Content-Type": "application/json",
-                            /*authorization: "Bearer " + user.token,*/
+                            authorization: "Bearer " + user.token,
                         },
                         body: JSON.stringify(turnoListo)
                     }
@@ -220,7 +220,7 @@ const NuevoTurno = () => {
                         headers: {
                             Accept: "application/json",
                             "Content-Type": "application/json",
-                            /*authorization: "Bearer " + user.token,*/
+                            authorization: "Bearer " + user.token,
                         },
                         body: JSON.stringify(turnoListo)
                     }
@@ -263,7 +263,7 @@ const NuevoTurno = () => {
                         headers: {
                             Accept: "application/json",
                             "Content-Type": "application/json",
-                            /*authorization: "Bearer " + user.token,*/
+                            authorization: "Bearer " + user.token,
                         },
                         body: JSON.stringify({ estado: 'Cancelado' })
                     }

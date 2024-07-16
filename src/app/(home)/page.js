@@ -3,11 +3,14 @@ import React from 'react'
 
 // Components
 import Calendario from '@/components/Calendario'
+import ProtectedPath from '@/components/ProtectedPath'
 
 
 const page = () => {
   return (
-    <Calendario/>
+    <ProtectedPath permisos={['ver_turnos']}>
+      <Calendario/>
+    </ProtectedPath>
   )
 }
 

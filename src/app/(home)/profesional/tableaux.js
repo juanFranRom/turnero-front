@@ -81,7 +81,7 @@ const TableAux = () => {
           headers: {
             Accept: "application/json",
             "Content-Type": "application/json",
-            //authorization: "Bearer " + user.token,
+            authorization: "Bearer "+ user.token,
           },
         }
       );
@@ -120,7 +120,7 @@ const TableAux = () => {
           headers: {
             Accept: "application/json",
             "Content-Type": "application/json",
-            //authorization: "Bearer " + user.token,
+            authorization: "Bearer "+ user.token,
           }
         }
       )

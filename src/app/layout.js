@@ -4,13 +4,15 @@ import { FocusProvider } from '@/contexts/navegacion'
 import { TurnoContextProvider } from "@/contexts/turno"
 import { PacienteContextProvider } from '@/contexts/paciente'
 import { ProfesionalContextProvider } from '@/contexts/profesional'
-
+import { WebSocketProvider } from '@/contexts/webSocket';
 // Fonts
 import { Open_Sans } from 'next/font/google'
 
 // SASS
 import './styles.scss'
 
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 export const metadata = {
   title: "Turnero Innova",
   description: "Turnero Innova",
@@ -33,7 +35,10 @@ export default function RootLayout({ children }) {
             <TurnoContextProvider>
               <PacienteContextProvider>
                 <ProfesionalContextProvider>
-                  {children}
+                  <WebSocketProvider>
+                    <ToastContainer />
+                      {children}
+                  </WebSocketProvider>
                 </ProfesionalContextProvider>
               </PacienteContextProvider>
             </TurnoContextProvider>
