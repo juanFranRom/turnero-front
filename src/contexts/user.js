@@ -22,7 +22,7 @@ export const UserContextProvider = ({ children }) => {
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
-                    //'authorization': user.token
+                    'authorization': "Bearer " + user.token
                 }
             }
         ).catch(()=>{
@@ -78,7 +78,6 @@ export const UserContextProvider = ({ children }) => {
                 console.log(json);
                 if(json.status === 'SUCCESS')
                 {
-                    debugger;
                     let userRef = {
                         ...user,
                         ...json.data

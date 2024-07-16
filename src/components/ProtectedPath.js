@@ -18,7 +18,7 @@ const ProtectedPath = ({ permisos =  null, children }) => {
                             height: 'auto'
                         }
                     }
-                    src={"/cil/imagenes/logo.png"} 
+                    src={"/innova/imagenes/iso.png"} 
                     width={1422} 
                     height={1661}
                     alt='logo'
@@ -34,7 +34,10 @@ const ProtectedPath = ({ permisos =  null, children }) => {
             // Si le falta alguno de los permisos lo mandamos al home segun el tipo
             if (permisos.filter(element => user['permisos'].includes(element)).length !== permisos.length)
             {
-                redirect('/')
+                if(user.permisos.includes('ver_turnos'))
+                    redirect('/')
+                else
+                    redirect('/agenda')
             }
         }
     }
