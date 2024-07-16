@@ -25,7 +25,7 @@ const NuevoBloqueo = () => {
         mensaje: ''
     })
     const [loading, setLoading] = useState(false)
-    const { bloqueo, setBloqueo, openBloqueo, setOpenBloqueo, filtros } = useTurnoContext()
+    const { bloqueo, setBloqueo, openBloqueo, setOpenBloqueo } = useTurnoContext()
     const router = useRouter()
 
     const handleDatalist = (val, key) => {
@@ -90,10 +90,11 @@ const NuevoBloqueo = () => {
     }
 
     const crearBloqueo = () => {
+        console.log("entro")
         const crear = async () => {
             try {
                 setLoading(true)
-                let bloqueoListo = bloqueoParaEnviar(turno)
+                let bloqueoListo = bloqueoParaEnviar(bloqueo)
     
                 if(!validar(bloqueoListo))
                 {
@@ -123,11 +124,12 @@ const NuevoBloqueo = () => {
                 {
                     setError({
                         value: true,
-                        mensaje: json.message ?? 'Ocurrio un erro al crear el turno.'
+                        mensaje: json.message ?? 'Ocurrio un erro al crear el bloqueo.'
                     })
                 }
 
             } catch (error) {
+                console.log(error)
                 setError({
                     value: true,
                     mensaje: 'Ocurrio un error, vuelva a intentar luego.'
