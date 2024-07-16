@@ -46,8 +46,8 @@ export const middleFetch = async (url, options) => {
             // Aquí puedes ejecutar tu lógica para cerrar sesión
 
             if (window) {
-                if (window.localStorage.getItem('user-cil')) {
-                    window.localStorage.removeItem('user-cil')
+                if (window.localStorage.getItem('user-innova')) {
+                    window.localStorage.removeItem('user-innova')
                     window.location.reload()
                 }
             }

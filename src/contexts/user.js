@@ -44,8 +44,8 @@ export const UserContextProvider = ({ children }) => {
     const logOut = () => {
         if(window)
         {
-            if(window.localStorage.getItem('user-cil'))
-                window.localStorage.removeItem('user-cil')
+            if(window.localStorage.getItem('user-innova'))
+                window.localStorage.removeItem('user-innova')
     
             setUser(null)
             setLogged(false)
@@ -78,7 +78,6 @@ export const UserContextProvider = ({ children }) => {
                 console.log(json);
                 if(json.status === 'SUCCESS')
                 {
-                    debugger;
                     let userRef = {
                         ...user,
                         ...json.data
@@ -98,12 +97,12 @@ export const UserContextProvider = ({ children }) => {
 
     useEffect(() => {
         if(user && logged){
-            window.localStorage.setItem('user-cil', JSON.stringify(user))
+            window.localStorage.setItem('user-innova', JSON.stringify(user))
         }
     }, [user, logged])
 
     useEffect(() => {
-        let user = window.localStorage.getItem('user-cil') ? JSON.parse(window.localStorage.getItem('user-cil')) : null
+        let user = window.localStorage.getItem('user-innova') ? JSON.parse(window.localStorage.getItem('user-innova')) : null
         setUser(user)
         if(user){
             setLogged(true)

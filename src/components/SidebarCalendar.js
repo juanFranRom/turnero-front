@@ -50,7 +50,7 @@ const SidebarCalendar = ({  }) => {
                 const newProfessional = {
                   ...profesional,
                   clinica: clinica,
-                  value: `${profesional.apellido}, ${profesional.nombre} (${clinica})`
+                  value: `${profesional.apellido}, ${profesional.nombre} (${clinica.nombre})`
                 }
                 acc.push(newProfessional)
               })

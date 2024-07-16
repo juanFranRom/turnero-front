@@ -129,7 +129,7 @@ const Datalist = ({ className, list, setBlank = false, defaultOption = null, set
         else if(value.text)
         {
             const filtered = list?.filter((option) =>
-              option?.value.text?.toLowerCase().includes(value.text?.toLowerCase())
+                option?.value?.toLowerCase().includes(value.text?.toLowerCase())
             )
             setFilteredOptions(filtered)
             if(autoSelect)

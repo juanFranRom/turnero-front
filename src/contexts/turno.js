@@ -46,6 +46,7 @@ export const TurnoContextProvider = ({ children }) => {
     const [openBloqueo, setOpenBloqueo] = useState(false)
     const [loadingTurnos, setLoadingTurnos] = useState(true)
     const [turnos, setTurnos] = useState([])
+    const [reprogramando, setReprogramando] = useState(null)
     const [openCalendar, setOpenCalendar] = useState(false)
     const [date, setDate] = useState(typeof window !== 'undefined' && window.localStorage.getItem('date') ?
         new Date(window.localStorage.getItem('date'))
@@ -107,7 +108,7 @@ export const TurnoContextProvider = ({ children }) => {
     }
 
     useEffect(() => {
-        if(!pathname.includes('calendario'))
+        if(pathname.includes('agenda'))
             buscarTurnos( date, filtros.profesional ?? null )
     }, [date, filtros])
 
@@ -137,6 +138,8 @@ export const TurnoContextProvider = ({ children }) => {
             bloqueo,
             openBloqueo,
             cancelandoBloqueo,
+            reprogramando,
+            setReprogramando,
             setCancelandoBloqueo,
             setOpenBloqueo,
             setBloqueo,

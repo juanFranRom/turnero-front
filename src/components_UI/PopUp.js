@@ -1,9 +1,9 @@
 import {AiFillCloseCircle} from "react-icons/ai";
 
-const PopUp = ({ children, className, close, centered = false }) => {
+const PopUp = ({ children, className, style, close, centered = false }) => {
 
     return (
-        <div className={`c-pop_up ${className} ${centered ? 'c-pop_up--centered' : ''}`}>
+        <div style={style} className={`c-pop_up ${className} ${centered ? 'c-pop_up--centered' : ''}`}>
             {
                 close ?
                     <AiFillCloseCircle

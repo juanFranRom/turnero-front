@@ -30,7 +30,7 @@ const NuevoTurno = () => {
         mensaje: '',
         accion: null
     })
-    const { turno, setTurno, openTurno, setOpenTurno, filtros } = useTurnoContext()
+    const { turno, setTurno, openTurno, setOpenTurno, filtros, reprogramando, setReprogramando } = useTurnoContext()
     const router = useRouter()
 
     const handleDatalist = (val, key) => {
@@ -48,7 +48,8 @@ const NuevoTurno = () => {
     }
     
     const minutesToTime = (duracion) => {
-        let hours = Math.floor( duracion/60);
+        console.log(duracion);
+        let hours = Math.floor(duracion/60);
         if(hours <= 9){
             hours = "0"+hours
         }
@@ -98,6 +99,7 @@ const NuevoTurno = () => {
             turnoParaEnviar.practica_id = turno.practica ? turno.practica.id : null
             turnoParaEnviar.duracion = turno.practica ? timeToMinutes(turno.practica.duracion_moda) : null
         }
+        
         turnoParaEnviar.fecha_hora = null
         if(turno.fecha && turno.hora)
         {
@@ -290,28 +292,45 @@ const NuevoTurno = () => {
     }, [turno.pacienteText])
 
     useEffect(() => {
-        if(turno.profesionalText.length > 2)
-            buscar(
-                'profesionales', 
-                turno.profesionalText, 
-                (profesionales) => {
-                    setTurno({
-                        ...turno,
-                        profesionalList: profesionales.reduce((acc, profesional) => {
-                            profesional.clinicas.forEach(clinica => {
-                              const newProfessional = {
-                                ...profesional,
-                                clinica: clinica,
-                                value: `${profesional.apellido}, ${profesional.nombre} (${clinica.nombre})`
-                              }
-                              acc.push(newProfessional)
+        const capitalizeFirstLetter = (string) => string.charAt(0).toUpperCase() + string.slice(1);
+        const buscarProfesional = async ( ) => {
+            try {
+                const response = await fetch(`${ process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL}/profesionales`,
+                    {
+                        method: "GET",
+                        headers: {
+                            Accept: "application/json",
+                            "Content-Type": "application/json",
+                            /*authorization: "Bearer " + user.token,*/
+                        },
+                    }
+                )
+                const json = await response.json()
+                if (json.status === "SUCCESS") {
+                    if(json.data.length && json.data.length > 0)
+                        setTurno({
+                            ...turno,
+                            profesionalList: json.data.reduce((acc, profesional) => {
+                                profesional.clinicas.forEach(clinica => {
+                                    const newProfessional = {
+                                        ...profesional,
+                                        clinica: clinica,
+                                        value: `${capitalizeFirstLetter(profesional.apellido)}, ${capitalizeFirstLetter(profesional.nombre)} (${capitalizeFirstLetter(clinica.nombre)})`
+                                    }
+                                    acc.push(newProfessional)
+                                })
+                                return acc
+                            }, []).sort((a, b) => {
+                                return a.value.localeCompare(b.value);
                             })
-                            return acc
-                        }, [])
-                    })
-                }
-            )
-    }, [turno.profesionalText])
+                        })
+                } 
+            } catch (error) {
+                console.log(error)
+            }
+        }
+        buscarProfesional()
+    }, [])
 
     useEffect(() => {
         if(typeof filtros.profesional === 'object' && filtros.profesional !== null)
@@ -324,7 +343,6 @@ const NuevoTurno = () => {
         }
     }, [filtros])
 
-    console.log(turno);
     return (
         <>
             {
@@ -391,7 +409,7 @@ const NuevoTurno = () => {
                                             <div className='u-1/1 u-flex-center-center'>
                                                 <Datalist
                                                     className={'u-1/1'}
-                                                    list={ turno.profesional.practicas.map((el) => { return ({ ...el, value: `${el.nombre} (${minutesToTime(el.duracion)})` }) }) } 
+                                                    list={ turno.profesional.practicas.map((el) => { return ({ ...el, value: `${el.nombre} (${el.duracion_moda})` }) }) } 
                                                     defaultOption={ { value: turno.practicaText } } 
                                                     setter={(val) => handleDatalist(val, "practica")}
                                                 />
@@ -439,11 +457,21 @@ const NuevoTurno = () => {
                         <div className='c-nuevo_turno__item c-nuevo_turno__hora'>
                             <div className='u-flex-column-center-start'>
                                 <span>Fecha</span>
-                                <Input className={'u-1/1'} type={'date'} defaultValue={turno.fecha} handleChange={(val) => setTurno({...turno, fecha: val})}/>
+                                {
+                                    turno.id ?
+                                        <Input className={'u-1/1'} type={'date'} defaultValue={turno.fecha} isReadOnly={true}/>
+                                    :
+                                        <Input className={'u-1/1'} type={'date'} defaultValue={turno.fecha} handleChange={(val) => setTurno({...turno, fecha: val})}/>
+                                }
                             </div>
                             <div className='u-flex-column-center-start'>
                                 <span>Hora</span>
-                                <Input className={'u-1/1'} type={'time'} defaultValue={turno.hora} handleChange={(val) => setTurno({...turno, hora: val})}/>
+                                {
+                                    turno.id ?
+                                        <Input className={'u-1/1'} type={'time'} defaultValue={turno.hora} isReadOnly={true}/>
+                                    :
+                                        <Input className={'u-1/1'} type={'time'} defaultValue={turno.hora} handleChange={(val) => setTurno({...turno, hora: val})}/>
+                                }
                             </div>
                         </div>
                         <div className='c-nuevo_turno__item c-nuevo_turno__hora'>
@@ -473,10 +501,12 @@ const NuevoTurno = () => {
                                     }
                                     {
                                         turno.id &&
-                                        <Button text={'Cancelar turno'} clickHandler={() => setAccion({ value: true, text: '¿Estas seguro que deseas cancelar el turno?', accion: cancelarTurno})}/>
+                                        <>
+                                            <Button text={'Reprogramar'} clickHandler={() => {setOpenTurno(false); setReprogramando(turno);}}/>
+                                        </>
                                     }
                                     <Button 
-                                        text={turno.id ? 'Cambiar turno' : 'Dar turno'} 
+                                        text={turno.id ? 'Actualizar' : 'Dar turno'} 
                                         clickHandler={
                                             turno.id ? 
                                                 () => setAccion({ value: true, text: '¿Estas seguro que deseas editar el turno?', accion: editarTurno})
@@ -484,6 +514,12 @@ const NuevoTurno = () => {
                                                 crearTurno
                                         }
                                     />
+                                    {
+                                        turno.id &&
+                                        <>
+                                            <Button text={'Cancelar'} clickHandler={() => setAccion({ value: true, text: '¿Estas seguro que deseas cancelar el turno?', accion: cancelarTurno})}/>
+                                        </>
+                                    }
                                 </div>
                         }
                         {/*<div className='c-nuevo_turno__item c-nuevo_turno__item--right'>

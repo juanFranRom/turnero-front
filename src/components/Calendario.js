@@ -16,6 +16,7 @@ import Overlay from '@/components_UI/Overlay'
 import PopUp from '@/components_UI/PopUp'
 import Button from '@/components_UI/Button'
 
+
 const generateIntervals = (start, end, interval) => {
     const times = []
     let currentTime = new Date(start.getTime())
@@ -66,7 +67,7 @@ const Calendario = () => {
     const [cancelandoBloqueo, setCancelandoBloqueo] = useState(null)
     const [visibleDays, setVisibleDays] = useState(null)
     const calendarRef = useRef(null)
-    const { date, mesesEspañol, setTurno, openTurno, setOpenTurno, filtros, reiniciarTurno, setBloqueo, openBloqueo, setOpenBloqueo } = useTurnoContext()
+    const { date, mesesEspañol, setTurno, openTurno, setOpenTurno, filtros, setBloqueo, setOpenBloqueo, reprogramando, setReprogramando } = useTurnoContext()
 
     const handleTurno = (day, interval) => {
         setOpenBloqueo(false)
@@ -147,8 +148,8 @@ const Calendario = () => {
         const handleResize = () => {
             if (calendarRef.current && dias) {
                 const calendarWidth = calendarRef.current.offsetWidth
-                const minWidthPerDay = 220 + 70 // Ancho mínimo por columna
-                const maxVisibleDays = Math.floor(calendarWidth / minWidthPerDay)
+                const minWidthPerDay = 160 + 70 // Ancho mínimo por columna
+                const maxVisibleDays = Math.min(Math.floor(calendarWidth / minWidthPerDay), 5)
                 let aux = []
 
                 for(let dia of dias)
@@ -192,7 +193,7 @@ const Calendario = () => {
                         return{
                             nombre:dayName,
                             fecha,
-                            intervalos: day.list.map(ele => ({...ele, tipo: 'bloqueo'})).sort((a, b) => {
+                            intervalos: day.list.map(ele => ({ ...ele })).sort((a, b) => {
                                 if (a.hora < b.hora) return -1;
                                 if (a.hora > b.hora) return 1;
                                 // Si las horas son iguales, ordenamos por tipo
@@ -218,9 +219,30 @@ const Calendario = () => {
             setDias(getWeekDays(date ?? new Date()))
     },[date, filtros])
     
-    console.log(cancelandoBloqueo, filtros);
     return (
         <>
+            {
+                reprogramando &&
+                <PopUp 
+                    style={{
+                        top: 'unset',
+                        right: 'unset',
+                        bottom: '50px',
+                        left: '50%',
+                        transform: 'translateX(50%)',
+                        width: '150px',
+                        height: '30px',
+                        padding: '0',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        backgroundColor: 'rgb(0, 179, 164)',
+                        color: 'white',
+                    }}
+                >
+                    <p>Reprogramando</p>
+                </PopUp>   
+            }
             {
                 cancelandoBloqueo &&
                 <Overlay>
@@ -252,7 +274,7 @@ const Calendario = () => {
                                         day.intervalos && day.intervalos.length > 0 ?
                                             <div key={index} className="c-daily_calendar__day_header">
                                                 {
-                                                    day.intervalos.find(el => el.tipo === 'disponibilidad') &&
+                                                    !day.intervalos.find(el => el.tipo === 'turno' || el.tipo === 'sobreturno') &&
                                                     <FaLock className='c-daily_calendar__lock' onClick={(e) => handleBloqueo(e, day, null)}/>
                                                 }
                                                 <div>

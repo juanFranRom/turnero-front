@@ -18,7 +18,7 @@ const ProtectedPath = ({ permisos =  null, children }) => {
                             height: 'auto'
                         }
                     }
-                    src={"/cil/imagenes/logo.png"} 
+                    src={"/innova/imagenes/iso.png"} 
                     width={1422} 
                     height={1661}
                     alt='logo'
