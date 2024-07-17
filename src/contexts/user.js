@@ -14,6 +14,7 @@ export const UserContextProvider = ({ children }) => {
     const [triedLog, setTriedLog] = useState(false)
     const [error, setError] = useState(null)
     const [message, setMessage] = useState(null)
+
     const reiniciarBase = async () =>{
         fetch(
             `${process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL}/reiniciarBase`,
@@ -75,7 +76,6 @@ export const UserContextProvider = ({ children }) => {
             },
             // Callback
             json => {
-                console.log(json);
                 if(json.status === 'SUCCESS')
                 {
                     let userRef = {

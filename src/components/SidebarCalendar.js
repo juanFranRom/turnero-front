@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 
 // Contexts
 import { useTurnoContext } from '@/contexts/turno'
+import { useUserContext } from '@/contexts/user'
 
 // Icons
 import { IoMdClose } from "react-icons/io"
@@ -14,6 +15,7 @@ import Datalist from '@/components_UI/Datalist'
 
 const SidebarCalendar = ({  }) => {
   const { openCalendar, turno, setTurno, filtros, setFiltros } = useTurnoContext()
+  const { user } = useUserContext()
 
   const minutesToTime = (duracion) => {
     let hours = Math.floor( duracion/60 )

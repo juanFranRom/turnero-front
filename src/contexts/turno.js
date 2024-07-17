@@ -1,6 +1,7 @@
 'use client'
 import { createContext, useContext, useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
+import { useUserContext } from './user'
 
 const TurnoContext = createContext([])
 
@@ -48,6 +49,7 @@ export const TurnoContextProvider = ({ children }) => {
     const [turnos, setTurnos] = useState([])
     const [reprogramando, setReprogramando] = useState(null)
     const [openCalendar, setOpenCalendar] = useState(false)
+    const { user } = useUserContext()
     const [date, setDate] = useState(typeof window !== 'undefined' && window.localStorage.getItem('date') ?
         new Date(window.localStorage.getItem('date'))
     :
@@ -107,6 +109,28 @@ export const TurnoContextProvider = ({ children }) => {
         }
     }
 
+    const cancelarBloqueo = async ( id ) => {
+        try {
+            setCancelandoBloqueo( true )
+            const response = await fetch(`${ process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL}/bloqueo/${id}`,
+                {
+                    method: "DELETE",
+                    headers: {
+                        Accept: "application/json",
+                        "Content-Type": "application/json",
+                        authorization: "Bearer " + user.token,
+                    }
+                }
+            )
+            const json = await response.json()
+            if(window) window.location.reload()
+            setCancelandoBloqueo( false )
+        } catch (error) {
+            console.log(error);
+            setCancelandoBloqueo( false )
+        }
+    }
+
     useEffect(() => {
         if(pathname.includes('agenda'))
             buscarTurnos( date, filtros.profesional ?? null )
@@ -139,6 +163,7 @@ export const TurnoContextProvider = ({ children }) => {
             openBloqueo,
             cancelandoBloqueo,
             reprogramando,
+            cancelarBloqueo,
             setReprogramando,
             setCancelandoBloqueo,
             setOpenBloqueo,

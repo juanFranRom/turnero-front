@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from 'react'
 
 // Contexts
 import { useTurnoContext } from '@/contexts/turno'
+import { useUserContext } from '@/contexts/user'
 
 // Icons
 import { CiLock } from "react-icons/ci"
@@ -64,10 +65,10 @@ const primeraLetraMayus = (string) => {
 
 const Calendario = () => {
     const [dias, setDias] = useState(null)
-    const [cancelandoBloqueo, setCancelandoBloqueo] = useState(null)
     const [visibleDays, setVisibleDays] = useState(null)
     const calendarRef = useRef(null)
-    const { date, mesesEspañol, setTurno, openTurno, setOpenTurno, filtros, setBloqueo, setOpenBloqueo, reprogramando, setReprogramando } = useTurnoContext()
+    const { user } = useUserContext()
+    const { date, mesesEspañol, setTurno, openTurno, setOpenTurno, filtros, setBloqueo, setOpenBloqueo, cancelandoBloqueo, setCancelandoBloqueo, reprogramando, setReprogramando } = useTurnoContext()
 
     const handleTurno = (day, interval) => {
         setOpenBloqueo(false)
@@ -243,27 +244,6 @@ const Calendario = () => {
                     <p>Reprogramando</p>
                 </PopUp>   
             }
-            {
-                cancelandoBloqueo &&
-                <Overlay>
-                    <PopUp centered={true}>
-                        <div className='u-1/1 u-flex-column-start-center u-p3--vertical'>
-                            <p className='u-text--1 u-m2--bottom'>{}</p>
-                            <div className='u-1/1 u-flex-end-center'>
-                                <Button 
-                                    text={'Aceptar'} 
-                                    clickHandler={
-                                        () => {
-                                            cancelarBloqueo(cancelandoBloqueo.id)
-                                        }
-                                    }
-                                />
-                                <Button text={'Cancelar'} clickHandler={() => setCancelandoBloqueo(null)}/>
-                            </div>
-                        </div>
-                    </PopUp>
-                </Overlay>
-            }
             <div className='c-daily_calendar' ref={calendarRef}>
                 {
                     dias && visibleDays ?
@@ -317,7 +297,7 @@ const Calendario = () => {
                                                             return (
                                                                 <div key={index} className="c-daily_calendar__day_cell">
                                                                     <div className="c-daily_calendar__time_cell">
-                                                                        {interval.text.slice(0, 5)} 
+                                                                        {new Date(interval.start).getHours().toString().padStart(2, '0')}:{new Date(interval.start).getMinutes().toString().padStart(2, '0')}
                                                                     </div>
                                                                     <div className="c-daily_calendar__data_cell">
                                                                         <FaLockOpen className='c-daily_calendar__lock_open' onClick={(e) => handleBloqueo(e, null, interval)}/>
