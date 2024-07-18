@@ -235,7 +235,7 @@ const NuevoBloqueo = () => {
                                     {
                                         error.value &&
                                         <div className='c-nuevo_bloqueo__item c-nuevo_bloqueo__item--right'>
-                                            <p className='u-color--red'>{error.mensaje}</p>
+                                            <p className='u-color--red'>{'El bloqueo se solapa con turnos reservados.'}</p>
                                         </div>
                                     }
                                     <Button 

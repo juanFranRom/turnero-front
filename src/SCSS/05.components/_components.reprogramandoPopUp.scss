@@ -1,0 +1,44 @@
+.c-reprogramandoPopUp{
+    position: fixed;
+    top: unset;
+    right: unset;
+    bottom: 50px;
+    left: 50%;
+    width: 150px;
+    height: 30px;
+    padding: 0;
+    background-color: rgb(0, 179, 164);
+    color: white;
+    border-radius: $global-radius;
+    overflow: hidden;
+    text-align: center;
+    z-index: 999;
+    cursor: pointer;
+    transition: all 0.5s ease-in-out;
+    display: flex;
+    align-items: center;
+    
+    &:hover{
+        .c-reprogramandoPopUp__text{
+            left: -100%;
+        }
+
+        .c-reprogramandoPopUp__hover{
+            left: 0;
+        }
+    }
+}
+
+.c-reprogramandoPopUp__text, .c-reprogramandoPopUp__hover{
+    position: absolute;
+    width: 100%;
+    transition: all 0.5s ease-in-out;
+}
+
+.c-reprogramandoPopUp__text{
+    left: 0;
+}
+
+.c-reprogramandoPopUp__hover{
+    left: 100%;
+}

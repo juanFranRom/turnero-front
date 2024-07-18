@@ -12,6 +12,7 @@ import Loader from '@/components_UI/Loader'
 
 // context
 import { useTurnoContext } from '@/contexts/turno'
+import { useUserContext } from '@/contexts/user'
 
 // Icons
 import { IoMdClose } from "react-icons/io"
@@ -31,6 +32,7 @@ const NuevoTurno = () => {
         accion: null
     })
     const { turno, setTurno, openTurno, setOpenTurno, filtros, reprogramando, setReprogramando } = useTurnoContext()
+    const { user } = useUserContext()
     const router = useRouter()
 
     const handleDatalist = (val, key) => {

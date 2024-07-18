@@ -13,7 +13,7 @@ import { IoMdClose } from "react-icons/io"
 import Calendar from '@/components_UI/Calendar'
 import Datalist from '@/components_UI/Datalist'
 
-const SidebarCalendar = ({  }) => {
+const SidebarCalendar = ({ blocked }) => {
   const { openCalendar, turno, setTurno, filtros, setFiltros } = useTurnoContext()
   const { user } = useUserContext()
 
@@ -105,19 +105,24 @@ const SidebarCalendar = ({  }) => {
 
   return (
     <div 
-      className={`c-sidebarCalendar ${ openCalendar ? `c-sidebarCalendar--open` : '' }`}
+      className={`c-sidebarCalendar ${ openCalendar ? `c-sidebarCalendar--open` : '' } `}
     >
       <Calendar/>
       <div className='c-sidebarCalendar__item'>
-        <span>Profesional</span>
-        <div className={'u-1/1 u-flex-center-center'}>
-          <Datalist
-            list={ turno.profesionalList } 
-            defaultOption={ typeof filtros.profesional === 'string' ? { value: filtros.profesional } : filtros.profesional} 
-            setter={(val) => handleDatalist(val, "profesional")}
-          />
-          <IoMdClose className='u-color--red u-cursor--pointer' onClick={() => limpiarDatalist("profesional")}/>
-        </div>
+        {
+          !blocked && 
+          <>
+            <span>Profesional</span>
+            <div className={'u-1/1 u-flex-center-center'}>
+              <Datalist
+                list={ turno.profesionalList } 
+                defaultOption={ typeof filtros.profesional === 'string' ? { value: filtros.profesional } : filtros.profesional} 
+                setter={(val) => handleDatalist(val, "profesional")}
+              />
+              <IoMdClose className='u-color--red u-cursor--pointer' onClick={() => limpiarDatalist("profesional")}/>
+            </div>
+          </>
+        }
       </div>
       {/*
         turno.profesional &&

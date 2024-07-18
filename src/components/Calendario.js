@@ -104,6 +104,13 @@ const Calendario = () => {
         setOpenTurno(true)
     }
 
+    const handleReprogramar = (interval) => {
+        setReprogramando({
+            ...reprogramando,
+            nuevoHorario: {...interval}
+        })
+    }
+
     const handleBloqueo = (e, day, interval) => {
         e.stopPropagation()
 
@@ -224,25 +231,10 @@ const Calendario = () => {
         <>
             {
                 reprogramando &&
-                <PopUp 
-                    style={{
-                        top: 'unset',
-                        right: 'unset',
-                        bottom: '50px',
-                        left: '50%',
-                        transform: 'translateX(50%)',
-                        width: '150px',
-                        height: '30px',
-                        padding: '0',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        backgroundColor: 'rgb(0, 179, 164)',
-                        color: 'white',
-                    }}
-                >
-                    <p>Reprogramando</p>
-                </PopUp>   
+                <div className='c-reprogramandoPopUp' onClick={() =>{setReprogramando(null)}}>
+                    <p className='c-reprogramandoPopUp__text'>Reprogramando</p>
+                    <p className='c-reprogramandoPopUp__hover'>Cancelar</p>
+                </div>   
             }
             <div className='c-daily_calendar' ref={calendarRef}>
                 {
@@ -254,7 +246,7 @@ const Calendario = () => {
                                         day.intervalos && day.intervalos.length > 0 ?
                                             <div key={index} className="c-daily_calendar__day_header">
                                                 {
-                                                    !day.intervalos.find(el => el.tipo === 'turno' || el.tipo === 'sobreturno') &&
+                                                    !reprogramando && !day.intervalos.find(el => el.tipo === 'turno' || el.tipo === 'sobreturno') &&
                                                     <FaLock className='c-daily_calendar__lock' onClick={(e) => handleBloqueo(e, day, null)}/>
                                                 }
                                                 <div>
@@ -280,19 +272,22 @@ const Calendario = () => {
                                         <div key={dayIndex} className="c-daily_calendar__day_column">
                                             {
                                                     day.intervalos.map((interval, index) => {
-                                                        if(interval.tipo==="disponibilidad"){
+                                                        if(interval.tipo ==="disponibilidad"){
                                                             return (
-                                                                <div key={index} className="c-daily_calendar__day_cell" onClick={() => handleTurno(day, interval)}>
+                                                                <div key={index} className="c-daily_calendar__day_cell" onClick={() => !reprogramando ? handleTurno(day, interval) : handleReprogramar(interval)}>
                                                                     <div className="c-daily_calendar__time_cell">
                                                                         {interval.text.slice(0, 5)} 
                                                                     </div>
-                                                                    <div className="c-daily_calendar__data_cell">
-                                                                        <FaLock className='c-daily_calendar__lock' onClick={(e) => handleBloqueo(e, day, interval)}/>
-                                                                    </div> 
+                                                                    {
+                                                                        !reprogramando &&
+                                                                        <div className="c-daily_calendar__data_cell">
+                                                                            <FaLock className='c-daily_calendar__lock' onClick={(e) => handleBloqueo(e, day, interval)}/>
+                                                                        </div> 
+                                                                    }
                                                                 </div>
                                                             )
                                                         }
-                                                        else if(interval.tipo==="bloqueo"){
+                                                        else if(interval.tipo==="bloqueo" && !reprogramando){
                                                             //ponerle un colorcito rojo
                                                             return (
                                                                 <div key={index} className="c-daily_calendar__day_cell">
@@ -305,7 +300,7 @@ const Calendario = () => {
                                                                 </div>
                                                             )
                                                         } 
-                                                        else {
+                                                        else if(!reprogramando) {
                                                             return (
                                                                 <div key={index} className="c-daily_calendar__day_cell" onClick={() => handleTurno(day, interval)}>
                                                                     <div className={`c-daily_calendar__time_cell ${ interval.tipo==="sobreturno" ? 'c-daily_calendar__time_cell--sobreturno' : '' } `}>

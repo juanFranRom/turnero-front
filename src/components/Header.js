@@ -20,7 +20,7 @@ import { useUserContext } from '@/contexts/user'
 import { useTurnoContext } from '@/contexts/turno'
 import { usePacienteContext } from '@/contexts/paciente'
 
-const Header = ( ) => {
+const Header = ({ blocked }) => {
     const [open, setOpen] = useState(false)
     const [menuTurno, setMenuTurno] = useState(false)
     const [coordenadas, setCoordenadas] = useState({
@@ -40,7 +40,7 @@ const Header = ( ) => {
     }, [pathname])
 
     return (
-        <header className='c-header'>
+        <header className={`c-header ${ blocked ? 'c-header--blocked' : ''}`}>
             <div className='u-flex-center-center'>
                 {
                     (pathname.length > 1 || !pathname.includes('calendario')) &&

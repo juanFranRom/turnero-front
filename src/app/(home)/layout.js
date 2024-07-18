@@ -22,13 +22,12 @@ import Loader from '@/components_UI/Loader'
 
 
 export default function RootLayout({ children }) {
-  const { openTurno, openBloqueo, cancelandoBloqueo, setCancelandoBloqueo, cancelarBloqueo, filtros } = useTurnoContext()
+  const { openTurno, openBloqueo, reprogramando, setReprogramando, cancelandoBloqueo, setCancelandoBloqueo, cancelarBloqueo, filtros } = useTurnoContext()
   const { openPaciente } = usePacienteContext()
 
-  console.log(cancelandoBloqueo,filtros);
   return (
     <ProtectedPath>
-      <Header/>
+      <Header blocked={ reprogramando ? true : false }/>
       { openTurno && <NuevoTurno/> }
       { openBloqueo && <NuevoBloqueo/> }
       { 
@@ -72,7 +71,7 @@ export default function RootLayout({ children }) {
               </PopUp>
           </Overlay>
       }
-      <SidebarCalendar/>
+      <SidebarCalendar blocked={ reprogramando ? true : false }/>
       <Page>
         {children}
       </Page>
