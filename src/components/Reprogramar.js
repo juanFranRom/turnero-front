@@ -5,6 +5,11 @@ import React from 'react'
 // Context
 import { useTurnoContext } from '@/contexts/turno'
 
+// Components
+import Overlay from '@/components_UI/Overlay'
+import PopUp from '@/components_UI/PopUp'
+import Button from '@/components_UI/Button'
+
 
 const Reprogramar = () => {
     const { reprogramando, setReprogramando } = useTurnoContext()
@@ -27,7 +32,7 @@ const Reprogramar = () => {
                 error: false,
             })
             
-            
+
         } catch (error) {
             setReprogramando({
                 ...reprogramando,
