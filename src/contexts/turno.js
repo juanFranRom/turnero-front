@@ -65,19 +65,18 @@ export const TurnoContextProvider = ({ children }) => {
 
     const reiniciarTurno = () => {
         setTurno({
+            ...turno,
             pacienteText: '',
             pacienteList: [],
             paciente: null,
-            profesionalText: '',
-            profesionalList: [],
-            profesional: null,
             practicasText: '',
             practicaText: '',
             practica: null,
             coberturaText: '',
             cobertura: null,
             fecha: null,
-            hora: null
+            hora: null,
+            id: null,
         })
     }
 

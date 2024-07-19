@@ -13,7 +13,7 @@ import { IoMdClose } from "react-icons/io"
 import Calendar from '@/components_UI/Calendar'
 import Datalist from '@/components_UI/Datalist'
 
-const SidebarCalendar = ({  }) => {
+const SidebarCalendar = ({ blocked }) => {
   const { openCalendar, turno, setTurno, filtros, setFiltros } = useTurnoContext()
   const { user } = useUserContext()
 
@@ -105,14 +105,13 @@ const SidebarCalendar = ({  }) => {
 
   return (
     <div 
-      className={`c-sidebarCalendar ${ openCalendar ? `c-sidebarCalendar--open` : '' }`}
+      className={`c-sidebarCalendar ${ openCalendar ? `c-sidebarCalendar--open` : '' } `}
     >
       <Calendar/>
-      {
-        user.rol==="profesional"?
-         <></>
-        :
-          <div className='c-sidebarCalendar__item'>
+      <div className='c-sidebarCalendar__item'>
+        {
+          !blocked && user.rol !=="profesional" &&
+          <>
             <span>Profesional</span>
             <div className={'u-1/1 u-flex-center-center'}>
               <Datalist
@@ -122,8 +121,9 @@ const SidebarCalendar = ({  }) => {
               />
               <IoMdClose className='u-color--red u-cursor--pointer' onClick={() => limpiarDatalist("profesional")}/>
             </div>
-          </div>
-      }
+          </>
+        }
+      </div>
       {/*
         turno.profesional &&
         <div className='c-sidebarCalendar__item'>

@@ -19,15 +19,16 @@ import Overlay from "@/components_UI/Overlay"
 import PopUp from '@/components_UI/PopUp'
 import Button from '@/components_UI/Button'
 import Loader from '@/components_UI/Loader'
+import Reprogramar from '@/components/Reprogramar'
 
 
 export default function RootLayout({ children }) {
-  const { openTurno, openBloqueo, cancelandoBloqueo, setCancelandoBloqueo, cancelarBloqueo, filtros } = useTurnoContext()
+  const { openTurno, openBloqueo, reprogramando, setReprogramando, cancelandoBloqueo, setCancelandoBloqueo, cancelarBloqueo, filtros } = useTurnoContext()
   const { openPaciente } = usePacienteContext()
 
   return (
     <ProtectedPath>
-      <Header/>
+      <Header blocked={ reprogramando ? true : false }/>
       { openTurno && <NuevoTurno/> }
       { openBloqueo && <NuevoBloqueo/> }
       { 
@@ -71,7 +72,8 @@ export default function RootLayout({ children }) {
               </PopUp>
           </Overlay>
       }
-      <SidebarCalendar/>
+      <Reprogramar/>
+      <SidebarCalendar blocked={ reprogramando ? true : false }/>
       <Page>
         {children}
       </Page>

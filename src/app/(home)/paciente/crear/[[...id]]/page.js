@@ -4,6 +4,7 @@ import ProtectedPath from '@/components/ProtectedPath'
 // Components
 import NuevoPaciente from '@/components/NuevoPaciente'
 import Button from '@/components_UI/Button'
+import ProtectedPath from '@/components/ProtectedPath'
 
 const page = ({ params }) => {
   return (
