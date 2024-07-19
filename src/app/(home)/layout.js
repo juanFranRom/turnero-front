@@ -25,7 +25,6 @@ export default function RootLayout({ children }) {
   const { openTurno, openBloqueo, cancelandoBloqueo, setCancelandoBloqueo, cancelarBloqueo, filtros } = useTurnoContext()
   const { openPaciente } = usePacienteContext()
 
-  console.log(cancelandoBloqueo,filtros);
   return (
     <ProtectedPath>
       <Header/>

@@ -27,7 +27,7 @@ const Header = ( ) => {
         x: null,
         y: null
     })
-    const { logOut } = useUserContext()
+    const { logOut,user } = useUserContext()
     const { setOpenTurno, setOpenCalendar, openCalendar, reiniciarTurno } = useTurnoContext()
     const { setOpenPaciente } = usePacienteContext()
     const pathname = usePathname()
@@ -65,12 +65,15 @@ const Header = ( ) => {
                     <Link className='c-header__link' href={'/agenda'} onClick={() => setOpen((prevState) => !prevState)}>
                         <span>Agenda</span>
                     </Link>
-                    <Link className='c-header__link' href={'/paciente'} onClick={() => setOpen((prevState) => !prevState)}>
-                        <span>Pacientes</span>
-                    </Link>
-                    <Link className='c-header__link' href={'/profesional'} onClick={() => setOpen((prevState) => !prevState)}>
-                        <span>Profesionales</span>
-                    </Link>
+                    {
+                        user.rol !== "profesional" &&  <>
+                        <Link className='c-header__link' href={'/paciente'} onClick={() => setOpen((prevState) => !prevState)}>
+                            <span>Pacientes</span>
+                        </Link>
+                        <Link className='c-header__link' href={'/profesional'} onClick={() => setOpen((prevState) => !prevState)}>
+                            <span>Profesionales</span>
+                        </Link></>
+                    }
                 </div>
                 {
                     menuTurno &&

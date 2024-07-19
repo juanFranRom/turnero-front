@@ -7,7 +7,7 @@ import ProtectedPath from '@/components/ProtectedPath'
 
 const page = () => {
   return (
-    <ProtectedPath permisos={['ver_informacion_pacientes']}>
+    <ProtectedPath permisos={['ver_pacientes']}>
       <div className='u-1/1 u-flex-column-center-end u-p4'>
         <div className='u-1/1 u-flex-center-space-between u-m4--bottom'>
           <h1>Pacientes</h1>

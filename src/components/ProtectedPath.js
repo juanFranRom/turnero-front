@@ -6,7 +6,6 @@ import Loader from '@/components_UI/Loader'
 
 const ProtectedPath = ({ permisos =  null, children }) => {
     const { waitChecking, user, logged  } = useUserContext();
-
     if(waitChecking ){
         return (
             <div className='u-1/1 u-flex-column-center-center u-p5--top'>
@@ -27,7 +26,6 @@ const ProtectedPath = ({ permisos =  null, children }) => {
             </div>
         )
     }
-    
     if (logged && user && user['permisos'])
     {  //Si la ruta tiene permisos
         if(permisos){
