@@ -6,7 +6,7 @@ import {
 
 const Loader = ({ children, text = 'Cargando...' }) => {
     return (
-        <div className="u-1/1 u-flex-column-center-center">
+        <div className="u-flex-column-center-center">
             <FaSpinner 
                 className='c-loader__spinner'
             />

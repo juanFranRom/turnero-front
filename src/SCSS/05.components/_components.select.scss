@@ -8,15 +8,13 @@
 
 .c-select{
     position: relative;
-    padding: $global-spacing-unit-small $global-spacing-unit;
+    padding: $global-spacing-unit-tiny $global-spacing-unit;
     border: 1px solid $global-primary-color;
-    border-radius: 5px;
     min-width: 150px;
-    min-height: 50px;
     background-color: $global-primary-color;
     color: #FFF;
     line-height: 1.5;
-    @include font-size(16px);
+    @include font-size(14px);
 
     .c-select__placeholder{
         position: absolute;
@@ -27,6 +25,8 @@
 
     svg{
         margin-left: auto;
+        @include font-size(18px);
+        margin-block: 5px;
     }
 }
 
@@ -44,11 +44,10 @@
     white-space: nowrap;
     position: absolute;
     top: 110%;
-    left: 0;
-    right: 0;
+    left: -2px;
+    right: -2px;
     background-color: white;
-    border-radius: 8px;
-    border: 2px solid $global-secondary-color;
+    border: 1px solid rgb(153, 140, 140);
     overflow: auto;
     z-index: 3;
     font-size: inherit;

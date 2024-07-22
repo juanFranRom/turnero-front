@@ -29,8 +29,8 @@ export default function RootLayout({ children }) {
   return (
     <ProtectedPath>
       <Header blocked={ reprogramando ? true : false }/>
-      { openTurno && <NuevoTurno/> }
-      { openBloqueo && <NuevoBloqueo/> }
+      <NuevoTurno/>
+      <NuevoBloqueo/>
       { 
         openPaciente && 
         <Overlay>

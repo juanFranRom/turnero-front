@@ -65,14 +65,20 @@ const Header = ({ blocked }) => {
                     <Link className='c-header__link' href={'/agenda'} onClick={() => setOpen((prevState) => !prevState)}>
                         <span>Agenda</span>
                     </Link>
+                    <Link className='c-header__link' href={'/paciente'} onClick={() => setOpen((prevState) => !prevState)}>
+                        <span>Pacientes</span>
+                    </Link>
                     {
-                        user.rol !== "profesional" &&  <>
-                        <Link className='c-header__link' href={'/paciente'} onClick={() => setOpen((prevState) => !prevState)}>
-                            <span>Pacientes</span>
-                        </Link>
+                        user.rol !== "profesional" && 
                         <Link className='c-header__link' href={'/profesional'} onClick={() => setOpen((prevState) => !prevState)}>
                             <span>Profesionales</span>
-                        </Link></>
+                        </Link>
+                    }
+                    {
+                        user.rol === "admin" && 
+                        <Link className='c-header__link' href={'/usuario'} onClick={() => setOpen((prevState) => !prevState)}>
+                            <span>Usuarios</span>
+                        </Link>
                     }
                 </div>
                 {

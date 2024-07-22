@@ -151,7 +151,7 @@ const Input = ({ type, className, placeholder = false, defaultValue = undefined,
             {
                 type === "password"
                 &&
-                <div className="u-flex-center-center u-m3--horizontal u-m1--vertical u-color--white u-cursor--pointer c-input__show_password">
+                <div className="u-flex-center-center u-m1--vertical u-color--white u-cursor--pointer">
                     <input
                         type={"checkbox"}
                         checked={password}

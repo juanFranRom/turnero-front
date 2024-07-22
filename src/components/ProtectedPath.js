@@ -5,7 +5,8 @@ import {useUserContext} from '@/contexts/user'
 import Loader from '@/components_UI/Loader'
 
 const ProtectedPath = ({ permisos =  null, children }) => {
-    const { waitChecking, user, logged  } = useUserContext();
+    const { waitChecking, user, logged  } = useUserContext()
+
     if(waitChecking ){
         return (
             <div className='u-1/1 u-flex-column-center-center u-p5--top'>

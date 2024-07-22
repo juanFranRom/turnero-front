@@ -35,8 +35,8 @@ export const TurnoContextProvider = ({ children }) => {
         horaHasta: null,
     })
     const [cancelandoBloqueo, setCancelandoBloqueo] = useState(null)
-    const [filtros, setFiltros] = useState(typeof window !== 'undefined' && window.localStorage.getItem('filtros') ?
-            JSON.parse(window.localStorage.getItem('filtros'))
+    const [filtros, setFiltros] = useState(typeof window !== 'undefined' && window.sessionStorage.getItem('filtros-innova') ?
+            JSON.parse(window.sessionStorage.getItem('filtros-innova'))
         :
             {
                 profesional: null,
@@ -50,8 +50,8 @@ export const TurnoContextProvider = ({ children }) => {
     const [reprogramando, setReprogramando] = useState(null)
     const [openCalendar, setOpenCalendar] = useState(false)
     const { user } = useUserContext()
-    const [date, setDate] = useState(typeof window !== 'undefined' && window.localStorage.getItem('date') ?
-        new Date(window.localStorage.getItem('date'))
+    const [date, setDate] = useState(typeof window !== 'undefined' && window.sessionStorage.getItem('date-innova') ?
+        new Date(window.sessionStorage.getItem('date-innova'))
     :
         new Date()
     )
@@ -138,8 +138,8 @@ export const TurnoContextProvider = ({ children }) => {
     useEffect(() => {
         if(window) 
         {
-            window.localStorage.setItem('date', date)
-            window.localStorage.setItem('filtros', JSON.stringify(filtros))
+            window.sessionStorage.setItem('date-innova', date)
+            window.sessionStorage.setItem('filtros-innova', JSON.stringify(filtros))
         }
     }, [date, filtros])
 

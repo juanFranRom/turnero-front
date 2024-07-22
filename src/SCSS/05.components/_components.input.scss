@@ -35,7 +35,7 @@ $input-ghost-border-width:       2px;
     background-color: $input-primary-color;
     border-color: $input-primary-color;
     color: #fff;
-    @include font-size(16px);
+    @include font-size(14px);
 
     span{
         transition: all ease-in-out 250ms;
