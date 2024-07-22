@@ -1,5 +1,4 @@
 import React from 'react'
-import ProtectedPath from '@/components/ProtectedPath'
 
 // Components
 import NuevoPaciente from '@/components/NuevoPaciente'
