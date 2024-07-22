@@ -31,7 +31,7 @@ const NuevoTurno = () => {
         mensaje: '',
         accion: null
     })
-    const { turno, setTurno, openTurno, setOpenTurno, filtros, reprogramando, setReprogramando } = useTurnoContext()
+    const { turno, setTurno, openTurno, setOpenTurno, filtros, setReprogramando } = useTurnoContext()
     const { user } = useUserContext()
     const router = useRouter()
 
@@ -272,7 +272,7 @@ const NuevoTurno = () => {
                 )
                 await response.json()
                 if(window) window.location.reload()
-            } catch (error) { setAccion({ value: false, text: '', accion: null }) }
+            } catch (error) { console.log(error); setAccion({ value: false, text: '', accion: null }) }
         }
         cancelar( )
     }
@@ -335,7 +335,7 @@ const NuevoTurno = () => {
     }, [])
 
     useEffect(() => {
-        if(typeof filtros.profesional === 'object' && filtros.profesional !== null)
+        if(filtros && filtros.profesional)
         {
             setTurno({
                 ...turno,

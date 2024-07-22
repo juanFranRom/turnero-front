@@ -101,7 +101,7 @@ const Input = ({ type, className, placeholder = false, defaultValue = undefined,
                                         handleChange(type === 'date' ? new Date(e.target.value.split('-')[0], e.target.value.split('-')[1] - 1, e.target.value.split('-')[2].split('T')[0]) : e.target.value)
                                 }}
                                 onClick={(e) => {
-                                    if (!isReadOnly && (type === "date" || type === "time"))
+                                    if (!isReadOnly && (type === "date"))
                                         e.target.showPicker();
                                 }}
                                 readOnly={isReadOnly}
@@ -118,7 +118,7 @@ const Input = ({ type, className, placeholder = false, defaultValue = undefined,
                             className={`c-input c-input--primary ${className}`}
                             checked={type === 'checkbox' ? value.checked : undefined}
                             onClick={(e) => {
-                                if (!isReadOnly && (type === "date" || type === "time"))
+                                if (!isReadOnly && (type === "date"))
                                     e.target.showPicker();
                             }}
                             onChange={(e) => {

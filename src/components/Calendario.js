@@ -129,6 +129,7 @@ const Calendario = () => {
                         fechaDesde: day.fecha,
                         horaDesde: interval.hora,
                         fechaHasta: day.fecha,
+                        horaHasta: interval.text.slice(interval.text.length - 5)
                     }
                 )
             })
@@ -287,7 +288,7 @@ const Calendario = () => {
                                                                 </div>
                                                             )
                                                         }
-                                                        else if(interval.tipo==="bloqueo" && !reprogramando){
+                                                        else if(interval.tipo==="bloqueo"){
                                                             //ponerle un colorcito rojo
                                                             return (
                                                                 <div key={index} className="c-daily_calendar__day_cell">
@@ -295,14 +296,14 @@ const Calendario = () => {
                                                                         {new Date(interval.start).getHours().toString().padStart(2, '0')}:{new Date(interval.start).getMinutes().toString().padStart(2, '0')}
                                                                     </div>
                                                                     <div className="c-daily_calendar__data_cell">
-                                                                        <FaLockOpen className='c-daily_calendar__lock_open' onClick={(e) => handleBloqueo(e, null, interval)}/>
+                                                                        <FaLockOpen className='c-daily_calendar__lock_open' onClick={(e) => !reprogramando ? handleBloqueo(e, null, interval) : null }/>
                                                                     </div> 
                                                                 </div>
                                                             )
                                                         } 
-                                                        else if(!reprogramando) {
+                                                        else  {
                                                             return (
-                                                                <div key={index} className="c-daily_calendar__day_cell" onClick={() => handleTurno(day, interval)}>
+                                                                <div key={index} className="c-daily_calendar__day_cell" onClick={ () => !reprogramando ? handleTurno(day, interval) : null }>
                                                                     <div className={`c-daily_calendar__time_cell ${ interval.tipo==="sobreturno" ? 'c-daily_calendar__time_cell--sobreturno' : '' } `}>
                                                                         {interval.text.slice(0, 5)} 
                                                                     </div>

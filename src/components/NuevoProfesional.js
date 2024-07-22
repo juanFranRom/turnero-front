@@ -59,6 +59,7 @@ const NuevoProfesional = ({ id = null, toClose = false }) => {
         setProfesional(aux)
     }
 
+    console.log(profesional);
     const producirInputs = (handleChange = null, cantInputs = 1, setCantInputs = null, values = [], type = '', placeholder = '') => {
         let result = []
 
@@ -248,7 +249,8 @@ const NuevoProfesional = ({ id = null, toClose = false }) => {
             objectToSend.contactos = objectToSend.contactos.concat(objectToSend.telefonos.map(el => { return ({ tipo: 'telefono', valor: el }) }))
             objectToSend.contactos = objectToSend.contactos.concat(objectToSend.emails.map(el => { return ({ tipo: 'email', valor: el }) }))
 
-            const response = await fetch(`${process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL}/profesionales/${profesional.id}`,
+            console.log(objectToSend);
+            /*const response = await fetch(`${process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL}/profesionales/${profesional.id}`,
                 {
                     method: "PUT",
                     headers: {
@@ -260,7 +262,6 @@ const NuevoProfesional = ({ id = null, toClose = false }) => {
                 }
             );
             const json = await response.json();
-            console.log(json);
             if (json.status === 'SUCCESS') {
                 router.push("/profesional");
             }
@@ -269,18 +270,22 @@ const NuevoProfesional = ({ id = null, toClose = false }) => {
                     value: true,
                     mensaje: json.message
                 })
-            }
+            }*/
+            setAccion({
+                text: '',
+                value: false
+            })
         } catch (error) {
             console.log(error)
             setError({
                 value: true,
                 mensaje: 'Ocurrio un error, vuelva a intentar luego.'
             })
+            setAccion({
+                text: '',
+                value: false
+            })
         }
-        setAccion({
-            text: '',
-            value: false
-        })
     }
 
     useEffect(() => {
@@ -302,7 +307,7 @@ const NuevoProfesional = ({ id = null, toClose = false }) => {
                 if (json.status === 'SUCCESS') {
                     let emails= json.data.contactos.filter((el) => el.tipo === 'email').map(el => el.valor)
                     let telefonos= json.data.contactos.filter((el) => el.tipo === 'telefono').map(el => el.valor)
-                    json.data.clinicas = json.data.clinicas.length ? json.data.clinicas : ['']
+                    json.data.clinicas = json.data.clinicas.length ? json.data.clinicas.map( el => el.nombre ) : ['']
                     json.data.obrasSociales = json.data.coberturas.length ? json.data.coberturas : ['']
                     json.data.practicas = json.data.practicas.length ? json.data.practicas : [{ nombre: '', duracion_moda: '' }]
                     json.data.telefonos = telefonos.length ? telefonos : ['']

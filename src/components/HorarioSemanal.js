@@ -12,7 +12,6 @@ const HorariosSemanales = ({ programacionDefault, actualizarProgramacion }) => {
         :
             []
     )
-    console.log(programacion);
     
     const manejoCambioDia = (day) => {
         if (diasSeleccionados.includes(day)) {

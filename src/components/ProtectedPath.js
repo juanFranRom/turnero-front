@@ -38,9 +38,7 @@ const ProtectedPath = ({ permisos =  null, children }) => {
         }
     }
     else
-    {
         redirect('/login')
-    }
 
 
     return children
