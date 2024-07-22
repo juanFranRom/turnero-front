@@ -18,7 +18,7 @@ const page = ({ params }) => {
     nombre: '',
     clinica: '',
     telefono: '',
-    email: '',
+    mail: '',
     rol: { id:1, value: 'Secretaria' }
   })
   const [error, setError] = useState({
@@ -58,6 +58,69 @@ const page = ({ params }) => {
     return true
   }
 
+  const editar = async () => {
+    setAccion({
+      text: 'Editando Usuario...',
+      value: true
+    })
+    try {
+      let dataToSend = {
+        ...data,
+      }
+      if(typeof data.rol !== "string"){
+        dataToSend.rol= data.rol.value.toLocaleLowerCase();
+      }else{
+        dataToSend.rol= dataToSend.rol.toLocaleLowerCase(); 
+      }
+      let validate = validar(dataToSend)
+      if(validate !== true && validate !='El campo "Contraseña" es obligatorio.')
+      {
+        setError({
+          value: true,
+          mensaje: validate
+        })
+        setAccion({
+          text: '',
+          value: false
+        })
+        return
+      }
+      //Puede no querer cambiar la pass
+      if(dataToSend.password && dataToSend.password.trim()===""){
+        delete dataToSend.password
+      }
+      const response = await fetch(`${process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL }/usuarios/${params.id}`,
+        {
+          method: "PUT",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            authorization: "Bearer "+ user.token,
+          },
+          body: JSON.stringify(dataToSend)
+        }
+      )
+
+      const json = await response.json();
+      if(json.status === 'SUCCESS')
+        router.push("/usuario");
+      else
+        setError({
+          value: true,
+          mensaje: json.message
+        })
+    } catch (error) {
+      console.log(error)
+      setError({
+        value: true,
+        mensaje: 'Ocurrio un error, vuelva a intentar luego.'
+      })
+    }
+    setAccion({
+      text: '',
+      value: false
+    })
+  }
   const crear = async () => {
     setAccion({
       text: 'Creando Usuario...',
@@ -114,7 +177,6 @@ const page = ({ params }) => {
       value: false
     })
   }
-
   useEffect(() => {
     const buscarUsuario = async (id) => {
         setLoading(true)
@@ -135,7 +197,7 @@ const page = ({ params }) => {
           {
             setData({ 
               ...json.data,
-              rol: json.data.rol === 'admin' ? 'Administrador' : 'Secretaria' 
+              rol: json.data.rol === 'administrador' ? 'Administrador' : json.data.rol === 'profesional'?'Profesional': 'Secretaria' 
             })
             setLoading(false)
           }
@@ -147,7 +209,7 @@ const page = ({ params }) => {
       }
       setLoading(false)
     }
-    if(params.id !== null)
+    if(params.id)
     {
         buscarUsuario(params.id)
     }
@@ -176,7 +238,7 @@ const page = ({ params }) => {
                                 {
                                   !params.id ?
                                     <Select 
-                                        options={[ { id:1, value: 'Secretaria' }, { id:2, value: 'Administrador' } ]} 
+                                        options={data.rol!== "Profesional"?[ { id:1, value: 'Secretaria' }, { id:2, value: 'Administrador' } ]:[ { id:3, value: 'Profesional' } ]} 
                                         handleChange={(val) => handleChange(val, 'rol')}
                                         defaultOption={data.rol}
                                     />
@@ -222,7 +284,7 @@ const page = ({ params }) => {
             {
                 loading || accion.value ?
                     <div className='c-nuevo_paciente__item c-nuevo_paciente__item--right u-p3--vertical'>
-                        <Loader text={accion.text.length > 0 ? accion.text : 'Cargando paciente...'}/>
+                        <Loader text={accion.text.length > 0 ? accion.text : 'Cargando usuario...'}/>
                     </div>
                 :
                     !loading?
