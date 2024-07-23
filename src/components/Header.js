@@ -39,6 +39,7 @@ const Header = ({ blocked }) => {
             setOpenCalendar(true)
     }, [pathname])
 
+    console.log(user);
     return (
         <header className={`c-header ${ blocked ? 'c-header--blocked' : ''}`}>
             <div className='u-flex-center-center'>
@@ -75,7 +76,7 @@ const Header = ({ blocked }) => {
                         </Link>
                     }
                     {
-                        user.rol === "admin" && 
+                        user.rol === "administrador" && 
                         <Link className='c-header__link' href={'/usuario'} onClick={() => setOpen((prevState) => !prevState)}>
                             <span>Usuarios</span>
                         </Link>

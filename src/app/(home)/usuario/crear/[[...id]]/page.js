@@ -11,6 +11,8 @@ import ProtectedPath from '@/components/ProtectedPath'
 import Input from '@/components_UI/Input'
 import Select from '@/components_UI/Select'
 import Loader from '@/components_UI/Loader'
+import Overlay from '@/components_UI/Overlay'
+import PopUp from '@/components_UI/PopUp'
 
 const page = ({ params }) => {
   const [data, setData] = useState({
@@ -30,6 +32,7 @@ const page = ({ params }) => {
       value: false
   })
   const [loading, setLoading] = useState( params.id ? true : false )
+  const [modificandoPass, setModificandoPass] = useState( false )
   const { user } = useUserContext()
   const router = useRouter()
 
@@ -38,7 +41,7 @@ const page = ({ params }) => {
     setData(aux)
   }
 
-  const validar = (data) => {
+  const validar = (data, crear = true) => {
     if (!data.nombre) {
       return 'El campo "Nombre y Apellido" es obligatorio.'
     }
@@ -47,7 +50,7 @@ const page = ({ params }) => {
       return 'El campo "Usuario" es obligatorio.'
     }
 
-    if (!data.password) {
+    if (!data.password && crear) {
       return 'El campo "Contraseña" es obligatorio.'
     }
 
@@ -59,6 +62,7 @@ const page = ({ params }) => {
   }
 
   const editar = async () => {
+    setModificandoPass( false )
     setAccion({
       text: 'Editando Usuario...',
       value: true
@@ -67,13 +71,14 @@ const page = ({ params }) => {
       let dataToSend = {
         ...data,
       }
-      if(typeof data.rol !== "string"){
-        dataToSend.rol= data.rol.value.toLocaleLowerCase();
-      }else{
-        dataToSend.rol= dataToSend.rol.toLocaleLowerCase(); 
-      }
-      let validate = validar(dataToSend)
-      if(validate !== true && validate !='El campo "Contraseña" es obligatorio.')
+
+      if(typeof data.rol !== "string")
+        dataToSend.rol = data.rol.value.toLocaleLowerCase();
+      else
+        dataToSend.rol = dataToSend.rol.toLocaleLowerCase(); 
+
+      let validate = validar(dataToSend, false)
+      if(validate !== true)
       {
         setError({
           value: true,
@@ -85,10 +90,12 @@ const page = ({ params }) => {
         })
         return
       }
+
       //Puede no querer cambiar la pass
-      if(dataToSend.password && dataToSend.password.trim()===""){
+      if(dataToSend.password && dataToSend.password.trim() === ""){
         delete dataToSend.password
       }
+
       const response = await fetch(`${process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL }/usuarios/${params.id}`,
         {
           method: "PUT",
@@ -121,6 +128,7 @@ const page = ({ params }) => {
       value: false
     })
   }
+
   const crear = async () => {
     setAccion({
       text: 'Creando Usuario...',
@@ -177,6 +185,7 @@ const page = ({ params }) => {
       value: false
     })
   }
+
   useEffect(() => {
     const buscarUsuario = async (id) => {
         setLoading(true)
@@ -217,6 +226,21 @@ const page = ({ params }) => {
 
   return (
       <div className='u-1/1 u-flex-center-center u-p2--vertical u-p5--horizontal'>
+        {
+          modificandoPass && 
+          <Overlay>
+            <PopUp centered={true}>
+              <div className='u-1/1 u-flex-column-center-center u-p2--vertical u-p5--horizontal'>
+                <p>Estas modificando la contraseña del usuario.</p>
+                <p className='u-m3--bottom'>¿Seguro que quieres continuar?</p>
+                <div className='u-1/1 u-flex-center-end'>
+                  <Button text={'Aceptar'} clickHandler={editar}/>
+                  <Button text={'Cancelar'} clickHandler={() => setModificandoPass( false )}/>
+                </div>
+              </div>
+            </PopUp>
+          </Overlay>
+        }
         <ProtectedPath permisos={["administrar_usuarios"]}/>
         <div className='u-absolute--top_right u-zindex--higher'>
           <Button text={'Volver'} url={'/usuario'}/>
@@ -289,7 +313,10 @@ const page = ({ params }) => {
                 :
                     !loading?
                         <div className='c-nuevo_paciente__item c-nuevo_paciente__item--right u-m4--top'>
-                            <Button text={ params.id ? 'Editar' : 'Crear' + ' Usuario' } clickHandler={ params.id ? () => editar() : () => crear() }/>
+                            <Button 
+                              text={ params.id ? 'Editar' : 'Crear' + ' Usuario' } 
+                              clickHandler={ params.id ? () => data.password && data.password.trim() !== "" ? setModificandoPass(true) : editar() : () => crear() }
+                            />
                         </div>
                     :
                         <></>
