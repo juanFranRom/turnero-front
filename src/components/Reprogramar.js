@@ -76,7 +76,6 @@ const Reprogramar = () => {
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
 
-    console.log(reprogramando);
     return (
         reprogramando && (reprogramando.enCurso || reprogramando.error || reprogramando.nuevoHorario) &&
         <Overlay>

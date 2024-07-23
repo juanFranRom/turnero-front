@@ -15,6 +15,7 @@ import Button from '@/components_UI/Button'
 import Input from '@/components_UI/Input'
 import Select from '@/components_UI/Select'
 import Loader from '@/components_UI/Loader'
+import Turno from './Turno'
 
 
 const NuevoPaciente = ({ id = null, toClose = false }) => {
@@ -61,7 +62,7 @@ const NuevoPaciente = ({ id = null, toClose = false }) => {
         for(let i = 0; i < cantInputs; i++)
         {
             result.push(
-                <div className='u-1/1 u-flex-start-center u-m2--vertical' key={i}>
+                <div className='u-1/1 u-flex-start-center u-m3--vertical' key={i}>
                     <Input className='u-1/1' type={type} placeholder={`${placeholder} ${i + 1}`} handleChange={(val) => handleChange(val, i)} defaultValue={values[i] ?? null}/>
                     <div style={{ width: '75px' }}>
                         {
@@ -303,147 +304,156 @@ const NuevoPaciente = ({ id = null, toClose = false }) => {
     }, [id])
 
     return (
-        <div className='c-nuevo_paciente'>
-            <h2 className='u-color--primary'>{id!==null? 'Editar': 'Nuevo'} Paciente</h2>
-            {
-                !loading ?
-                    <>
-                        {
-                            toClose &&
-                            <IoMdClose className='u-cursor--pointer u-text--1 u-absolute--top_right' onClick={() => setOpenPaciente( prev => !prev )}/>
-                        }
-                        <div className='c-nuevo_paciente__item'>
-                            <div>
-                                <span>Nombres</span>
-                                <Input defaultValue={paciente.nombre} handleChange={(val) => handleChange(val, 'nombre')}/>
+        <div className='u-1/1 u-flex-column-center-center'>
+            <div className='c-nuevo_paciente u-p5--horizontal'>
+                <h2 className='u-color--primary'>{id!==null? 'Editar': 'Nuevo'} Paciente</h2>
+                {
+                    !loading ?
+                        <>
+                            {
+                                toClose &&
+                                <IoMdClose className='u-cursor--pointer u-text--1 u-absolute--top_right' onClick={() => setOpenPaciente( prev => !prev )}/>
+                            }
+                            <div className='c-nuevo_paciente__item'>
+                                <div>
+                                    <span>Nombres</span>
+                                    <Input defaultValue={paciente.nombre} handleChange={(val) => handleChange(val, 'nombre')}/>
+                                </div>
                             </div>
-                        </div>
-                        <div className='c-nuevo_paciente__item'>
-                            <div>
-                                <span>Apellidos</span>
-                                <Input defaultValue={paciente.apellido} handleChange={(val) => handleChange(val, 'apellido')}/>
+                            <div className='c-nuevo_paciente__item'>
+                                <div>
+                                    <span>Apellidos</span>
+                                    <Input defaultValue={paciente.apellido} handleChange={(val) => handleChange(val, 'apellido')}/>
+                                </div>
                             </div>
-                        </div>
-                        <div className='c-nuevo_paciente__item'>
-                            <div>
-                                <span>DNI</span>
-                                <Input type={'number'} defaultValue={paciente.dni} handleChange={(val) => handleChange(val, 'dni')}/>
+                            <div className='c-nuevo_paciente__item'>
+                                <div>
+                                    <span>DNI</span>
+                                    <Input type={'number'} defaultValue={paciente.dni} handleChange={(val) => handleChange(val, 'dni')}/>
+                                </div>
                             </div>
-                        </div>
-                        <div className='c-nuevo_paciente__item'>
-                            <div>
-                                <span>Fecha de Nacimiento</span>
-                                <Input type={'date'} defaultValue={paciente.fecha_nacimiento} handleChange={(val) => handleChange(val, 'fecha_nacimiento')}/>
+                            <div className='c-nuevo_paciente__item'>
+                                <div>
+                                    <span>Fecha de Nacimiento</span>
+                                    <Input type={'date'} defaultValue={paciente.fecha_nacimiento} handleChange={(val) => handleChange(val, 'fecha_nacimiento')}/>
+                                </div>
                             </div>
-                        </div>
-                        <div className='c-nuevo_paciente__item'>
-                            <div>
-                                <span>Genero</span>
-                                <Select 
-                                    options={[ { id:1, value: 'Masculino' }, { id:2, value: 'Femenino' }, { id:3, value: 'Otro' } ]} 
-                                    handleChange={(val) => handleChange(val, 'genero')}
-                                    defaultOption={paciente.genero}
-                                />
+                            <div className='c-nuevo_paciente__item'>
+                                <div>
+                                    <span>Genero</span>
+                                    <Select 
+                                        options={[ { id:1, value: 'Masculino' }, { id:2, value: 'Femenino' }, { id:3, value: 'Otro' } ]} 
+                                        handleChange={(val) => handleChange(val, 'genero')}
+                                        defaultOption={paciente.genero}
+                                    />
+                                </div>
                             </div>
-                        </div>
-                        <div className='c-nuevo_paciente__item'>
-                            <div>
-                                <span>Obra Social</span>
-                                <Input defaultValue={paciente.obraSocial} handleChange={(val) => handleChange(val, 'obraSocial')}/>
+                            <div className='c-nuevo_paciente__item'>
+                                <div>
+                                    <span>Obra Social</span>
+                                    <Input defaultValue={paciente.obraSocial} handleChange={(val) => handleChange(val, 'obraSocial')}/>
+                                </div>
                             </div>
-                        </div>
-                        <div className='c-nuevo_paciente__item'>
-                            <div>
-                                <span>Numero Obra Social</span>
-                                <Input defaultValue={paciente.obraSocialNum} handleChange={(val) => handleChange(val, 'obraSocialNum')}/>
+                            <div className='c-nuevo_paciente__item'>
+                                <div>
+                                    <span>Numero Obra Social</span>
+                                    <Input defaultValue={paciente.obraSocialNum} handleChange={(val) => handleChange(val, 'obraSocialNum')}/>
+                                </div>
                             </div>
-                        </div>
-                        <div className='c-nuevo_paciente__item c-nuevo_paciente__hora'>
-                            <div>
-                                <span>Telefonos</span>
-                                {
-                                    producirInputs(
-                                        (val, index) => handleChangeArray(val, 'telefonos', index),
-                                        paciente.telefonos.length,
-                                        (index) => {
-                                            if(index >= paciente.telefonos.length)
-                                            {
-                                                setPaciente(prev => {
-                                                    let aux = [...prev.telefonos]
-                                                    aux.push('')
-                                                    return({ ...prev, telefonos: aux })
-                                                })
-                                            }
-                                            else
-                                            {
-                                                setPaciente(prev =>{
-                                                    let aux = [...prev.telefonos]
-                                                    aux.splice(index,  1)
-                                                    return({ ...prev, telefonos: aux })
-                                                })
-                                            }
-                                        },
-                                        paciente.telefonos,
-                                        'number',
-                                        'Telefono'
-                                    )   
-                                }
+                            <div className='c-nuevo_paciente__item c-nuevo_paciente__hora'>
+                                <div>
+                                    <span>Telefonos</span>
+                                    {
+                                        producirInputs(
+                                            (val, index) => handleChangeArray(val, 'telefonos', index),
+                                            paciente.telefonos.length,
+                                            (index) => {
+                                                if(index >= paciente.telefonos.length)
+                                                {
+                                                    setPaciente(prev => {
+                                                        let aux = [...prev.telefonos]
+                                                        aux.push('')
+                                                        return({ ...prev, telefonos: aux })
+                                                    })
+                                                }
+                                                else
+                                                {
+                                                    setPaciente(prev =>{
+                                                        let aux = [...prev.telefonos]
+                                                        aux.splice(index,  1)
+                                                        return({ ...prev, telefonos: aux })
+                                                    })
+                                                }
+                                            },
+                                            paciente.telefonos,
+                                            'number',
+                                            'Telefono'
+                                        )   
+                                    }
+                                </div>
                             </div>
-                        </div>
-                        <div className='c-nuevo_paciente__item c-nuevo_paciente__hora'>
-                            <div>
-                                <span>Emails</span>
-                                {
-                                    producirInputs(
-                                        (val, index) => handleChangeArray(val, 'emails', index),
-                                        paciente.emails.length,
-                                        (index) => {
-                                            if(index >= paciente.emails.length)
-                                            {
-                                                setPaciente(prev => {
-                                                    let aux = [...prev.emails]
-                                                    aux.push('')
-                                                    return({ ...prev, emails: aux })
-                                                })
-                                            }
-                                            else
-                                            {
-                                                setPaciente(prev =>{
-                                                    let aux = [...prev.emails]
-                                                    aux.splice(index,  1)
-                                                    return({ ...prev, emails: aux })
-                                                })
-                                            }
-                                        },
-                                        paciente.emails,
-                                        'mail',
-                                        'Email'
-                                    )   
-                                }
+                            <div className='c-nuevo_paciente__item c-nuevo_paciente__hora'>
+                                <div>
+                                    <span>Emails</span>
+                                    {
+                                        producirInputs(
+                                            (val, index) => handleChangeArray(val, 'emails', index),
+                                            paciente.emails.length,
+                                            (index) => {
+                                                if(index >= paciente.emails.length)
+                                                {
+                                                    setPaciente(prev => {
+                                                        let aux = [...prev.emails]
+                                                        aux.push('')
+                                                        return({ ...prev, emails: aux })
+                                                    })
+                                                }
+                                                else
+                                                {
+                                                    setPaciente(prev =>{
+                                                        let aux = [...prev.emails]
+                                                        aux.splice(index,  1)
+                                                        return({ ...prev, emails: aux })
+                                                    })
+                                                }
+                                            },
+                                            paciente.emails,
+                                            'mail',
+                                            'Email'
+                                        )   
+                                    }
+                                </div>
                             </div>
-                        </div>
-                    </>
-                :
-                    <></>
-            }
-            {
-                error.value &&
-                <div className='c-nuevo_paciente__item c-nuevo_paciente__item--right'>
-                    <p className='u-text--1 u-color--red'>{error.mensaje}</p>
-                </div>
-            }
-            {
-                loading || accion.value ?
-                    <div className='c-nuevo_paciente__item c-nuevo_paciente__item--right u-p3--vertical'>
-                        <Loader text={accion.text.length > 0 ? accion.text : 'Cargando paciente...'}/>
-                    </div>
-                :
-                    !loading?
-                        <div className='c-nuevo_paciente__item c-nuevo_paciente__item--right u-m4--top'>
-                            <Button text={ id ? 'Editar Paciente' : 'Crear Paciente'} clickHandler={id ? () => editar(paciente) : () => crear(paciente)}/>
-                        </div>
+                        </>
                     :
                         <></>
+                }
+                {
+                    error.value &&
+                    <div className='c-nuevo_paciente__item c-nuevo_paciente__item--right'>
+                        <p className='u-text--1 u-color--red'>{error.mensaje}</p>
+                    </div>
+                }
+                {
+                    loading || accion.value ?
+                        <div className='c-nuevo_paciente__item c-nuevo_paciente__item--right u-p3--vertical'>
+                            <Loader text={accion.text.length > 0 ? accion.text : 'Cargando paciente...'}/>
+                        </div>
+                    :
+                        !loading?
+                            <div className='c-nuevo_paciente__item c-nuevo_paciente__item--right u-m4--top'>
+                                <Button text={ id ? 'Editar Paciente' : 'Crear Paciente'} clickHandler={id ? () => editar(paciente) : () => crear(paciente)}/>
+                            </div>
+                        :
+                            <></>
+                }
+            </div>
+            {
+                paciente.turnos && paciente.turnos.length > 0 &&
+                <div className='u-1/1 u-flex-column-center-start u-p3--horizontal'>
+                    <h2 className='u-text--2 u-color--primary'>Turnos</h2>
+                    {paciente.turnos.map( (turno) => (<Turno data={turno} onlyView={true}/>))}
+                </div>
             }
         </div>
     )

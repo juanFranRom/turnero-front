@@ -98,6 +98,7 @@ const Calendario = () => {
                         nombrePractica: `${interval.duracion}' - ${primeraLetraMayus(interval.practica)}`,
                         nota: interval.nota,
                         tipo: interval.tipo,
+                        onlyView: false
                     }
                 )
             })

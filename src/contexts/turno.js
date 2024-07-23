@@ -77,6 +77,7 @@ export const TurnoContextProvider = ({ children }) => {
             fecha: null,
             hora: null,
             id: null,
+            onlyView: false
         })
     }
 

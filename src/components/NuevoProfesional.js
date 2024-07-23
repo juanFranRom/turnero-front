@@ -59,7 +59,6 @@ const NuevoProfesional = ({ id = null, toClose = false }) => {
         setProfesional(aux)
     }
 
-    console.log(profesional);
     const producirInputs = (handleChange = null, cantInputs = 1, setCantInputs = null, values = [], type = '', placeholder = '') => {
         let result = []
 
@@ -249,8 +248,7 @@ const NuevoProfesional = ({ id = null, toClose = false }) => {
             objectToSend.contactos = objectToSend.contactos.concat(objectToSend.telefonos.map(el => { return ({ tipo: 'telefono', valor: el }) }))
             objectToSend.contactos = objectToSend.contactos.concat(objectToSend.emails.map(el => { return ({ tipo: 'email', valor: el }) }))
 
-            console.log(objectToSend);
-            /*const response = await fetch(`${process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL}/profesionales/${profesional.id}`,
+            const response = await fetch(`${process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL}/profesionales/${profesional.id}`,
                 {
                     method: "PUT",
                     headers: {
@@ -270,7 +268,7 @@ const NuevoProfesional = ({ id = null, toClose = false }) => {
                     value: true,
                     mensaje: json.message
                 })
-            }*/
+            }
             setAccion({
                 text: '',
                 value: false

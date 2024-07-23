@@ -24,7 +24,7 @@ const estados = [
     'Ausente',
 ]
 
-const Turno = ({ data = null }) => {
+const Turno = ({ data = null, onlyView = false }) => {
     const [desplegable, setDesplegable] = useState(false)
     const [desplegableCSS, setDesplegableCSS] = useState({});
     const [currentTime, setCurrentTime] = useState(new Date());
@@ -113,6 +113,7 @@ const Turno = ({ data = null }) => {
                     nombrePractica:  `${data.duracion}' - ${primeraLetraMayus(data.practica)}`,
                     nota: data.nota,
                     tipo: data.tipo,
+                    onlyView: true,
                 }
             )
         })
@@ -147,16 +148,21 @@ const Turno = ({ data = null }) => {
         return () => clearInterval(interval);
     }, []);*/
 
+    console.log(data);
     return (
         <>
+            {
+                onlyView &&
+                <span className='u-m3--top'>{new Date(data.fecha).getDate()}/{new Date(data.fecha).getMonth() + 1}/{new Date(data.fecha).getFullYear()}</span>
+            }
             <div 
                 className={`
-                    c-turno 
-                    ${data.estado.toLowerCase() === 'esperando' ? 'c-turno--esperando' : ''}
-                    ${data.estado.toLowerCase() === 'consulta' ? 'c-turno--consulta' : ''}
-                    ${data.estado.toLowerCase() === 'atendido' ? 'c-turno--atendido' : ''}
-                    ${data.estado.toLowerCase() === 'ausente' ? 'c-turno--ausente' : ''}
-                    ${data.estado.toLowerCase() === 'cancelado' ? 'c-turno--cancelado' : ''}
+                    c-turno ${ onlyView ? 'c-turno--onlyView' : '' }
+                    ${data.estado.toLowerCase() === 'esperando' && !onlyView ? 'c-turno--esperando' : ''}
+                    ${data.estado.toLowerCase() === 'en consulta' && !onlyView ? 'c-turno--consulta' : ''}
+                    ${data.estado.toLowerCase() === 'atendido' && !onlyView ? 'c-turno--atendido' : ''}
+                    ${data.estado.toLowerCase() === 'ausente' && !onlyView ? 'c-turno--ausente' : ''}
+                    ${data.estado.toLowerCase() === 'cancelado' && !onlyView ? 'c-turno--cancelado' : ''}
                 `}
             >
                 <div className='c-turno__horario'>
@@ -194,35 +200,41 @@ const Turno = ({ data = null }) => {
                     </div>
                     <div className='c-turno__doctor'>
                         <div className='c-turno__hora'>
-                            <span className='u-text--bold'>{primeraLetraMayus(data.practica)}</span>
+                            <span className='u-text--bold'>Practica - {primeraLetraMayus(data.practica)}</span>
                         </div>
                         <div className='c-turno__div c-turno__informacion--column'>
                             <span className='u-text--bold'>{primeraLetraMayus(data.doctor)}</span>
                         </div>
                     </div>
                 </div>
-                <div className='c-turno__estado'>
-                    <button ref={botonRef} onClick={() => setDesplegable( (prev) => !prev )}>
-                        <IoMdArrowDropdown/>
-                    </button>
-                </div>
-            </div>
-            <div 
-                className={`c-turno__desplegable ${ desplegable ? 'c-turno__desplegable--open' : ''}`} 
-                ref={desplegableRef}
-                style={desplegableCSS}
-            >
                 {
-                    estados.map( (ele, index) => {
-
-                        return(
-                            <div className='c-turno__option' key={index} onClick={ () => editarEstado(ele) }>
-                                {ele.slice(0, 1).toUpperCase()}{ele.slice(1)}
-                            </div>
-                        )
-                    })
+                    !onlyView &&
+                    <div className='c-turno__estado'>
+                        <button ref={botonRef} onClick={() => setDesplegable( (prev) => !prev )}>
+                            <IoMdArrowDropdown/>
+                        </button>
+                    </div>
                 }
             </div>
+            {
+                !onlyView &&
+                <div 
+                    className={`c-turno__desplegable ${ desplegable ? 'c-turno__desplegable--open' : ''}`} 
+                    ref={desplegableRef}
+                    style={desplegableCSS}
+                >
+                    {
+                        estados.map( (ele, index) => {
+    
+                            return(
+                                <div className='c-turno__option' key={index} onClick={ () => editarEstado(ele) }>
+                                    {ele.slice(0, 1).toUpperCase()}{ele.slice(1)}
+                                </div>
+                            )
+                        })
+                    }
+                </div>
+            }
         </>
     )
 }

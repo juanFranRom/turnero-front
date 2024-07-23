@@ -7,7 +7,7 @@ import ProtectedPath from '@/components/ProtectedPath'
 
 const page = ({ params }) => {
   return (
-      <div className='u-1/1 u-flex-center-center u-p2--vertical u-p5--horizontal'>
+      <div className='u-1/1 u-flex-center-center u-p2--vertical'>
         {
           params && params.id?
           <ProtectedPath permisos={['modificar_pacientes']}/>

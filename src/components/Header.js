@@ -39,7 +39,6 @@ const Header = ({ blocked }) => {
             setOpenCalendar(true)
     }, [pathname])
 
-    console.log(user);
     return (
         <header className={`c-header ${ blocked ? 'c-header--blocked' : ''}`}>
             <div className='u-flex-center-center'>
@@ -59,7 +58,7 @@ const Header = ({ blocked }) => {
                         setMenuTurno(prev => !prev)
                     }}
                 />
-                <div className={`c-header__links ${open ? 'c-header__links--open' : ''}`}>
+                <div className={`c-header__links ${ open ? 'c-header__links--open' : '' }`}>
                     <Link className='c-header__link' href={'/'} onClick={() => setOpen((prevState) => !prevState)}>
                         <span>Calendario</span>
                     </Link>
