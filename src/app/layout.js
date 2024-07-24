@@ -4,8 +4,6 @@ import { Open_Sans } from 'next/font/google'
 // SASS
 import './styles.scss'
 
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 export const metadata = {
   title: "Turnero Innova",
   description: "Turnero Innova",
