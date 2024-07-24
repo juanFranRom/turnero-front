@@ -223,10 +223,14 @@ const page = ({ params }) => {
     {
         buscarUsuario(params.id)
     }
-}, [params.id])
-
+  }, [params.id])
+  
   return (
       <div className='u-1/1 u-flex-center-center u-p2--vertical u-p5--horizontal'>
+        {
+          parseInt(user.id) !== parseInt(params.id[0]) &&
+          <ProtectedPath permisos={["administrar_usuarios"]}/>
+        }
         {
           modificandoPass && 
           <Overlay>
@@ -242,7 +246,6 @@ const page = ({ params }) => {
             </PopUp>
           </Overlay>
         }
-        <ProtectedPath permisos={["administrar_usuarios"]}/>
         <div className='u-absolute--top_right u-zindex--higher'>
           <Button text={'Volver'} url={'/usuario'}/>
         </div>

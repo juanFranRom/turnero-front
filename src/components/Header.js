@@ -77,12 +77,12 @@ const Header = ({ blocked }) => {
                         </Link>
                     }
                     {
-                        user.rol === "administrador" ? 
+                        String(user.rol).trim() === "administrador" || String(user.rol).trim() === "admin"? 
                             <Link className='c-header__link' href={'/usuario'} onClick={() => setOpen((prevState) => !prevState)}>
                                 <span>Usuarios</span>
                             </Link>
                         :
-                            <Link className='c-header__link' href={`/usuario/${user.id}`} onClick={() => setOpen((prevState) => !prevState)}>
+                            <Link className='c-header__link' href={`/usuario/crear/${user.id}`} onClick={() => setOpen((prevState) => !prevState)}>
                                 <span>Mi perfil</span>
                             </Link>
                     }

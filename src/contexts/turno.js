@@ -211,7 +211,7 @@ export const TurnoContextProvider = ({ children }) => {
     }
 
     useEffect(() => {
-        if(user)
+        if(user && user.rol !== 'profesional')
             buscarProfesionales()
     }, [user])
 
@@ -223,7 +223,7 @@ export const TurnoContextProvider = ({ children }) => {
     useEffect(() => {
         const buscarTurnosCalendario = async ( dia, profesional ) => {
             try {
-                const response = await fetch(`${ process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL}/calendario/disponibilidad/5?fecha=${dia.getFullYear()}-${dia.getMonth() + 1}-${dia.getDate()}&profesionales=${profesional.id}`,
+                const response = await fetch(`${ process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL}/calendario/disponibilidad/5?fecha=${dia.getFullYear()}-${dia.getMonth() + 1}-${dia.getDate()}${profesional ? `&profesionales=${profesional.id}` : ''}`,
                     {
                         method: "GET",
                         headers: {
@@ -265,7 +265,9 @@ export const TurnoContextProvider = ({ children }) => {
 
         if(pathname === '/' && user)
         {
-            if(filtros.profesional)
+            if(user.rol === 'profesional')
+                buscarTurnosCalendario(date, null)
+            else if(filtros.profesional)
                 buscarTurnosCalendario(date, filtros.profesional)
             else
                 setDias(getWeekDays(date ?? new Date()))
