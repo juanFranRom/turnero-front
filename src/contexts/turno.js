@@ -34,6 +34,7 @@ export const TurnoContextProvider = ({ children }) => {
         fechaHasta: null,
         horaHasta: null,
     })
+    const [dias, setDias] = useState(null)
     const [cancelandoBloqueo, setCancelandoBloqueo] = useState(null)
     const [filtros, setFiltros] = useState(typeof window !== 'undefined' && window.sessionStorage.getItem('filtros-innova') ?
             JSON.parse(window.sessionStorage.getItem('filtros-innova'))
@@ -137,6 +138,57 @@ export const TurnoContextProvider = ({ children }) => {
     }, [date, filtros])
 
     useEffect(() => {
+        const buscarTurnosCalendario = async ( dia, profesional ) => {
+            try {
+                const response = await fetch(`${ process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL}/calendario/disponibilidad/5?fecha=${dia.getFullYear()}-${dia.getMonth() + 1}-${dia.getDate()}&profesionales=${profesional.id}`,
+                    {
+                        method: "GET",
+                        headers: {
+                            Accept: "application/json",
+                            "Content-Type": "application/json",
+                            authorization: "Bearer " + user.token,
+                        }
+                    }
+                )
+                const json = await response.json()
+                if (json.status === "SUCCESS") {
+                    let option =  { weekday: 'long' };
+                    let aux = json.data.map(day=>{
+                        let [year,month,dia] = day.dia.split('-');
+                        let fecha = new Date(year,parseInt(month)-1,dia,0,0,0);
+                        const dayName = fecha.toLocaleDateString('es-ES',option)
+                        return{
+                            nombre:dayName,
+                            fecha,
+                            intervalos: day.list.map(ele => ({ ...ele })).sort((a, b) => {
+                                if (a.hora < b.hora) return -1;
+                                if (a.hora > b.hora) return 1;
+                                // Si las horas son iguales, ordenamos por tipo
+                                if (a.hora === b.hora) {
+                                    if (a.tipo === 'turno' && b.tipo === 'sobreturno') return -1;
+                                    if (a.tipo === 'sobreturno' && b.tipo === 'turno') return 1;
+                                }
+                                return 0;
+                            })
+                        }
+                    });
+                    setDias(aux)
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
+        if(pathname.includes('calendario'))
+        {
+            if(filtros.profesional)
+                buscarTurnosCalendario(date, filtros.profesional)
+            else
+                setDias(getWeekDays(date ?? new Date()))
+        }
+    },[date, filtros])
+
+    useEffect(() => {
         if(window) 
         {
             window.sessionStorage.setItem('date-innova', date)
@@ -163,6 +215,7 @@ export const TurnoContextProvider = ({ children }) => {
             openBloqueo,
             cancelandoBloqueo,
             reprogramando,
+            dias,
             cancelarBloqueo,
             setReprogramando,
             setCancelandoBloqueo,

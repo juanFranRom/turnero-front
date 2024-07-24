@@ -64,11 +64,9 @@ const primeraLetraMayus = (string) => {
 
 
 const Calendario = () => {
-    const [dias, setDias] = useState(null)
     const [visibleDays, setVisibleDays] = useState(null)
     const calendarRef = useRef(null)
-    const { user } = useUserContext()
-    const { date, mesesEspañol, setTurno, openTurno, setOpenTurno, filtros, setBloqueo, setOpenBloqueo, cancelandoBloqueo, setCancelandoBloqueo, reprogramando, setReprogramando } = useTurnoContext()
+    const { dias, mesesEspañol, setTurno, openTurno, setOpenTurno, filtros, setBloqueo, setOpenBloqueo, setCancelandoBloqueo, reprogramando, setReprogramando } = useTurnoContext()
 
     const handleTurno = (day, interval) => {
         setOpenBloqueo(false)
@@ -152,10 +150,6 @@ const Calendario = () => {
     }
 
     useEffect(() => {
-        setDias(getWeekDays(date))
-    },[date])
-
-    useEffect(() => {
         const handleResize = () => {
             if (calendarRef.current && dias) {
                 const calendarWidth = calendarRef.current.offsetWidth
@@ -181,54 +175,7 @@ const Calendario = () => {
         return () => window.removeEventListener('resize', handleResize)
     }, [dias, calendarRef.current?.offsetWidth, openTurno])
 
-    useEffect(() => {
-        const buscarTurnos = async ( dia, profesional ) => {
-            try {
-                const response = await fetch(`${ process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL}/calendario/disponibilidad/5?fecha=${dia.getFullYear()}-${dia.getMonth() + 1}-${dia.getDate()}&profesionales=${profesional.id}`,
-                    {
-                        method: "GET",
-                        headers: {
-                            Accept: "application/json",
-                            "Content-Type": "application/json",
-                            authorization: "Bearer " + user.token,
-                        }
-                    }
-                )
-                const json = await response.json()
-                if (json.status === "SUCCESS") {
-                    let option =  { weekday: 'long' };
-                    let aux = json.data.map(day=>{
-                        let [year,month,dia] = day.dia.split('-');
-                        let fecha = new Date(year,parseInt(month)-1,dia,0,0,0);
-                        const dayName = fecha.toLocaleDateString('es-ES',option)
-                        return{
-                            nombre:dayName,
-                            fecha,
-                            intervalos: day.list.map(ele => ({ ...ele })).sort((a, b) => {
-                                if (a.hora < b.hora) return -1;
-                                if (a.hora > b.hora) return 1;
-                                // Si las horas son iguales, ordenamos por tipo
-                                if (a.hora === b.hora) {
-                                    if (a.tipo === 'turno' && b.tipo === 'sobreturno') return -1;
-                                    if (a.tipo === 'sobreturno' && b.tipo === 'turno') return 1;
-                                }
-                                return 0;
-                            })
-                        }
-                    });
-                    setDias(aux)
-                }
-            } catch (error) {
-                console.log(error);
-            }
-        }
-        if(filtros.profesional)
-        {
-            buscarTurnos(date, filtros.profesional)
-        }
-        else
-            setDias(getWeekDays(date ?? new Date()))
-    },[date, filtros])
+    
     
     return (
         <>
