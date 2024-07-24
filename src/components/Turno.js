@@ -25,6 +25,7 @@ const estados = [
 ]
 
 const Turno = ({ data = null, onlyView = false }) => {
+    const [dataTurno, setDataTurno] = useState( data ?? null )
     const [desplegable, setDesplegable] = useState(false)
     const [desplegableCSS, setDesplegableCSS] = useState({});
     const [currentTime, setCurrentTime] = useState(new Date());
@@ -82,7 +83,7 @@ const Turno = ({ data = null, onlyView = false }) => {
     const editarEstado = ( nuevoEstado ) => {
         const editar = async (nuevoEstado) => {
             try {
-                const response = await fetch(`${ process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL}/turnos/${data.id}`,
+                const response = await fetch(`${ process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL}/turnos/${dataTurno.id}`,
                     {
                         method: "PUT",
                         headers: {
@@ -106,13 +107,13 @@ const Turno = ({ data = null, onlyView = false }) => {
                 {
                     ...prev,
                     fecha: date,
-                    hora: data.horario,
-                    id: data.id,
-                    nombrePaciente: primeraLetraMayus(data.nombre),
-                    nombreProfesional: primeraLetraMayus(data.doctor),
-                    nombrePractica:  `${data.duracion}' - ${primeraLetraMayus(data.practica)}`,
-                    nota: data.nota,
-                    tipo: data.tipo,
+                    hora: dataTurno.horario,
+                    id: dataTurno.id,
+                    nombrePaciente: primeraLetraMayus(dataTurno.nombre),
+                    nombreProfesional: primeraLetraMayus(dataTurno.doctor),
+                    nombrePractica:  `${dataTurno.duracion}' - ${primeraLetraMayus(dataTurno.practica)}`,
+                    nota: dataTurno.nota,
+                    tipo: dataTurno.tipo,
                     onlyView: true,
                 }
             )
@@ -147,63 +148,66 @@ const Turno = ({ data = null, onlyView = false }) => {
 
         return () => clearInterval(interval);
     }, []);*/
+    
+    useEffect(() => {
+        setDataTurno(data)
+    }, [data])
 
-    console.log(data);
     return (
         <>
             {
                 onlyView &&
-                <span className='u-m3--top'>{new Date(data.fecha).getDate()}/{new Date(data.fecha).getMonth() + 1}/{new Date(data.fecha).getFullYear()}</span>
+                <span className='u-m3--top'>{new Date(dataTurno.fecha).getDate()}/{new Date(dataTurno.fecha).getMonth() + 1}/{new Date(dataTurno.fecha).getFullYear()}</span>
             }
             <div 
                 className={`
                     c-turno ${ onlyView ? 'c-turno--onlyView' : '' }
-                    ${data.estado.toLowerCase() === 'esperando' && !onlyView ? 'c-turno--esperando' : ''}
-                    ${data.estado.toLowerCase() === 'en consulta' && !onlyView ? 'c-turno--consulta' : ''}
-                    ${data.estado.toLowerCase() === 'atendido' && !onlyView ? 'c-turno--atendido' : ''}
-                    ${data.estado.toLowerCase() === 'ausente' && !onlyView ? 'c-turno--ausente' : ''}
-                    ${data.estado.toLowerCase() === 'cancelado' && !onlyView ? 'c-turno--cancelado' : ''}
+                    ${dataTurno.estado.toLowerCase() === 'esperando' && !onlyView ? 'c-turno--esperando' : ''}
+                    ${dataTurno.estado.toLowerCase() === 'en consulta' && !onlyView ? 'c-turno--consulta' : ''}
+                    ${dataTurno.estado.toLowerCase() === 'atendido' && !onlyView ? 'c-turno--atendido' : ''}
+                    ${dataTurno.estado.toLowerCase() === 'ausente' && !onlyView ? 'c-turno--ausente' : ''}
+                    ${dataTurno.estado.toLowerCase() === 'cancelado' && !onlyView ? 'c-turno--cancelado' : ''}
                 `}
             >
                 <div className='c-turno__horario'>
-                    <div className={`c-turno__hora ${ data.tipo==="sobreturno" ? 'c-turno__hora--sobreturno' : '' } `}>
+                    <div className={`c-turno__hora ${ dataTurno.tipo==="sobreturno" ? 'c-turno__hora--sobreturno' : '' } `}>
                         <GiInfo className='u-cursor'/>
                         {
-                            data.nota &&
-                            <Tooltip className={'u-flex-center-center'} text={data.nota}>
+                            dataTurno.nota &&
+                            <Tooltip className={'u-flex-center-center'} text={dataTurno.nota}>
                                 <MdInsertComment onClick={ handleModificarTurno } className='u-cursor'/>
                             </Tooltip>
                         }
-                        <span onClick={ handleModificarTurno }>{data.horario}</span>
+                        <span onClick={ handleModificarTurno }>{dataTurno.horario}</span>
                     </div>
                     <div className='c-turno__div c-turno__informacion--column'>
-                        <span>{haceTanto(data.ultimaModificacion)}</span>
-                        <span>{data.estado}</span>
+                        <span>{haceTanto(dataTurno.ultimaModificacion)}</span>
+                        <span>{dataTurno.estado}</span>
                     </div>
                 </div>
                 <div className='c-turno__paciente'>
-                    <span className='c-turno__nombre'>{primeraLetraMayus(data.nombre)}</span>
+                    <span className='c-turno__nombre'>{primeraLetraMayus(dataTurno.nombre)}</span>
                     <div className='c-turno__informacion'>
                         {
-                            data.telefono &&
+                            dataTurno.telefono &&
                             <>
-                                <a class="c-turno__telefono" href={`http://web.whatsapp.com/send?phone=${data.telefono}`} target="_blank">{data.telefono}</a>
-                                <a class="c-turno__telefono--mobile" href={`whatsapp://send?phone=${data.telefono}`} target="_blank">{data.telefono}</a>
+                                <a class="c-turno__telefono" href={`http://web.whatsapp.com/send?phone=${dataTurno.telefono}`} target="_blank">{dataTurno.telefono}</a>
+                                <a class="c-turno__telefono--mobile" href={`whatsapp://send?phone=${dataTurno.telefono}`} target="_blank">{dataTurno.telefono}</a>
                             </>
                         }
-                        <span className='c-turno__dni'>{data.dni}</span>
+                        <span className='c-turno__dni'>{dataTurno.dni}</span>
                     </div>
                 </div>
                 <div className='c-turno__clinica'>
                     <div className='u-m3--right'>
-                        <span className='c-turno__obra'>{primeraLetraMayus(data.obraSocial)}</span>
+                        <span className='c-turno__obra'>{primeraLetraMayus(dataTurno.obraSocial)}</span>
                     </div>
                     <div className='c-turno__doctor'>
                         <div className='c-turno__hora'>
-                            <span className='u-text--bold'>Practica - {primeraLetraMayus(data.practica)}</span>
+                            <span className='u-text--bold'>Practica - {primeraLetraMayus(dataTurno.practica)}</span>
                         </div>
                         <div className='c-turno__div c-turno__informacion--column'>
-                            <span className='u-text--bold'>{primeraLetraMayus(data.doctor)}</span>
+                            <span className='u-text--bold'>{primeraLetraMayus(dataTurno.doctor)}</span>
                         </div>
                     </div>
                 </div>
