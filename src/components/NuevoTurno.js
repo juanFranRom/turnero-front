@@ -18,6 +18,7 @@ import { useUserContext } from '@/contexts/user'
 import { IoMdClose } from "react-icons/io"
 import Textarea from '@/components_UI/Textarea'
 import PopUp from '@/components_UI/PopUp'
+import { checkFetch } from '@/utils/checkFetch'
 
 
 const NuevoTurno = () => {
@@ -32,7 +33,7 @@ const NuevoTurno = () => {
         accion: null
     })
     const { turno, setTurno, openTurno, setOpenTurno, filtros, setReprogramando, profesionales } = useTurnoContext()
-    const { user } = useUserContext()
+    const { user, logOut } = useUserContext()
     const router = useRouter()
 
     const handleDatalist = (val, key) => {
@@ -80,6 +81,7 @@ const NuevoTurno = () => {
                 }
             )
             const json = await response.json()
+            checkFetch(json, logOut)
             if (json.status === "SUCCESS") {
                 if(json.data.length && json.data.length > 0)
                     setter(json.data)
@@ -180,6 +182,7 @@ const NuevoTurno = () => {
                 )
                 const json = await response.json()
                 setLoading(false)
+                checkFetch(json, logOut)
                 if (json.status === "SUCCESS") 
                 {
                     setOpenTurno( prev => !prev )
@@ -228,6 +231,7 @@ const NuevoTurno = () => {
                     }
                 )
                 const json = await response.json()
+                checkFetch(json, logOut)
                 setLoading(false)
                 if (json.status === "SUCCESS")
                 {
@@ -270,7 +274,8 @@ const NuevoTurno = () => {
                         body: JSON.stringify({ estado: 'Cancelado' })
                     }
                 )
-                await response.json()
+                response = await response.json()
+                checkFetch(response, logOut)
                 //if(window) window.location.reload()
             } catch (error) { console.log(error); setAccion({ value: false, text: '', accion: null }) }
         }

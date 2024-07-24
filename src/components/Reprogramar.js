@@ -11,11 +11,12 @@ import Overlay from '@/components_UI/Overlay'
 import PopUp from '@/components_UI/PopUp'
 import Button from '@/components_UI/Button'
 import Loader from '@/components_UI/Loader'
+import { checkFetch } from '@/utils/checkFetch'
 
 
 const Reprogramar = () => {
     const { reprogramando, setReprogramando, filtros } = useTurnoContext()
-    const { user } = useUserContext()
+    const { user, logOut } = useUserContext()
 
     const turnoParaEnviar = ( nuevaFecha, nuevoHorario ) => {
         let turnoParaEnviar = { }
@@ -48,6 +49,7 @@ const Reprogramar = () => {
                 }
             )
             const json = await response.json()
+            checkFetch(json, logOut)
             if (json.status === "SUCCESS")
             {
                 setReprogramando( null )

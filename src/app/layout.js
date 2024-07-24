@@ -1,6 +1,9 @@
 // Fonts
 import { Open_Sans } from 'next/font/google'
 
+// Context
+import { UserContextProvider } from '@/contexts/user'
+
 // SASS
 import './styles.scss'
 
@@ -21,7 +24,9 @@ export default function RootLayout({ children }) {
         <link rel="icon" href={metadata.icon}/>
       </head>
       <body className={openSans.className}>
-        {children}
+        <UserContextProvider>
+          {children}
+        </UserContextProvider>
       </body>
     </html>
   )

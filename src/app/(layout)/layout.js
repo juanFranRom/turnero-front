@@ -1,6 +1,5 @@
 'use client'
 // Contexts
-import { UserContextProvider } from '@/contexts/user'
 import { FocusProvider } from '@/contexts/navegacion'
 import { TurnoContextProvider } from "@/contexts/turno"
 import { PacienteContextProvider } from '@/contexts/paciente'
@@ -15,7 +14,6 @@ export default function RootLayout({ children }) {
 
   return (
   <FocusProvider>
-    <UserContextProvider>
       <TurnoContextProvider>
         <PacienteContextProvider>
           <ProfesionalContextProvider>
@@ -26,7 +24,6 @@ export default function RootLayout({ children }) {
           </ProfesionalContextProvider>
         </PacienteContextProvider>
       </TurnoContextProvider>
-    </UserContextProvider>
   </FocusProvider>
   )
 }

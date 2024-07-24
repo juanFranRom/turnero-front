@@ -17,6 +17,7 @@ import { useUserContext } from "@/contexts/user";
 import { FaRegEdit } from "react-icons/fa";
 import { MdDeleteForever } from "react-icons/md";
 import Loader from "@/components_UI/Loader";
+import { checkFetch } from "@/utils/checkFetch";
 
 const headers = [
   {
@@ -54,7 +55,7 @@ const TableAux = () => {
     value: false,
     message: ''
   })
-  const { user } = useUserContext();
+  const { user, logOut } = useUserContext();
   const router = useRouter();
 
   const getData = async () => {
@@ -71,7 +72,7 @@ const TableAux = () => {
         }
       );
       const json = await response.json();
-      console.log(json);
+      checkFetch(json, logOut)
       if(json.status === 'SUCCESS')
       {
         if(json.data.length)
@@ -106,6 +107,7 @@ const TableAux = () => {
         }
       )
       const json = await response.json();
+      checkFetch(json, logOut)
       if(json.status === 'SUCCESS')
       {
         await getData()

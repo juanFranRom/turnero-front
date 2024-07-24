@@ -18,6 +18,7 @@ import { FaRegEdit } from "react-icons/fa";
 import { MdDeleteForever } from "react-icons/md";
 import Loader from "@/components_UI/Loader";
 import { useTurnoContext } from "@/contexts/turno";
+import { checkFetch } from "@/utils/checkFetch";
 
 const headers = [
   {
@@ -71,7 +72,7 @@ const TableAux = () => {
     message: ''
   })
   const { profesionales } = useTurnoContext()
-  const { user } = useUserContext();
+  const { user, logOut } = useUserContext();
   const router = useRouter();
 
   const getProfesionales = async () => {
@@ -106,6 +107,7 @@ const TableAux = () => {
         }
       )
       const json = await response.json();
+      checkFetch(json, logOut)
       if(json.status === 'SUCCESS')
       {
         await getProfesionales()

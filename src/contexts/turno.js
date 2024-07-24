@@ -2,6 +2,7 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { useUserContext } from './user'
+import { checkFetch } from '@/utils/checkFetch'
 
 const TurnoContext = createContext([])
 
@@ -87,7 +88,7 @@ export const TurnoContextProvider = ({ children }) => {
     const [turnos, setTurnos] = useState([])
     const [reprogramando, setReprogramando] = useState(null)
     const [openCalendar, setOpenCalendar] = useState(false)
-    const { user } = useUserContext()
+    const { user, logOut } = useUserContext()
     const [date, setDate] = useState(typeof window !== 'undefined' && window.sessionStorage.getItem('date-innova') ?
         new Date(window.sessionStorage.getItem('date-innova'))
     :
@@ -135,6 +136,7 @@ export const TurnoContextProvider = ({ children }) => {
                 }
             )
             const json = await response.json()
+            checkFetch(json, logOut)
             if (json.status === "SUCCESS") 
                 setTurnos([...json.data[0].turnos])
             else
@@ -162,6 +164,7 @@ export const TurnoContextProvider = ({ children }) => {
                 }
             )
             const json = await response.json()
+            checkFetch(json, logOut)
             //if(window) window.location.reload()
             setCancelandoBloqueo( false )
         } catch (error) {
@@ -183,6 +186,7 @@ export const TurnoContextProvider = ({ children }) => {
                 }
             )
             const json = await response.json()
+            checkFetch(json, logOut)
             if (json.status === "SUCCESS") {
                 if(json.data.length && json.data.length > 0)
                     setProfesionales(
@@ -230,6 +234,7 @@ export const TurnoContextProvider = ({ children }) => {
                     }
                 )
                 const json = await response.json()
+                checkFetch(json, logOut)
                 if (json.status === "SUCCESS") {
                     let option =  { weekday: 'long' };
                     let aux = json.data.map(day=>{
