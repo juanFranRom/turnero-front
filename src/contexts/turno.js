@@ -9,6 +9,42 @@ export const useTurnoContext = () => useContext(TurnoContext)
 
 const lenguaje = 'español'
 
+
+const generateIntervals = (start, end, interval) => {
+    const times = []
+    let currentTime = new Date(start.getTime())
+
+    while (currentTime <= end) {
+        const hours = String(currentTime.getHours()).padStart(2, '0')
+        const minutes = String(currentTime.getMinutes()).padStart(2, '0')
+        times.push({ tipo: 'disponibilidad', text: `${hours}:${minutes}` })
+        currentTime.setMinutes(currentTime.getMinutes() + interval)
+    }
+
+    return times
+}
+
+const getWeekDays = (fecha) => {
+    const today = fecha
+    const days = []
+    const intervals = generateIntervals(new Date(today.setHours(8, 0, 0)), new Date(today.setHours(20, 30, 0)), 10) // 10 minutos de intervalo
+    const options = { weekday: 'long' }
+
+    let count = 0
+    while (days.length < 7) {
+        const date = new Date(today)
+        date.setDate(today.getDate() + count)
+        const dayName = date.toLocaleDateString('es-ES', options)
+
+        if (dayName !== 'sábado' && dayName !== 'domingo') {
+            days.push({ nombre: dayName, fecha: new Date(date), intervalos: [...intervals] })
+        }
+        count++
+    }
+
+    return days
+}
+
 export const TurnoContextProvider = ({ children }) => {
     const [turno, setTurno] = useState({
         pacienteText: '',
@@ -35,6 +71,7 @@ export const TurnoContextProvider = ({ children }) => {
         horaHasta: null,
     })
     const [dias, setDias] = useState(null)
+    const [profesionales, setProfesionales] = useState( [] )
     const [cancelandoBloqueo, setCancelandoBloqueo] = useState(null)
     const [filtros, setFiltros] = useState(typeof window !== 'undefined' && window.sessionStorage.getItem('filtros-innova') ?
             JSON.parse(window.sessionStorage.getItem('filtros-innova'))
@@ -82,6 +119,7 @@ export const TurnoContextProvider = ({ children }) => {
         })
     }
 
+    const capitalizeFirstLetter = (string) => string.charAt(0).toUpperCase() + string.slice(1);
 
     const buscarTurnos = async ( dia, profesional = null ) => {
         try {
@@ -132,10 +170,51 @@ export const TurnoContextProvider = ({ children }) => {
         }
     }
 
+    const buscarProfesionales = async ( ) => {
+        try {
+            const response = await fetch(`${ process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL}/profesionales`,
+                {
+                    method: "GET",
+                    headers: {
+                        Accept: "application/json",
+                        "Content-Type": "application/json",
+                        authorization: "Bearer " + user.token,
+                    },
+                }
+            )
+            const json = await response.json()
+            if (json.status === "SUCCESS") {
+                if(json.data.length && json.data.length > 0)
+                    setProfesionales(
+                        json.data.reduce((acc, profesional) => {
+                            profesional.clinicas.forEach(clinica => {
+                                const newProfessional = {
+                                    ...profesional,
+                                    clinica: clinica,
+                                    value: `${capitalizeFirstLetter(profesional.apellido)}, ${capitalizeFirstLetter(profesional.nombre)} (${capitalizeFirstLetter(clinica.nombre)})`
+                                }
+                                acc.push(newProfessional)
+                            })
+                            return acc
+                        }, []).sort((a, b) => {
+                            return a.value.localeCompare(b.value);
+                        })
+                    )
+            } 
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     useEffect(() => {
-        if(pathname.includes('agenda'))
+        if(user)
+            buscarProfesionales()
+    }, [user])
+
+    useEffect(() => {
+        if(pathname.includes('agenda') && user)
             buscarTurnos( date, filtros.profesional ?? null )
-    }, [date, filtros])
+    }, [date, filtros, pathname, user])
 
     useEffect(() => {
         const buscarTurnosCalendario = async ( dia, profesional ) => {
@@ -179,14 +258,14 @@ export const TurnoContextProvider = ({ children }) => {
             }
         }
 
-        if(pathname.includes('calendario'))
+        if(pathname === '/' && user)
         {
             if(filtros.profesional)
                 buscarTurnosCalendario(date, filtros.profesional)
             else
                 setDias(getWeekDays(date ?? new Date()))
         }
-    },[date, filtros])
+    },[date, filtros, pathname, user])
 
     useEffect(() => {
         if(window) 
@@ -216,6 +295,7 @@ export const TurnoContextProvider = ({ children }) => {
             cancelandoBloqueo,
             reprogramando,
             dias,
+            profesionales,
             cancelarBloqueo,
             setReprogramando,
             setCancelandoBloqueo,

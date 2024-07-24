@@ -63,7 +63,6 @@ $turno-color-secondary: rgba(108, 117, 125, 1);
                 max-width: unset;
             }
             .c-turno__doctor{
-                width: fit-content;
 
                 @media (max-width: 1590px) {
                     display: flex;
@@ -87,7 +86,6 @@ $turno-color-secondary: rgba(108, 117, 125, 1);
     @include font-size(12px);
 
     .c-turno__hora, .c-turno__estado{
-        height: fit-content;
         min-width: 100px;
         width: 100%;
         @include flex-center-center();
@@ -193,10 +191,6 @@ $turno-color-secondary: rgba(108, 117, 125, 1);
     .c-turno__doctor{
         @include flex-column-center-start();
         gap: 0;
-
-        & div{
-            height: fit-content;
-        }
 
         @media (max-width: 1590px) {
             width: 0;

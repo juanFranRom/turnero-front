@@ -31,7 +31,7 @@ const NuevoTurno = () => {
         mensaje: '',
         accion: null
     })
-    const { turno, setTurno, openTurno, setOpenTurno, filtros, setReprogramando } = useTurnoContext()
+    const { turno, setTurno, openTurno, setOpenTurno, filtros, setReprogramando, profesionales } = useTurnoContext()
     const { user } = useUserContext()
     const router = useRouter()
 
@@ -294,47 +294,6 @@ const NuevoTurno = () => {
     }, [turno.pacienteText])
 
     useEffect(() => {
-        const capitalizeFirstLetter = (string) => string.charAt(0).toUpperCase() + string.slice(1);
-        const buscarProfesional = async ( ) => {
-            try {
-                const response = await fetch(`${ process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL}/profesionales`,
-                    {
-                        method: "GET",
-                        headers: {
-                            Accept: "application/json",
-                            "Content-Type": "application/json",
-                            /*authorization: "Bearer " + user.token,*/
-                        },
-                    }
-                )
-                const json = await response.json()
-                if (json.status === "SUCCESS") {
-                    if(json.data.length && json.data.length > 0)
-                        setTurno({
-                            ...turno,
-                            profesionalList: json.data.reduce((acc, profesional) => {
-                                profesional.clinicas.forEach(clinica => {
-                                    const newProfessional = {
-                                        ...profesional,
-                                        clinica: clinica,
-                                        value: `${capitalizeFirstLetter(profesional.apellido)}, ${capitalizeFirstLetter(profesional.nombre)} (${capitalizeFirstLetter(clinica.nombre)})`
-                                    }
-                                    acc.push(newProfessional)
-                                })
-                                return acc
-                            }, []).sort((a, b) => {
-                                return a.value.localeCompare(b.value);
-                            })
-                        })
-                } 
-            } catch (error) {
-                console.log(error)
-            }
-        }
-        buscarProfesional()
-    }, [])
-
-    useEffect(() => {
         if(filtros && filtros.profesional)
         {
             setTurno({
@@ -390,8 +349,8 @@ const NuevoTurno = () => {
                                         <div className='u-1/1 u-flex-center-center'>
                                             <Datalist
                                                 className={'u-1/1'}
-                                                list={ turno.profesionalList } 
-                                                defaultOption={ typeof turno.profesionalText === 'string' ? { value: turno.profesionalText } : turno.profesionalText} 
+                                                list={ profesionales } 
+                                                defaultOption={ typeof turno.profesionalText === 'string' ? { value: turno.profesionalText } : turno.profesionalText } 
                                                 setter={(val) => handleDatalist(val, "profesional")}
                                             />
                                             <IoMdClose className='u-color--red u-cursor--pointer' onClick={() => handleDatalist(null, "profesional")}/>

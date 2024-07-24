@@ -148,7 +148,7 @@ const Turno = ({ data = null, onlyView = false }) => {
 
         return () => clearInterval(interval);
     }, []);*/
-    
+
     useEffect(() => {
         setDataTurno(data)
     }, [data])

@@ -17,6 +17,7 @@ import { useUserContext } from "@/contexts/user";
 import { FaRegEdit } from "react-icons/fa";
 import { MdDeleteForever } from "react-icons/md";
 import Loader from "@/components_UI/Loader";
+import { useTurnoContext } from "@/contexts/turno";
 
 const headers = [
   {
@@ -69,45 +70,25 @@ const TableAux = () => {
     value: false,
     message: ''
   })
+  const { profesionales } = useTurnoContext()
   const { user } = useUserContext();
   const router = useRouter();
 
   const getProfesionales = async () => {
-    setLoading(true)
     try { 
-      const response = await fetch(`${process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL }/profesionales`,
-        {
-          method: "GET",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            authorization: "Bearer "+ user.token,
-          },
+      setLoading(true)
+      setData(profesionales.map(profesional => {
+        return {
+          ...profesional,
+          coberturas: profesional.coberturas.join(", "),
+          practicasText: profesional.practicas.map(practica => practica.nombre).join(", "),
+          contactosText: <ContactListComponent key={profesional.dni} contactos={profesional.contactos} />
         }
-      );
-      const json = await response.json();
-      console.log(json)
-      if(json.status === 'SUCCESS')
-      {
-        if(json.data.length)
-          setData(json.data.map(profesional => {
-            return {
-              ...profesional,
-              coberturas: profesional.coberturas.join(", "),
-              practicasText: profesional.practicas.map(practica => practica.nombre).join(", "),
-              contactosText: <ContactListComponent key={profesional.dni} contactos={profesional.contactos} />
-            };
-          }));
-        else
-          setData([])
-        setLoading(false)
-      }
-      else
-        //router.push("/")
+      }))
       setLoading(false)
     } catch (error) {
       console.log(error);
-      //router.push("/");
+      router.push("/");
     } 
   }
 

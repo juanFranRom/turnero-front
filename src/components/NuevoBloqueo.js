@@ -26,7 +26,7 @@ const NuevoBloqueo = () => {
         mensaje: ''
     })
     const [loading, setLoading] = useState(false)
-    const { bloqueo, setBloqueo, openBloqueo, setOpenBloqueo } = useTurnoContext()
+    const { bloqueo, setBloqueo, openBloqueo, setOpenBloqueo, profesionales } = useTurnoContext()
     const { user } = useUserContext()
     const router = useRouter()
 
@@ -142,44 +142,6 @@ const NuevoBloqueo = () => {
         crear()
     }
 
-    useEffect(() => {
-        const buscar = async () => {
-            try {
-                const response = await fetch(`${ process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL}/profesionales`,
-                    {
-                        method: "GET",
-                        headers: {
-                            Accept: "application/json",
-                            "Content-Type": "application/json",
-                            authorization: "Bearer " + user.token,
-                        },
-                    }
-                )
-                const json = await response.json()
-                if (json.status === "SUCCESS") {
-                    if(json.data.length && json.data.length > 0)
-                        setBloqueo({
-                            ...bloqueo,
-                            profesionalList: json.data.reduce((acc, profesional) => {
-                                profesional.clinicas.forEach(clinica => {
-                                  const newProfessional = {
-                                    ...profesional,
-                                    clinica: clinica,
-                                    value: `${profesional.apellido}, ${profesional.nombre} (${clinica})`
-                                  }
-                                  acc.push(newProfessional)
-                                })
-                                return acc
-                            }, [])
-                        })
-                } 
-            } catch (error) {
-                console.log(error)
-            }
-        }
-        buscar()
-    }, [])
-
     return (
         <>
             {
@@ -198,7 +160,7 @@ const NuevoBloqueo = () => {
                             <div className='u-1/1 u-flex-center-center'>
                                 <Datalist
                                     className={'u-1/1'}
-                                    list={ bloqueo.profesionalList } 
+                                    list={ profesionales } 
                                     defaultOption={ !bloqueo.profesional ? '' : typeof bloqueo.profesional === 'string' ? { value: bloqueo.profesional } : bloqueo.profesional} 
                                     setter={(val) => handleDatalist(val, "profesional")}
                                 />
