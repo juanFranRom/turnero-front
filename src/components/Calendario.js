@@ -74,6 +74,7 @@ const Calendario = () => {
         setOpenBloqueo(false)
         if(interval.tipo === 'disponibilidad')
         {
+            console.log(interval.hora)
             setTurno((prev) => {
                 return(
                     {

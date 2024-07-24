@@ -51,7 +51,7 @@ const Reprogramar = () => {
             if (json.status === "SUCCESS")
             {
                 setReprogramando( null )
-                if(window) window.location.reload()
+                //if(window) window.location.reload()
             }
             else
                 setReprogramando({

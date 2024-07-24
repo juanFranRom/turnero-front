@@ -16,6 +16,7 @@ import { FaPlusSquare } from "react-icons/fa"
 
 // Contexts
 import { useSideBarContext } from '@/contexts/sidebar'
+import { useWebSocketContext } from '@/contexts/webSocket'
 import { useUserContext } from '@/contexts/user'
 import { useTurnoContext } from '@/contexts/turno'
 import { usePacienteContext } from '@/contexts/paciente'
@@ -30,6 +31,7 @@ const Header = ({ blocked }) => {
     const { logOut,user } = useUserContext()
     const { setOpenTurno, setOpenCalendar, openCalendar, reiniciarTurno } = useTurnoContext()
     const { setOpenPaciente } = usePacienteContext()
+    const { closeWebSocket  } = useWebSocketContext()
     const pathname = usePathname()
 
     useEffect(() => {
@@ -98,7 +100,7 @@ const Header = ({ blocked }) => {
             </Link>
             <div className='u-flex-center-center'>
                 <FaBars className='c-header__menu u-m3--right' onClick={() => setOpen((prevState) => !prevState)}/>
-                <FaPowerOff className='c-header__cerrarSesion'  onClick={logOut}/>
+                <FaPowerOff className='c-header__cerrarSesion'  onClick={()=>{closeWebSocket();logOut();}}/>
             </div>
         </header>
     )

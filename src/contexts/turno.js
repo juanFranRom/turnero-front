@@ -123,7 +123,7 @@ export const TurnoContextProvider = ({ children }) => {
                 }
             )
             const json = await response.json()
-            if(window) window.location.reload()
+            //if(window) window.location.reload()
             setCancelandoBloqueo( false )
         } catch (error) {
             console.log(error);

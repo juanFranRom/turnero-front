@@ -120,7 +120,7 @@ const NuevoBloqueo = () => {
                 if (json.status === "SUCCESS") 
                 {
                     setOpenBloqueo( prev => !prev )
-                    if(window) window.location.reload()
+                    //if(window) window.location.reload()
                 }
                 else
                 {

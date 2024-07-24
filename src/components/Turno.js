@@ -94,7 +94,7 @@ const Turno = ({ data = null, onlyView = false }) => {
                     }
                 )
                 await response.json()
-                if(window) window.location.reload()
+                //if(window) window.location.reload()
             } catch (error) { }
         }
         editar( nuevoEstado )

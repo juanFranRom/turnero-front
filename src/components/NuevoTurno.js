@@ -183,7 +183,7 @@ const NuevoTurno = () => {
                 if (json.status === "SUCCESS") 
                 {
                     setOpenTurno( prev => !prev )
-                    if(window) window.location.reload()
+                    //if(window) window.location.reload()
                 }
                 else
                 {
@@ -232,7 +232,7 @@ const NuevoTurno = () => {
                 if (json.status === "SUCCESS")
                 {
                     setOpenTurno( prev => !prev )
-                    if(window) window.location.reload()
+                    //if(window) window.location.reload()
                 }
                 else
                 {
@@ -271,7 +271,7 @@ const NuevoTurno = () => {
                     }
                 )
                 await response.json()
-                if(window) window.location.reload()
+                //if(window) window.location.reload()
             } catch (error) { console.log(error); setAccion({ value: false, text: '', accion: null }) }
         }
         cancelar( )
