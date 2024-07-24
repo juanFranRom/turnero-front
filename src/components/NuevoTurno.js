@@ -274,8 +274,8 @@ const NuevoTurno = () => {
                         body: JSON.stringify({ estado: 'Cancelado' })
                     }
                 )
-                response = await response.json()
-                checkFetch(response, logOut)
+                let json = await response.json()
+                checkFetch(json, logOut)
                 //if(window) window.location.reload()
             } catch (error) { console.log(error); setAccion({ value: false, text: '', accion: null }) }
         }
