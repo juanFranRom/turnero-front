@@ -99,7 +99,7 @@ const NuevoPaciente = ({ id = null, toClose = false }) => {
         if (!object.fecha_nacimiento) {
             return 'El campo "Fecha de Nacimiento" es obligatorio.'
         }
-
+        
         if (!object.telefonos.find((el) => el && el.length > 0)) {
             return 'Debe ingresar al menos un telefono.'
         }
@@ -108,7 +108,7 @@ const NuevoPaciente = ({ id = null, toClose = false }) => {
             return 'Debe ingresar al menos un email.'
         }
 
-        if (object.obraSocial && object.obraSocial.length > 0 && !object.obraSocialNum) {
+        if (object.obraSocial && object.obraSocial.length > 0 && object.obraSocial.toLowerCase() !== "particular" && !object.obraSocialNum) {
             return 'Ha ingresado que el paciente posee obra social, ingrese el numero de la misma.'
         }
 
@@ -214,7 +214,6 @@ const NuevoPaciente = ({ id = null, toClose = false }) => {
 
             if(objectToSend.obraSocial && objectToSend.obraSocial.length > 0)
                 objectToSend.coberturas.push({ nombre: objectToSend.obraSocial, numero: objectToSend.obraSocialNum })
-
             objectToSend.contactos = objectToSend.contactos.concat(objectToSend.telefonos.map(el => { return({ tipo: 'telefono', valor: el }) }))
             objectToSend.contactos = objectToSend.contactos.concat(objectToSend.emails.map(el => { return({ tipo: 'email', valor: el }) }))
 
