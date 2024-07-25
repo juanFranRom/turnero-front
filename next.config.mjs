@@ -9,7 +9,7 @@ const nextConfig = {
         //WS_APP_BASE_URL: 'ws://localhost:9000'
         REACT_APP_BASE_URL: 'https://monic.com.ar:8420/api',
         SERVER_APP_BASE_URL: 'https://monic.com.ar:8420/api',
-        WS_APP_BASE_URL: 'ws://monic.com.ar:9000'
+        WS_APP_BASE_URL: 'wss://monic.com.ar:9000'
     }
 }
 
