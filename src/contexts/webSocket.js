@@ -40,8 +40,49 @@ export const WebSocketProvider = ({ children }) => {
             fecha1.getDate() === fecha2.getDate()
         );
     };
-
-    function updateAgendaCalendar(turno, operation) {
+    function updateCalendarBloqueo(bloqueo,operation,horario,practica) {    
+        // Update setDias
+        setDias(prev => {
+            if(!prev)
+                return prev;
+            return prev.map(dia => {
+                if (new Date(dia.fecha).toDateString() === new Date(bloqueo.start).toDateString()) {
+                    let bloqueoOld = dia.intervalos.find(intervalo => intervalo.id == bloqueo.id);
+                    //El && bloqueo.hora es porque si es delete no viene la hora solo el id
+                    let intervalos = dia.intervalos.filter(intervalo => intervalo.id !== bloqueo.id && bloqueo.hora && intervalo.hora !== bloqueo.hora);
+                    if(operation==="delete" && bloqueoOld){
+                        intervalos.push({
+                            tipo:"disponibilidad",
+                            duracion:bloqueoOld.duracion,
+                            start:bloqueoOld.start,
+                            end:bloqueoOld.end,
+                            text:bloqueoOld.text,
+                            hora:bloqueoOld.hora,
+                        })
+                    }else{
+                        if (operation === 'create' || operation === 'update') {
+                            intervalos.push(bloqueo);
+                        }
+                        if(bloqueoOld && bloqueoOld.start !== bloqueo.start){
+                            intervalos.push({
+                                tipo:"disponibilidad",
+                                duracion:bloqueoOld.duracion,
+                                start:bloqueoOld.start,
+                                end:bloqueoOld.end,
+                                text:bloqueoOld.text,
+                                hora:bloqueoOld.hora,
+                            })
+                        }
+                    }
+                    intervalos.sort((a, b) => new Date(a.start) - new Date(b.start));
+    
+                    return { ...dia, intervalos };
+                }
+                return dia;
+            });
+        });
+    }
+    function updateAgendaCalendar(turno, operation,horario,practica) {
         const turnoData = {
             ...turno,
             start: new Date(turno.fecha),
@@ -52,36 +93,42 @@ export const WebSocketProvider = ({ children }) => {
             estado: turno.estado
         };
     
-        if(pathname === '/')
-        {
-            // Update setDias
-            setDias(prev => {
-                if(!prev)
-                    return prev;
-                return prev.map(dia => {
-                    if (new Date(dia.fecha).toDateString() === new Date(turno.fecha).toDateString()) {
-                        let intervalos = dia.intervalos.filter(intervalo => intervalo.id !== turno.id && intervalo.hora !== turnoData.hora);
-        
-                        if (operation === 'create' || (operation === 'update' && turno.estado !== 'Cancelado')) {
-                            intervalos.push(turnoData);
-                        }
-        
-                        intervalos.sort((a, b) => new Date(a.start) - new Date(b.start));
-        
-                        return { ...dia, intervalos };
+        // Update setDias
+        setDias(prev => {
+            if(!prev)
+                return prev;
+            return prev.map(dia => {
+                if (new Date(dia.fecha).toDateString() === new Date(turno.fecha).toDateString()) {
+                    let turnoOld = dia.intervalos.find(intervalo => intervalo.id == turno.id);
+                    let intervalos = dia.intervalos.filter(intervalo => intervalo.id !== turno.id && intervalo.hora !== turnoData.hora);
+                    debugger;
+                    if (operation === 'create' || (operation === 'update' && turno.estado !== 'Cancelado')) {
+                        intervalos.push(turnoData);
                     }
-                    return dia;
-                });
-            });
-        }
-        
-        if(pathname === '/agenda')
-        {
-            // Update setTurnos
-            setTurnos(prev => {
-                if(!prev)
-                    return prev;
+                    if(turnoOld && turnoOld.start !== turnoData.start.toISOString()){
+                        intervalos.push({
+                            tipo:"disponibilidad",
+                            duracion:turnoOld.duracion,
+                            start:turnoOld.start,
+                            end:turnoOld.end,
+                            text:turnoOld.text,
+                            hora:turnoOld.hora,
+                        })
+                    }
+                    intervalos.sort((a, b) => new Date(a.start) - new Date(b.start));
     
+                    return { ...dia, intervalos };
+                }
+                return dia;
+            });
+        });
+        
+        // Update setTurnos
+        setTurnos(prev => {
+            if(!prev)
+                return prev;
+            console.log(isSameDay(new Date(turno.fecha), parseFechaFormateada(fechaFormateada, lenguaje)));
+            if (isSameDay(new Date(turno.fecha), parseFechaFormateada(fechaFormateada, lenguaje))) {
                 let turnos = prev.filter(t => t.id !== turno.id);
                 if (operation === 'create' || operation === 'update') {
                     turnos.push(turnoData);
@@ -89,10 +136,113 @@ export const WebSocketProvider = ({ children }) => {
                 //descendente
                 turnos.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
                 return turnos;
-            });
-        }
+            } 
+            return prev;
+        });
     }
-    
+    async function processTurno(data){
+        const response = await fetch(`${process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL}/turnos/${data.turnoId}`, {
+            method: "GET",
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+                authorization: "Bearer " + user.token,
+            }
+        });
+
+        const result = await response.json();
+
+        if (result.status === "SUCCESS") {
+            const turno = result.data;
+            const changes = data.changes;
+        
+            // Extract necessary information
+            const fecha = new Date(turno.fecha).toLocaleDateString('es-ES');
+            const hora = turno.horario;
+            const nombrePaciente = turno.nombre;
+            const doctor = user.rol !== 'profesional' ? `Doctor: ${turno.doctor}` : '';
+        
+            // Generate the message based on the operation
+            if (data.operation === 'create') {
+                let message = `Turno creado para ${nombrePaciente} el ${fecha} a las ${hora}. ${doctor}`;
+                toast(message, { type: 'info' });
+            } else if (data.operation === 'update') {
+                let message = `Turno actualizado para ${nombrePaciente} el ${fecha} a las ${hora}. ${doctor}. Cambios: `;
+                let changesMessages = [];
+        
+                if (changes.fecha_hora) {
+                    const from = new Date(changes.fecha_hora.from).toLocaleString('es-ES');
+                    const to = new Date(changes.fecha_hora.to).toLocaleString('es-ES');
+                    toast(message+`
+                    fecha y hora: de ${from} a ${to}`, { type: 'info' });
+                    changesMessages.push(`fecha y hora: de ${from} a ${to}`);
+                }
+        
+                if (changes.estado) {
+                    const from = changes.estado.from;
+                    const to = changes.estado.to; 
+                    if(changes.estado.to === 'Cancelado') {
+                        message = `Se canceló el turno para ${nombrePaciente} el ${fecha} a las ${hora}. ${doctor}`;
+                        toast(message, { type: 'error' });
+                    }else{
+                        toast(message+`
+                        estado: de ${from} a ${to}`, { type: 'info' });
+                    }
+                }
+        
+                if (changes.nota) {
+                    const from = changes.nota.from;
+                    const to = changes.nota.to;
+                    toast(message+ `Se agregó la nota al turno: ${to}`, { type: 'info' }); 
+                }
+         
+            }
+            updateAgendaCalendar(turno,data.operation,data.horario,data.practica);
+        }
+                   
+    }
+    async function processBloqueo(data){
+        if(data.operation === "delete"){
+            const fecha = new Date(data.data.start).toLocaleDateString('es-ES');
+            const fecha_fin = new Date(data.data.end).toLocaleDateString('es-ES');
+            const doctor = user.rol !== 'profesional' ? `Doctor: ${data.data.doctor}` : '';
+            let message = `Bloqueo creado desde ${fecha} hasta ${fecha_fin}. ${doctor}`;
+            toast(message, { type: 'error' });
+            return updateCalendarBloqueo(null,data.operation,data.horario,data.practica);
+        }
+
+        const response = await fetch(`${process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL}/bloqueo/${data.bloqueoId}`, {
+            method: "GET",
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+                authorization: "Bearer " + user.token,
+            }
+        });
+
+        const result = await response.json();
+
+        if (result.status === "SUCCESS") {
+            const bloqueo = result.data;
+            // Extract necessary information
+            const fecha = new Date(bloqueo.start).toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' });
+            const fecha_fin = new Date(bloqueo.end).toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' });
+            const doctor = user.rol !== 'profesional' ? `Doctor: ${bloqueo.doctor}` : '';
+        
+            // Generate the message based on the operation
+            if (data.operation === 'create') {
+                let message = `Bloqueo creado desde ${fecha} hasta ${fecha_fin}. ${doctor}`;
+                toast(message, { type: 'info' });
+            } else if (data.operation === 'update') {
+                let message = `Bloqueo actualizado desde ${fecha} hasta ${fecha_fin}. ${doctor}.`;
+                toast(message, { type: 'info' });
+            }
+
+            updateCalendarBloqueo(bloqueo,data.operation,data.horario,data.practica);
+
+        }
+                   
+    }
     useEffect(() => {
         if (user && user['wsToken']) {
             const newSocket = new WebSocket(`${process.env.WS_APP_BASE_URL}?token=${user['wsToken']}`);
@@ -106,66 +256,10 @@ export const WebSocketProvider = ({ children }) => {
                 
                 
                 try {
-                    const response = await fetch(`${process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL}/turnos/${data.turnoId}`, {
-                        method: "GET",
-                        headers: {
-                            Accept: "application/json",
-                            "Content-Type": "application/json",
-                            authorization: "Bearer " + user.token,
-                        }
-                    });
-
-                    const result = await response.json();
-
-                    if (result.status === "SUCCESS") {
-                        const turno = result.data;
-                        const changes = data.changes;
-                    
-                        // Extract necessary information
-                        const fecha = new Date(turno.fecha).toLocaleDateString('es-ES');
-                        const hora = turno.horario;
-                        const nombrePaciente = turno.nombre;
-                        const doctor = user.rol !== 'profesional' ? `Doctor: ${turno.doctor}` : '';
-                    
-                        // Generate the message based on the operation
-                        if (data.operation === 'create') {
-                            let message = `Turno creado para ${nombrePaciente} el ${fecha} a las ${hora}. ${doctor}`;
-                            toast(message, { type: 'info' });
-                        } else if (data.operation === 'update') {
-                            let message = `Turno actualizado para ${nombrePaciente} el ${fecha} a las ${hora}. ${doctor}. Cambios: `;
-                            let changesMessages = [];
-                    
-                            if (changes.fecha_hora) {
-                                const from = new Date(changes.fecha_hora.from).toLocaleString('es-ES');
-                                const to = new Date(changes.fecha_hora.to).toLocaleString('es-ES');
-                                toast(message+`
-                                fecha y hora: de ${from} a ${to}`, { type: 'info' });
-                                changesMessages.push(`fecha y hora: de ${from} a ${to}`);
-                            }
-                    
-                            if (changes.estado) {
-                                const from = changes.estado.from;
-                                const to = changes.estado.to; 
-                                if(changes.estado.to === 'Cancelado') {
-                                    message = `Se canceló el turno para ${nombrePaciente} el ${fecha} a las ${hora}. ${doctor}`;
-                                    toast(message, { type: 'error' });
-                                }else{
-                                    toast(message+`
-                                    estado: de ${from} a ${to}`, { type: 'info' });
-                                }
-                            }
-                    
-                            if (changes.nota) {
-                                const from = changes.nota.from;
-                                const to = changes.nota.to;
-                                toast(message+ `Se agregó la nota al turno: ${to}`, { type: 'info' }); 
-                            }
-                     
-                        }
-                        updateAgendaCalendar(turno,data.operation);
-
-                    }
-                                      
+                    if(data.modelo==="turno")
+                        await processTurno(data);   
+                    if(data.modelo==="bloqueo")
+                        await processBloqueo(data);
                 } catch (error) {
                     console.error('Error fetching turno:', error);
                 }
