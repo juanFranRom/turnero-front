@@ -3,6 +3,7 @@
 // Contexts
 import { useTurnoContext } from '@/contexts/turno'
 import { usePacienteContext } from "@/contexts/paciente"
+import { useUserContext } from '@/contexts/user'
 
 // Icons
 import { IoMdClose } from "react-icons/io"
@@ -23,7 +24,8 @@ import Reprogramar from '@/components/Reprogramar'
 
 
 export default function RootLayout({ children }) {
-  const { openTurno, openBloqueo, reprogramando, setReprogramando, cancelandoBloqueo, setCancelandoBloqueo, cancelarBloqueo, filtros } = useTurnoContext()
+  const { reprogramando, cancelandoBloqueo, setCancelandoBloqueo, cancelarBloqueo, filtros } = useTurnoContext()
+  const { changePass, setChangePass } = useUserContext()
   const { openPaciente } = usePacienteContext()
 
   return (
@@ -36,6 +38,19 @@ export default function RootLayout({ children }) {
         <Overlay>
           <PopUp centered={true}>
             <NuevoPaciente width={'600px'} height={'80vh'} toClose={true}/>
+          </PopUp>
+        </Overlay> 
+      }
+      { 
+        changePass && 
+        <Overlay>
+          <PopUp centered={true}>
+            <div className='u-1/1 u-p5 u-flex-column-center-center'>
+              <p className='u-text--2 u-color-primary u-m3--bottom'>¡Atencion!</p>
+              <p>Has ingresado con la contraseña por defecto.</p>
+              <p>Por razones de seguridad, te pedimos que actualices tu contraseña en la seccion "Mi Perfil".</p>
+              <Button text={'Continuar'} clickHandler={() => setChangePass(false)}/>
+            </div>
           </PopUp>
         </Overlay> 
       }

@@ -11,6 +11,7 @@ export const UserContextProvider = ({ children }) => {
     const [user, setUser] = useState(null)
     const [waitChecking, setWait] = useState(true)
     const [logged, setLogged] = useState(false)
+    const [changePass, setChangePass] = useState(false)
     const [triedLog, setTriedLog] = useState(false)
     const [error, setError] = useState(null)
     const [message, setMessage] = useState(null)
@@ -84,6 +85,10 @@ export const UserContextProvider = ({ children }) => {
                     }
                     setUser(userRef)
                     setLogged(true)
+
+                    if(user.username === user.password)
+                        setChangePass(true)
+
                     result = json.data.permisos.length === 1 && json.data.permisos[0] === "invitado" ? "invitado" : "admin";
                 }
                 else
@@ -102,6 +107,11 @@ export const UserContextProvider = ({ children }) => {
     }, [user, logged])
 
     useEffect(() => {
+        if(!logged)
+            setChangePass(false)
+    }, [logged])
+
+    useEffect(() => {
         let user = window.localStorage.getItem('user-innova') ? JSON.parse(window.localStorage.getItem('user-innova')) : null
         setUser(user)
         if(user){
@@ -118,6 +128,8 @@ export const UserContextProvider = ({ children }) => {
             triedLog,
             error,
             message,
+            changePass,
+            setChangePass,
             setTriedLog,
             setMessage,
             setError,
