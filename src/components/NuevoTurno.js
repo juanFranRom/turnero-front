@@ -32,7 +32,7 @@ const NuevoTurno = () => {
         mensaje: '',
         accion: null
     })
-    const { turno, setTurno, openTurno, setOpenTurno, filtros, setReprogramando, profesionales } = useTurnoContext()
+    const { turno, setTurno, openTurno, setOpenTurno, filtros, setReprogramando, profesionales, profesional } = useTurnoContext()
     const { user, logOut } = useUserContext()
     const router = useRouter()
 
@@ -96,10 +96,11 @@ const NuevoTurno = () => {
         
         if(crear)
         {
-            turnoParaEnviar.profesional_id = user.rol === 'profesional' ? user.id : turno.profesional ? turno.profesional.id : null
+            console.log(turno);
+            turnoParaEnviar.profesional_id = turno.profesional ? turno.profesional.id : null
             turnoParaEnviar.paciente_id = turno.paciente ? turno.paciente.id : null
             turnoParaEnviar.cobertura_id = turno.cobertura ? turno.cobertura.id : null
-            turnoParaEnviar.clinica_id = turno.profesional ? turno.profesional.clinica.id : null
+            turnoParaEnviar.clinica_id = turno.profesional && turno.profesional.clinicas ? turno.profesional.clinicas[0].id : turno.profesional.clinica.id ?? null
             turnoParaEnviar.practica_id = turno.practica ? turno.practica.id : null
             turnoParaEnviar.duracion = turno.practica ? timeToMinutes(turno.practica.duracion_moda) : null
         }
@@ -197,6 +198,7 @@ const NuevoTurno = () => {
                 }
 
             } catch (error) {
+                console.log(error);
                 setError({
                     value: true,
                     mensaje: 'Ocurrio un error, vuelva a intentar luego.'
@@ -261,6 +263,7 @@ const NuevoTurno = () => {
     }
 
     const cancelarTurno = () => {
+        setOpenTurno((prev) => !prev)
         const cancelar = async () => {
             try {
                 const response = await fetch(`${ process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL}/turnos/${turno.id}`,
@@ -299,7 +302,16 @@ const NuevoTurno = () => {
     }, [turno.pacienteText])
 
     useEffect(() => {
-        if(filtros && filtros.profesional)
+        if(profesional)
+        {
+            setTurno({
+                ...turno,
+                profesional: profesional,
+                paciente: null,
+                pacienteText: '',
+            })
+        }
+        else if(filtros && filtros.profesional)
         {
             setTurno({
                 ...turno,
@@ -309,8 +321,9 @@ const NuevoTurno = () => {
                 pacienteText: '',
             })
         }
-    }, [filtros, openTurno])
+    }, [filtros, openTurno, profesional])
 
+    
     return (
         <>
             {

@@ -24,8 +24,8 @@ import Reprogramar from '@/components/Reprogramar'
 
 
 export default function RootLayout({ children }) {
-  const { reprogramando, cancelandoBloqueo, setCancelandoBloqueo, cancelarBloqueo, filtros } = useTurnoContext()
-  const { changePass, setChangePass } = useUserContext()
+  const { reprogramando, cancelandoBloqueo, setCancelandoBloqueo, cancelarBloqueo, filtros, profesional } = useTurnoContext()
+  const { user, changePass, setChangePass } = useUserContext()
   const { openPaciente } = usePacienteContext()
 
   return (
@@ -46,10 +46,10 @@ export default function RootLayout({ children }) {
         <Overlay>
           <PopUp centered={true}>
             <div className='u-1/1 u-p5 u-flex-column-center-center'>
-              <p className='u-text--2 u-color-primary u-m3--bottom'>¡Atencion!</p>
+              <p className='u-text--2 u-color--primary u-m3--bottom'>¡Atencion!</p>
               <p>Has ingresado con la contraseña por defecto.</p>
-              <p>Por razones de seguridad, te pedimos que actualices tu contraseña en la seccion "Mi Perfil".</p>
-              <Button text={'Continuar'} clickHandler={() => setChangePass(false)}/>
+              <p className='u-m3--bottom'>Por razones de seguridad, te pedimos que actualices tu contraseña en la seccion "Mi Perfil".</p>
+              <Button text={'Continuar'} clickHandler={() => setChangePass(false)} url={`/usuario/crear/${user.id}`}/>
             </div>
           </PopUp>
         </Overlay> 
@@ -66,7 +66,7 @@ export default function RootLayout({ children }) {
                         <>
                           <p className='u-text--1 u-m2--bottom'>¿Seguro desea cancelar el bloqueo?</p>
                           <div className='u-1/1 u-flex-column-center-center u-text_align--start u-p4--vertical'>
-                            <p className='u-1/1'>Profesional: {filtros.profesional.apellido}, {filtros.profesional.nombre}</p>
+                            <p className='u-1/1'>Profesional: {profesional ? profesional.apellido : filtros.profesional.apellido}, {profesional ? profesional.nombre : filtros.profesional.nombre}</p>
                             <p className='u-1/1'>Desde: {new Date(cancelandoBloqueo.start).getDate()}/{new Date(cancelandoBloqueo.start).getMonth() + 1}/{new Date(cancelandoBloqueo.start).getFullYear()} {new Date(cancelandoBloqueo.start).getHours().toString().padStart(2, '0')}:{new Date(cancelandoBloqueo.start).getMinutes().toString().padStart(2, '0')}</p>
                             <p className='u-1/1'>Hasta: {new Date(cancelandoBloqueo.end).getDate()}/{new Date(cancelandoBloqueo.end).getMonth() + 1}/{new Date(cancelandoBloqueo.end).getFullYear()} {new Date(cancelandoBloqueo.end).getHours().toString().padStart(2, '0')}:{new Date(cancelandoBloqueo.end).getMinutes().toString().padStart(2, '0')}</p>
                           </div>

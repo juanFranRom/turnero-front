@@ -81,6 +81,7 @@ export const TurnoContextProvider = ({ children }) => {
     })
     const [dias, setDias] = useState(null)
     const [profesionales, setProfesionales] = useState( [] )
+    const [profesional, setProfesional] = useState( null )
     const [cancelandoBloqueo, setCancelandoBloqueo] = useState(null)
     const [filtros, setFiltros] = useState(typeof window !== 'undefined' && window.sessionStorage.getItem('filtros-innova') ?
             JSON.parse(window.sessionStorage.getItem('filtros-innova'))
@@ -110,7 +111,6 @@ export const TurnoContextProvider = ({ children }) => {
     const mes = lenguaje === 'español' ? mesesEspañol[date.getMonth()] : mesesIngles[date.getMonth()]
     const fechaFormateada = diaSemana + ' ' + date.getDate() + ' - ' + mes + ' ' + date.getFullYear()
 
-    console.log(turnos);
     const reiniciarTurno = () => {
         setTurno({
             ...turno,
@@ -187,9 +187,9 @@ export const TurnoContextProvider = ({ children }) => {
         }
     }
 
-    const buscarProfesionales = async ( ) => {
+    const buscarProfesionales = async ( id ) => {
         try {
-            const response = await fetch(`${ process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL}/profesionales`,
+            const response = await fetch(`${ process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL}/profesionales${id ? `/${id}` : ''}`,
                 {
                     method: "GET",
                     headers: {
@@ -202,7 +202,9 @@ export const TurnoContextProvider = ({ children }) => {
             const json = await response.json()
             checkFetch(json, logOut)
             if (json.status === "SUCCESS") {
-                if(json.data.length && json.data.length > 0)
+                if(id)
+                    setProfesional(json.data)
+                else if(json.data.length && json.data.length > 0)
                     setProfesionales(
                         json.data.reduce((acc, profesional) => {
                             profesional.clinicas.forEach(clinica => {
@@ -227,7 +229,9 @@ export const TurnoContextProvider = ({ children }) => {
     useEffect(() => {
         if(user && user.rol !== 'profesional')
             buscarProfesionales()
-    }, [user])
+        else if(user)
+            buscarProfesionales(user.profesional.id)
+    }, [user, pathname])
 
     useEffect(() => {
         if(pathname.includes('agenda') && user)
@@ -324,6 +328,8 @@ export const TurnoContextProvider = ({ children }) => {
             reprogramando,
             dias,
             profesionales,
+            profesional,
+            setProfesional,
             cancelarBloqueo,
             setReprogramando,
             setCancelandoBloqueo,

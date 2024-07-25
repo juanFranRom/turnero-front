@@ -93,7 +93,6 @@ const TableAux = () => {
     } 
   }
 
-
   const deleteProfesional = async (id) => {
     try {
       const response = await fetch(`${process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL }/profesionales/${id}`,
@@ -127,7 +126,7 @@ const TableAux = () => {
 
   useEffect(() => {
     getProfesionales();
-  }, []);
+  }, [profesionales]);
   
   return (
     <>

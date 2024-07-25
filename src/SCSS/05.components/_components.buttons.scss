@@ -109,9 +109,6 @@ $button-ghost-border-width:       2px;
     padding: $button-large-padding-vertical $button-large-padding-horizontal;
 }
 .c-fixed-print-button {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
     background-color: $button-primary-color;
     color: white;
     transition: $button-transition;

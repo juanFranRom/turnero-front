@@ -22,10 +22,11 @@ const Agenda = ({}) => {
   return (
     <ProtectedPath permisos={['ver_agenda']}>
       <div className='u-1/1 u-background--white'>
-        <div className='u-bordered__bottom--thick u-p2'>
+        <div className='u-bordered__bottom--thick u-p2 u-1/1 u-flex-center-space-between'>
           <span className=' u-color--primary'>
             {fechaFormateada}
           </span>
+          <FiPrinter  className='c-fixed-print-button' size={50} onClick={handlePrint} />
         </div>
         {
           loadingTurnos?
@@ -34,7 +35,6 @@ const Agenda = ({}) => {
             </div>
           :
             <>
-            <FiPrinter  className='c-fixed-print-button' size={50} onClick={handlePrint} />
               <div ref={printRef}>
                 {
                   turnos && turnos.length > 0 &&

@@ -8,6 +8,8 @@ const Button = ({className, text, clickHandler = null, url = null}) => {
         url
             ?
             <button className={`c-button c-button--primary ${className}`} onClick={() => {
+                if(clickHandler)
+                    clickHandler()
                 router.push(url);
             }}>
                 {text}

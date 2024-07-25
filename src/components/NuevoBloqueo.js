@@ -27,7 +27,7 @@ const NuevoBloqueo = () => {
         mensaje: ''
     })
     const [loading, setLoading] = useState(false)
-    const { bloqueo, setBloqueo, openBloqueo, setOpenBloqueo, profesionales } = useTurnoContext()
+    const { bloqueo, setBloqueo, openBloqueo, setOpenBloqueo, profesionales, profesional } = useTurnoContext()
     const { user, logOut } = useUserContext()
     const router = useRouter()
 
@@ -42,7 +42,7 @@ const NuevoBloqueo = () => {
     const bloqueoParaEnviar = ( bloqueo ) => {
         let bloqueoParaEnviar = { }
         
-        bloqueoParaEnviar.profesional_id = bloqueo.profesional ? bloqueo.profesional.id : null
+        bloqueoParaEnviar.profesional_id = profesional ? profesional.id : bloqueo.profesional ? bloqueo.profesional.id : null
         bloqueoParaEnviar.fecha_hora = null
 
         if(bloqueo.fechaDesde && bloqueo.horaDesde)
@@ -93,7 +93,6 @@ const NuevoBloqueo = () => {
     }
 
     const crearBloqueo = () => {
-        console.log("entro")
         const crear = async () => {
             try {
                 setLoading(true)
@@ -157,18 +156,21 @@ const NuevoBloqueo = () => {
                             }}
                         />
                         <h2 className='u-color--primary u-m4--bottom'>Bloqueo</h2>
-                        <div className='u-flex-column-center-start'>
-                            <span>Profesional</span>
-                            <div className='u-1/1 u-flex-center-center'>
-                                <Datalist
-                                    className={'u-1/1'}
-                                    list={ profesionales } 
-                                    defaultOption={ !bloqueo.profesional ? '' : typeof bloqueo.profesional === 'string' ? { value: bloqueo.profesional } : bloqueo.profesional} 
-                                    setter={(val) => handleDatalist(val, "profesional")}
-                                />
-                                <IoMdClose className='u-color--red u-cursor--pointer' onClick={() => handleDatalist(null, "profesional")}/>
+                        {
+                            !profesional &&
+                            <div className='u-flex-column-center-start'>
+                                <span>Profesional</span>
+                                <div className='u-1/1 u-flex-center-center'>
+                                    <Datalist
+                                        className={'u-1/1'}
+                                        list={ profesionales } 
+                                        defaultOption={ !bloqueo.profesional ? '' : typeof bloqueo.profesional === 'string' ? { value: bloqueo.profesional } : bloqueo.profesional} 
+                                        setter={(val) => handleDatalist(val, "profesional")}
+                                    />
+                                    <IoMdClose className='u-color--red u-cursor--pointer' onClick={() => handleDatalist(null, "profesional")}/>
+                                </div>
                             </div>
-                        </div>
+                        }
                         <div className='c-nuevo_bloqueo__item c-nuevo_bloqueo__hora'>
                             <div className='u-flex-column-center-start'>
                                 <span>Fecha Inicio</span>

@@ -250,7 +250,12 @@ const page = ({ params }) => {
           <Button text={'Volver'} url={'/usuario'}/>
         </div>
         <div className='c-nuevo_paciente'>
-            <h2 className='u-color--primary'>{ params.id  ? 'Editar' : 'Nuevo'} Usuario</h2>
+          {
+            parseInt(user.id) === parseInt(params.id[0]) ?
+              <h2 className='u-color--primary'>Mi Perfil</h2>
+            :
+              <h2 className='u-color--primary'>{ params.id  ? 'Editar' : 'Nuevo'} Usuario</h2>
+          }
             {
                 !loading ?
                     <>

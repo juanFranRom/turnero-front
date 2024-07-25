@@ -5,26 +5,39 @@
 }
 
 .c-tooltip__text {
-    visibility: visible;
+    visibility: hidden;
     background-color: #555;
     color: #fff;
     text-align: center;
     border-radius: 6px;
     padding: 10px 15px;
     z-index: 1;
-    opacity: 1;
+    opacity: 0;
     transition: opacity 0.3s;
-    position: fixed; /* Position fixed to relative to the viewport */
+    position: fixed;
 }
 
 .c-tooltip__text::after {
     content: "";
     position: absolute;
-    top: 100%;
-    left: 10px;
-    margin-left: -5px;
     border-width: 5px;
     border-style: solid;
-    border-color: #555 transparent transparent transparent;
     z-index: 6;
+    left: 10px;
+    margin-left: -5px;
+}
+
+.c-tooltip__text--up::after {
+    top: 100%;
+    border-color: #555  transparent  transparent  transparent;
+}
+
+.c-tooltip__text--down::after {
+    bottom: 100%;
+    border-color:  transparent  transparent #555 transparent;
+}
+
+.c-tooltip:hover .c-tooltip__text {
+    visibility: visible;
+    opacity: 1;
 }

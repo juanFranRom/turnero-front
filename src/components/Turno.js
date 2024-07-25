@@ -36,6 +36,7 @@ const Turno = ({ data = null, onlyView = false }) => {
     const desplegableRef = useRef(null);
     const { user, logOut } = useUserContext()
     const { date, turno, setTurno, setOpenTurno } = useTurnoContext()
+    const infoRef = useRef()
 
     const primeraLetraMayus = (string) => {
         let result = ''
@@ -127,24 +128,59 @@ const Turno = ({ data = null, onlyView = false }) => {
         setOpenTurno(true)
     }
 
+    const generateHistorial = () => {
+        return(
+            <div className='u-p1--vertical u-p2--horizontal'>
+                {
+                    dataTurno.historial_cambios.map( cambio => {
+                        return(
+                            <div className='c-turno__cambio'>
+                                <p className='c-turno__cambio--titulo'>{ cambio.campo_modificado === "Creador" ? cambio.campo_modificado : cambio.nuevo_valor }</p>
+                                <p className='c-turno__cambio--fecha'>Fecha: { new Date(cambio.fecha).toLocaleDateString() }</p>
+                                <p className='c-turno__cambio--usuario'>Usuario: { cambio.usuario.nombre && cambio.usuario.nombre !== '' ? cambio.usuario.nombre : cambio.usuario.username }</p>
+                            </div>
+                        )
+                    })
+                }
+            </div>
+        )
+    }
+
     useEffect(() => {
-
-        if (desplegable && botonRef.current && desplegableRef.current) 
-        {
-            const buttonRect = botonRef.current.getBoundingClientRect();
-            setDesplegableCSS({
-                top: `${buttonRect.bottom}px`,
-                left: `${buttonRect.right - desplegableRef.current.offsetWidth}px`
-            });
-            document.addEventListener('mousedown', handleClickOutside);
-        } 
-        else 
-            document.removeEventListener('mousedown', handleClickOutside)
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside)
-        }
-
+        const adjustDropdownPosition = () => {
+            if (desplegable && botonRef.current && desplegableRef.current) {
+                const buttonRect = botonRef.current.getBoundingClientRect();
+                const dropdownHeight = desplegableRef.current.offsetHeight;
+                const windowHeight = window.innerHeight;
+    
+                const spaceBelow = windowHeight - buttonRect.bottom;
+                const spaceAbove = buttonRect.top;
+    
+                if (spaceBelow < dropdownHeight && spaceAbove > dropdownHeight) {
+                    setDesplegableCSS({
+                        top: `calc(${buttonRect.top - dropdownHeight}px - 10px)`,
+                        left: `${buttonRect.right - desplegableRef.current.offsetWidth}px`,
+                        direction: 'up'
+                    });
+                } else {
+                    setDesplegableCSS({
+                        top: `calc(${buttonRect.bottom}px + 10px)`,
+                        left: `${buttonRect.right - desplegableRef.current.offsetWidth}px`,
+                        direction: 'down'
+                    });
+                }
+    
+                document.addEventListener('mousedown', handleClickOutside);
+            } else {
+                document.removeEventListener('mousedown', handleClickOutside);
+            }
+    
+            return () => {
+                document.removeEventListener('mousedown', handleClickOutside);
+            };
+        };
+    
+        adjustDropdownPosition();
     }, [desplegable]);
 
     /*useEffect(() => {
@@ -159,7 +195,6 @@ const Turno = ({ data = null, onlyView = false }) => {
         setDataTurno(data)
     }, [data])
 
-    console.log(dataTurno);
     return (
         <>
             {
@@ -178,7 +213,12 @@ const Turno = ({ data = null, onlyView = false }) => {
             >
                 <div className='c-turno__horario'>
                     <div className={`c-turno__hora ${ dataTurno.tipo==="sobreturno" ? 'c-turno__hora--sobreturno' : '' } `}>
-                        <GiInfo className='u-cursor'/>
+                        {
+                            dataTurno.historial_cambios &&
+                            <Tooltip className={'u-flex-center-center'} text={generateHistorial()} childrenRef={infoRef}>
+                                <GiInfo ref={infoRef} className='u-cursor'/>
+                            </Tooltip>
+                        }
                         {
                             dataTurno.nota &&
                             <Tooltip className={'u-flex-center-center'} text={dataTurno.nota}>
@@ -230,7 +270,7 @@ const Turno = ({ data = null, onlyView = false }) => {
             {
                 !onlyView &&
                 <div 
-                    className={`c-turno__desplegable ${ desplegable ? 'c-turno__desplegable--open' : ''}`} 
+                    className={`c-turno__desplegable ${ desplegable ? 'c-turno__desplegable--open' : ''}  ${ desplegableCSS.direction === 'up' ? 'c-turno__desplegable--up' : 'c-turno__desplegable--down'}`} 
                     ref={desplegableRef}
                     style={desplegableCSS}
                 >
