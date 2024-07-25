@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { useUserContext } from '@/contexts/user'; // Ajusta la ruta según corresponda
 import { useTurnoContext } from '@/contexts/turno'; // Ajusta la ruta según corresponda
 import { toast } from 'react-toastify';
+import { usePathname } from 'next/navigation';
 
 const WebSocketContext = createContext([]);
 
@@ -11,13 +12,14 @@ export const useWebSocketContext = () => useContext(WebSocketContext);
 
 export const WebSocketProvider = ({ children }) => {
     const { user } = useUserContext();
-    const { lenguaje,fechaFormateada,date, setTurnos, setDias } = useTurnoContext()
+    const { lenguaje,fechaFormateada, date, setTurnos, setDias } = useTurnoContext()
     const [socket, setSocket] = useState(null);
     const formatTime = (date) => {
         const hours = date.getHours().toString().padStart(2, '0');
         const minutes = date.getMinutes().toString().padStart(2, '0');
         return `${hours}:${minutes}`;
     };
+    const pathname = usePathname()
     // Función para convertir una fecha formateada en un objeto Date
     const parseFechaFormateada = (fechaFormateada, lenguaje) => {
         const [diaSemana, diaMes, mes, anio] = fechaFormateada
@@ -46,44 +48,49 @@ export const WebSocketProvider = ({ children }) => {
             end: new Date(new Date(turno.fecha).getTime() + turno.duracion * 60000),
             hora: turno.horario,
             tipo: "turno",
-            text: `${turno.horario} - ${formatTime(new Date(new Date(turno.fecha).getTime() + turno.duracion * 60000))}`
+            text: `${turno.horario} - ${formatTime(new Date(new Date(turno.fecha).getTime() + turno.duracion * 60000))}`,
+            estado: turno.estado
         };
     
-        // Update setDias
-        setDias(prev => {
-            if(!prev)
-                return prev;
-            return prev.map(dia => {
-                if (new Date(dia.fecha).toDateString() === new Date(turno.fecha).toDateString()) {
-                    let intervalos = dia.intervalos.filter(intervalo => intervalo.id !== turno.id && intervalo.hora!==turnoData.hora);
-    
-                    if (operation === 'create' || (operation === 'update' && turno.estado !== 'Cancelado')) {
-                        intervalos.push(turnoData);
+        if(pathname === '/')
+        {
+            // Update setDias
+            setDias(prev => {
+                if(!prev)
+                    return prev;
+                return prev.map(dia => {
+                    if (new Date(dia.fecha).toDateString() === new Date(turno.fecha).toDateString()) {
+                        let intervalos = dia.intervalos.filter(intervalo => intervalo.id !== turno.id && intervalo.hora !== turnoData.hora);
+        
+                        if (operation === 'create' || (operation === 'update' && turno.estado !== 'Cancelado')) {
+                            intervalos.push(turnoData);
+                        }
+        
+                        intervalos.sort((a, b) => new Date(a.start) - new Date(b.start));
+        
+                        return { ...dia, intervalos };
                     }
-    
-                    intervalos.sort((a, b) => new Date(a.start) - new Date(b.start));
-    
-                    return { ...dia, intervalos };
-                }
-                return dia;
+                    return dia;
+                });
             });
-        });
-     
-        // Update setTurnos
-        setTurnos(prev => {
-            if(!prev)
-                return prev;
-            if (isSameDay(new Date(turno.fecha), parseFechaFormateada(fechaFormateada, lenguaje))) {
+        }
+        
+        if(pathname === '/agenda')
+        {
+            // Update setTurnos
+            setTurnos(prev => {
+                if(!prev)
+                    return prev;
+    
                 let turnos = prev.filter(t => t.id !== turno.id);
-                if (operation === 'create' || (operation === 'update' && turno.estado !== 'Cancelado')) {
+                if (operation === 'create' || operation === 'update') {
                     turnos.push(turnoData);
                 }
                 //descendente
                 turnos.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
                 return turnos;
-            }
-            return prev;
-        });
+            });
+        }
     }
     
     useEffect(() => {
@@ -96,7 +103,8 @@ export const WebSocketProvider = ({ children }) => {
 
             newSocket.onmessage = async (event) => {
                 const {codigo,data }= JSON.parse(event.data); //por ahora el codigo es turno sino es el modulo que afecta ahr
-
+                
+                
                 try {
                     const response = await fetch(`${process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL}/turnos/${data.turnoId}`, {
                         method: "GET",

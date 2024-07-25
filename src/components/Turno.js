@@ -85,6 +85,7 @@ const Turno = ({ data = null, onlyView = false }) => {
     }
 
     const editarEstado = ( nuevoEstado ) => {
+        setDesplegable(false)
         const editar = async (nuevoEstado) => {
             try {
                 const response = await fetch(`${ process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL}/turnos/${dataTurno.id}`,
@@ -158,6 +159,7 @@ const Turno = ({ data = null, onlyView = false }) => {
         setDataTurno(data)
     }, [data])
 
+    console.log(dataTurno);
     return (
         <>
             {

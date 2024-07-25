@@ -96,7 +96,7 @@ const NuevoTurno = () => {
         
         if(crear)
         {
-            turnoParaEnviar.profesional_id = turno.profesional ? turno.profesional.id : null
+            turnoParaEnviar.profesional_id = user.rol === 'profesional' ? user.id : turno.profesional ? turno.profesional.id : null
             turnoParaEnviar.paciente_id = turno.paciente ? turno.paciente.id : null
             turnoParaEnviar.cobertura_id = turno.cobertura ? turno.cobertura.id : null
             turnoParaEnviar.clinica_id = turno.profesional ? turno.profesional.clinica.id : null
@@ -305,9 +305,11 @@ const NuevoTurno = () => {
                 ...turno,
                 profesional: filtros.profesional,
                 profesionalText: filtros.profesional.value,
+                paciente: null,
+                pacienteText: '',
             })
         }
-    }, [filtros])
+    }, [filtros, openTurno])
 
     return (
         <>
@@ -344,25 +346,28 @@ const NuevoTurno = () => {
                             }}
                         />
                         <h2 className='u-color--primary'>Turno</h2>
-                        <div className='c-nuevo_turno__item'>
-                            <div className='u-flex-column-center-start'>
-                                <span>Profesional</span>
-                                {
-                                    turno.id ?
-                                        <Input className={'u-1/1'} defaultValue={turno.nombreProfesional} isReadOnly={true}/>
-                                    :
-                                        <div className='u-1/1 u-flex-center-center'>
-                                            <Datalist
-                                                className={'u-1/1'}
-                                                list={ profesionales } 
-                                                defaultOption={ typeof turno.profesionalText === 'string' ? { value: turno.profesionalText } : turno.profesionalText } 
-                                                setter={(val) => handleDatalist(val, "profesional")}
-                                            />
-                                            <IoMdClose className='u-color--red u-cursor--pointer' onClick={() => handleDatalist(null, "profesional")}/>
-                                        </div>
-                                }
+                        {
+                            user.rol !== 'profesional' &&
+                            <div className='c-nuevo_turno__item'>
+                                <div className='u-flex-column-center-start'>
+                                    <span>Profesional</span>
+                                    {
+                                        turno.id ?
+                                            <Input className={'u-1/1'} defaultValue={turno.nombreProfesional} isReadOnly={true}/>
+                                        :
+                                            <div className='u-1/1 u-flex-center-center'>
+                                                <Datalist
+                                                    className={'u-1/1'}
+                                                    list={ profesionales } 
+                                                    defaultOption={ typeof turno.profesionalText === 'string' ? { value: turno.profesionalText } : turno.profesionalText } 
+                                                    setter={(val) => handleDatalist(val, "profesional")}
+                                                />
+                                                <IoMdClose className='u-color--red u-cursor--pointer' onClick={() => handleDatalist(null, "profesional")}/>
+                                            </div>
+                                    }
+                                </div>
                             </div>
-                        </div>
+                        }
                         {
                             (turno.profesional || turno.id) &&
                             <div className='c-nuevo_turno__item'>
@@ -465,12 +470,6 @@ const NuevoTurno = () => {
                                             <p className='u-color--red'>{error.mensaje}</p>
                                         </div>
                                     }
-                                    {
-                                        turno.id && !turno.onlyView && 
-                                        <>
-                                            <Button text={'Reprogramar'} clickHandler={() => {setOpenTurno(false); setReprogramando(turno);}}/>
-                                        </>
-                                    }
                                     <Button 
                                         text={turno.id ? 'Actualizar' : 'Dar turno'} 
                                         clickHandler={
@@ -481,9 +480,15 @@ const NuevoTurno = () => {
                                         }
                                     />
                                     {
+                                        turno.id && !turno.onlyView && 
+                                        <>
+                                            <Button text={'Reprogramar'} clickHandler={() => {setOpenTurno(false); setReprogramando(turno);}}/>
+                                        </>
+                                    }
+                                    {
                                         turno.id && !turno.onlyView &&
                                         <>
-                                            <Button text={'Cancelar'} clickHandler={() => setAccion({ value: true, text: '¿Estas seguro que deseas cancelar el turno?', accion: cancelarTurno})}/>
+                                            <Button text={'Cancelar Turno'} clickHandler={() => setAccion({ value: true, text: '¿Estas seguro que deseas cancelar el turno?', accion: cancelarTurno})}/>
                                         </>
                                     }
                                 </div>

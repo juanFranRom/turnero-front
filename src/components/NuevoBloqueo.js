@@ -18,6 +18,7 @@ import { useUserContext } from '@/contexts/user'
 import { IoMdClose } from "react-icons/io"
 import Textarea from '@/components_UI/Textarea'
 import PopUp from '@/components_UI/PopUp'
+import { checkFetch } from '@/utils/checkFetch'
 
 
 const NuevoBloqueo = () => {

@@ -1,9 +1,9 @@
 'use client'
 // Contexts
 import { FocusProvider } from '@/contexts/navegacion'
-import { TurnoContextProvider } from "@/contexts/turno"
 import { PacienteContextProvider } from '@/contexts/paciente'
 import { ProfesionalContextProvider } from '@/contexts/profesional'
+import { TurnoContextProvider } from '@/contexts/turno';
 import { WebSocketProvider } from '@/contexts/webSocket';
 
 // Toast
@@ -14,16 +14,16 @@ export default function RootLayout({ children }) {
 
   return (
   <FocusProvider>
-      <TurnoContextProvider>
-        <PacienteContextProvider>
-          <ProfesionalContextProvider>
-            <WebSocketProvider>
-              <ToastContainer />
-                {children}
-            </WebSocketProvider>
-          </ProfesionalContextProvider>
-        </PacienteContextProvider>
-      </TurnoContextProvider>
+    <TurnoContextProvider>
+      <PacienteContextProvider>
+        <ProfesionalContextProvider>
+          <WebSocketProvider>
+            <ToastContainer />
+              {children}
+          </WebSocketProvider>
+        </ProfesionalContextProvider>
+      </PacienteContextProvider>
+    </TurnoContextProvider>
   </FocusProvider>
   )
 }

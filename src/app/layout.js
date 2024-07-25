@@ -6,6 +6,7 @@ import { UserContextProvider } from '@/contexts/user'
 
 // SASS
 import './styles.scss'
+import { TurnoContextProvider } from '@/contexts/turno'
 
 export const metadata = {
   title: "Turnero Innova",
