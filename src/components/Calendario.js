@@ -4,54 +4,13 @@ import React, { useState, useRef, useEffect } from 'react'
 
 // Contexts
 import { useTurnoContext } from '@/contexts/turno'
-import { useUserContext } from '@/contexts/user'
 
 // Icons
-import { CiLock } from "react-icons/ci"
 import { FaLock } from "react-icons/fa"
 import { FaLockOpen } from "react-icons/fa"
 
 // Components
 import Loader from '@/components_UI/Loader'
-import Overlay from '@/components_UI/Overlay'
-import PopUp from '@/components_UI/PopUp'
-import Button from '@/components_UI/Button'
-
-
-const generateIntervals = (start, end, interval) => {
-    const times = []
-    let currentTime = new Date(start.getTime())
-
-    while (currentTime <= end) {
-        const hours = String(currentTime.getHours()).padStart(2, '0')
-        const minutes = String(currentTime.getMinutes()).padStart(2, '0')
-        times.push({ tipo: 'disponibilidad', text: `${hours}:${minutes}` })
-        currentTime.setMinutes(currentTime.getMinutes() + interval)
-    }
-
-    return times
-}
-
-const getWeekDays = (fecha) => {
-    const today = fecha
-    const days = []
-    const intervals = generateIntervals(new Date(today.setHours(8, 0, 0)), new Date(today.setHours(20, 30, 0)), 10) // 10 minutos de intervalo
-    const options = { weekday: 'long' }
-
-    let count = 0
-    while (days.length < 7) {
-        const date = new Date(today)
-        date.setDate(today.getDate() + count)
-        const dayName = date.toLocaleDateString('es-ES', options)
-
-        if (dayName !== 'sábado' && dayName !== 'domingo') {
-            days.push({ nombre: dayName, fecha: new Date(date), intervalos: [...intervals] })
-        }
-        count++
-    }
-
-    return days
-}
 
 const primeraLetraMayus = (string) => {
     let result = ''
@@ -174,7 +133,6 @@ const Calendario = () => {
         window.addEventListener('resize', handleResize)
         return () => window.removeEventListener('resize', handleResize)
     }, [dias, calendarRef.current?.offsetWidth, openTurno])
-
     
     
     return (
@@ -188,7 +146,7 @@ const Calendario = () => {
             }
             <div className='c-daily_calendar' ref={calendarRef}>
                 {
-                    dias && visibleDays ?
+                    dias && typeof dias !== 'string' && visibleDays ?
                         <>
                             <div className="c-daily_calendar__header">
                                 {
@@ -272,9 +230,15 @@ const Calendario = () => {
                             </div>
                         </>
                     :
-                    <div className='u-1/1 u-p5--vertical u-flex-center-center'>
-                        <Loader text='Cargando turnos...'/>
-                    </div>
+                        typeof dias === 'string'?
+                            <div className='u-1/1 u-p5--vertical u-flex-column-center-center'>
+                                <p className='u-color--red u-text--2 u-m2--bottom'>!Error!</p>
+                                <p>No se pudo obtener el calendario del profesional. Verifique el horario laboral del mismo.</p>
+                            </div>  
+                        :
+                            <div className='u-1/1 u-p5--vertical u-flex-center-center'>
+                                <Loader text='Cargando turnos...'/>
+                            </div>
                 }
 
             </div>

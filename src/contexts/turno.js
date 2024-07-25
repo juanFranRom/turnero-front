@@ -278,6 +278,8 @@ export const TurnoContextProvider = ({ children }) => {
                     });
                     setDias(aux)
                 }
+                else
+                    setDias('error')
             } catch (error) {
                 console.log(error);
             }
