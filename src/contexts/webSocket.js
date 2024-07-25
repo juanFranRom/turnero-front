@@ -12,9 +12,11 @@ export const useWebSocketContext = () => useContext(WebSocketContext);
 
 export const WebSocketProvider = ({ children }) => {
     const { user } = useUserContext();
-    const { lenguaje,fechaFormateada, date, setTurnos, setDias } = useTurnoContext()
+    const { lenguaje, fechaFormateada, date, setTurnos, setDias } = useTurnoContext()
     const [socket, setSocket] = useState(null);
     const formatTime = (date) => {
+        if(typeof date === 'string')
+            date = new Date(date) 
         const hours = date.getHours().toString().padStart(2, '0');
         const minutes = date.getMinutes().toString().padStart(2, '0');
         return `${hours}:${minutes}`;
@@ -33,56 +35,94 @@ export const WebSocketProvider = ({ children }) => {
     };
 
     // Función para comparar solo día, mes y año de dos fechas usando la fecha formateada
-    const isSameDay = (fecha1,fecha2) => {
+    const isSameDay = (fecha1, fecha2) => {
         return (
             fecha1.getFullYear() === fecha2.getFullYear() &&
             fecha1.getMonth() === fecha2.getMonth() &&
             fecha1.getDate() === fecha2.getDate()
         );
     };
-    function updateCalendarBloqueo(bloqueo,operation,horario,practica) {    
-        // Update setDias
+
+    function updateCalendarBloqueo(bloqueo, operation, horarios, practica) {
         setDias(prev => {
-            if(!prev)
-                return prev;
+            if (!prev) return prev;
+
+            // Función para obtener el rango de días entre dos fechas
+            function getDaysArray(start, end) {
+                let arr = [];
+                let dt = new Date(start);
+                while (dt <= end) {
+                    arr.push(new Date(dt));
+                    dt.setDate(dt.getDate() + 1);
+                }
+                return arr;
+            }
+
+            const bloqueoStart = new Date(bloqueo.start);
+            const bloqueoEnd = new Date(bloqueo.end);
+            const daysArray = getDaysArray(bloqueoStart, bloqueoEnd);
+
             return prev.map(dia => {
-                if (new Date(dia.fecha).toDateString() === new Date(bloqueo.start).toDateString()) {
-                    let bloqueoOld = dia.intervalos.find(intervalo => intervalo.id == bloqueo.id);
-                    //El && bloqueo.hora es porque si es delete no viene la hora solo el id
-                    let intervalos = dia.intervalos.filter(intervalo => intervalo.id !== bloqueo.id && bloqueo.hora && intervalo.hora !== bloqueo.hora);
-                    if(operation==="delete" && bloqueoOld){
-                        intervalos.push({
-                            tipo:"disponibilidad",
-                            duracion:bloqueoOld.duracion,
-                            start:bloqueoOld.start,
-                            end:bloqueoOld.end,
-                            text:bloqueoOld.text,
-                            hora:bloqueoOld.hora,
-                        })
-                    }else{
+                let diaDate = new Date(dia.fecha);
+                let diaString = diaDate.toDateString();
+                let inBloqueoRange = daysArray.some(day => day.toDateString() === diaString);
+
+                if (inBloqueoRange) {
+                    let bloqueoOld = dia.intervalos.find(intervalo => intervalo.tipo === "bloqueo" && intervalo.id == bloqueo.id);
+                    let intervalos = dia.intervalos.filter(intervalo => {
+                        if (intervalo.id === bloqueo.id) return false;
+
+                        let intervaloStart = new Date(intervalo.start);
+                        let intervaloEnd = new Date(intervalo.end);
+
+                        return (
+                            !(
+                                (intervalo.tipo === "disponibilidad" &&
+                                    (intervaloStart < new Date(bloqueo.end) && intervaloEnd > new Date(bloqueo.start))) ||
+                                (intervalo.tipo === "disponibilidad" &&
+                                    (intervaloStart == new Date(bloqueo.start).toISOString() && intervaloEnd == new Date(bloqueo.ebd).toISOString()))
+                            )
+                        );
+                    });
+                    if (operation === "delete" && bloqueoOld) {
+                        horarios.forEach(horario => {
+                            if (horario.dia === diaDate.toLocaleDateString('es-ES', { weekday: 'long' })) {
+                                let horarioInicio = new Date(`${diaString} ${horario.hora_inicio}`);
+                                let intervaloFin = new Date(bloqueoOld.end);
+
+                                // Crear intervalos de disponibilidad antes del bloqueo
+                                while (horarioInicio < intervaloFin) {
+                                    let disponibilidadFin = new Date(horarioInicio.getTime() + practica * 60000);
+                                    if (disponibilidadFin > intervaloFin) {
+                                        disponibilidadFin = new Date(intervaloFin);
+                                    }
+                                    intervalos.push({
+                                        tipo: "disponibilidad",
+                                        duracion: practica,
+                                        start: horarioInicio,
+                                        end: disponibilidadFin,
+                                        text: `${formatTime(horarioInicio)} - ${formatTime(disponibilidadFin)}`,
+                                        hora: formatTime(horarioInicio),
+                                    });
+                                    horarioInicio = new Date(disponibilidadFin);
+                                } 
+                            }
+                        });
+                    } else {
                         if (operation === 'create' || operation === 'update') {
                             intervalos.push(bloqueo);
                         }
-                        if(bloqueoOld && bloqueoOld.start !== bloqueo.start){
-                            intervalos.push({
-                                tipo:"disponibilidad",
-                                duracion:bloqueoOld.duracion,
-                                start:bloqueoOld.start,
-                                end:bloqueoOld.end,
-                                text:bloqueoOld.text,
-                                hora:bloqueoOld.hora,
-                            })
-                        }
                     }
                     intervalos.sort((a, b) => new Date(a.start) - new Date(b.start));
-    
+
                     return { ...dia, intervalos };
                 }
                 return dia;
             });
         });
     }
-    function updateAgendaCalendar(turno, operation,horario,practica) {
+
+    function updateAgendaCalendar(turno, operation, horarios, practica) {
         const turnoData = {
             ...turno,
             start: new Date(turno.fecha),
@@ -92,55 +132,169 @@ export const WebSocketProvider = ({ children }) => {
             text: `${turno.horario} - ${formatTime(new Date(new Date(turno.fecha).getTime() + turno.duracion * 60000))}`,
             estado: turno.estado
         };
-    
+
+        // Función para obtener el rango de días entre dos fechas
+        function getDaysArray(start, end) {
+            let arr = [];
+            let dt = new Date(start);
+            while (dt <= end) {
+                arr.push(new Date(dt));
+                dt.setDate(dt.getDate() + 1);
+            }
+            return arr;
+        }
+
+        const turnoStart = new Date(turno.fecha);
+        const turnoEnd = new Date(turnoStart.getTime() + turno.duracion * 60000);
+        const daysArray = getDaysArray(turnoStart, turnoEnd);
+
+
         // Update setDias
         setDias(prev => {
-            if(!prev)
-                return prev;
+            if (!prev) return prev;
             return prev.map(dia => {
-                if (new Date(dia.fecha).toDateString() === new Date(turno.fecha).toDateString()) {
-                    let turnoOld = dia.intervalos.find(intervalo => intervalo.id == turno.id);
-                    let intervalos = dia.intervalos.filter(intervalo => intervalo.id !== turno.id && intervalo.hora !== turnoData.hora);
-                    debugger;
+                const diaDate = new Date(dia.fecha);
+                const diaString = diaDate.toDateString();
+                const inTurnoRange = daysArray.some(day => day.toDateString() === diaString);
+                // busco el turno viejo
+                let turnoOld = dia.intervalos.find(intervalo => intervalo.tipo === "turno" && intervalo.id === turno.id);
+                // caso el turno se movio dentro del mismo dia, se cancelo o se creo uno nuevo
+                if (inTurnoRange) {
+                    let intervalos = dia.intervalos.filter(intervalo => {
+                        if (intervalo.tipo === "turno" && intervalo.id === turno.id) return false;
+
+                        let intervaloStart = new Date(intervalo.start);
+                        let intervaloEnd = new Date(intervalo.end);
+
+                        return (
+                            !(
+                                (intervalo.tipo === "disponibilidad" &&
+                                    (intervaloStart < turnoData.end && intervaloEnd > turnoData.start)) ||
+                                (intervalo.tipo === "disponibilidad" &&
+                                    (intervaloStart == turnoData.start && intervaloEnd == turnoData.end))
+                            )
+                        );
+                    });
                     if (operation === 'create' || (operation === 'update' && turno.estado !== 'Cancelado')) {
                         intervalos.push(turnoData);
                     }
-                    if(turnoOld && turnoOld.start !== turnoData.start.toISOString()){
-                        intervalos.push({
-                            tipo:"disponibilidad",
-                            duracion:turnoOld.duracion,
-                            start:turnoOld.start,
-                            end:turnoOld.end,
-                            text:turnoOld.text,
-                            hora:turnoOld.hora,
-                        })
+
+                    if (turno.estado === 'Cancelado' && turnoOld) {
+
+                        horarios.forEach(horario => {
+                            if(turnoOld.start instanceof Date){
+                                turnoOld.start = turnoOld.start.toISOString();
+                            }
+                            if(turnoOld.end instanceof Date){
+                                turnoOld.end = turnoOld.end.toISOString();
+                            }
+                            let horarioInicio = new Date(`${turnoOld.start.split('T')[0]}T${horario.hora_inicio}`);
+                            let intervaloFin = new Date(turnoOld.end);
+
+                            // Crear intervalos durante el turno viejo
+                            while (horarioInicio < intervaloFin) {
+                                let disponibilidadFin = new Date(horarioInicio.getTime() + practica * 60000);
+                                if (disponibilidadFin > intervaloFin) {
+                                    disponibilidadFin = new Date(intervaloFin);
+                                }
+                                intervalos.push({
+                                    tipo: "disponibilidad",
+                                    duracion: practica,
+                                    start: horarioInicio,
+                                    end: disponibilidadFin,
+                                    text: `${formatTime(horarioInicio)} - ${formatTime(disponibilidadFin)}`,
+                                    hora: formatTime(horarioInicio),
+                                });
+                                horarioInicio = new Date(disponibilidadFin);
+                            } 
+                        });
+                        // Asegurarse de que los intervalos estén ordenados
+                        intervalos.sort((a, b) => new Date(a.start) - new Date(b.start));
+                        // Eliminar intervalos duplicados o solapados
+                        let result = [];
+                        for (let i = 0; i < intervalos.length; i++) {
+                            if (i === 0 || new Date(intervalos[i].start) >= new Date(result[result.length - 1].end)) {
+                                result.push(intervalos[i]);
+                            } else {
+                                result[result.length - 1].end = new Date(Math.max(new Date(result[result.length - 1].end), new Date(intervalos[i].end)));
+                                result[result.length - 1].text = `${formatTime(result[result.length - 1].start)} - ${formatTime(result[result.length - 1].end)}`;
+                            }
+                        }
+                        intervalos = result;
                     }
+
                     intervalos.sort((a, b) => new Date(a.start) - new Date(b.start));
-    
                     return { ...dia, intervalos };
+                } else {
+                    //caso el turno se cambio de dia entonces si esta en el dia filtrado lo borramos
+                    if (turnoOld) {
+                        dia.intervalos = dia.intervalos.filter(intervalo => !(intervalo.tipo === "turno" && intervalo.id == turno.id));
+
+                        horarios.forEach(horario => {
+                            if(turnoOld.start instanceof Date){
+                                turnoOld.start = turnoOld.start.toISOString();
+                            }
+                            if(turnoOld.end instanceof Date){
+                                turnoOld.end = turnoOld.end.toISOString();
+                            }
+                            let horarioInicio = new Date(`${turnoOld.start.split('T')[0]}T${horario.hora_inicio}`);
+                            let intervaloFin = new Date(turnoOld.end);
+                            // Crear intervalos durante el turno viejo
+                            while (horarioInicio < intervaloFin) {
+                                let disponibilidadFin = new Date(horarioInicio.getTime() + practica * 60000);
+                                if (disponibilidadFin > intervaloFin) {
+                                    disponibilidadFin = new Date(intervaloFin);
+                                }
+                                dia.intervalos.push({
+                                    tipo: "disponibilidad",
+                                    duracion: practica,
+                                    start: horarioInicio,
+                                    end: disponibilidadFin,
+                                    text: `${formatTime(horarioInicio)} - ${formatTime(disponibilidadFin)}`,
+                                    hora: formatTime(horarioInicio),
+                                });
+                                horarioInicio = new Date(disponibilidadFin);
+                            } 
+                        });
+
+                        // Asegurarse de que los intervalos estén ordenados
+                        dia.intervalos.sort((a, b) => new Date(a.start) - new Date(b.start));
+                        // Eliminar intervalos duplicados o solapados
+                        let result = [];
+                        for (let i = 0; i < dia.intervalos.length; i++) {
+                            if (i === 0 || new Date(dia.intervalos[i].start) >= new Date(result[result.length - 1].end)) {
+                                result.push(dia.intervalos[i]);
+                            } else {
+                                result[result.length - 1].end = new Date(Math.max(new Date(result[result.length - 1].end), new Date(dia.intervalos[i].end)));
+                                result[result.length - 1].text = `${formatTime(result[result.length - 1].start)} - ${formatTime(result[result.length - 1].end)}`;
+                            }
+                        }
+                        dia.intervalos = result;
+                    }
                 }
                 return dia;
             });
         });
-        
+
         // Update setTurnos
         setTurnos(prev => {
-            if(!prev)
-                return prev;
-            console.log(isSameDay(new Date(turno.fecha), parseFechaFormateada(fechaFormateada, lenguaje)));
+            if (!prev) return prev;
+
+            // Filtrar turnos previos
+            prev = prev.filter(t => t.id !== turno.id);
+
             if (isSameDay(new Date(turno.fecha), parseFechaFormateada(fechaFormateada, lenguaje))) {
-                let turnos = prev.filter(t => t.id !== turno.id);
                 if (operation === 'create' || operation === 'update') {
-                    turnos.push(turnoData);
+                    prev.push(turnoData);
                 }
-                //descendente
-                turnos.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
-                return turnos;
-            } 
+                prev.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+                return prev;
+            }
             return prev;
         });
     }
-    async function processTurno(data){
+
+    async function processTurno(data) {
         const response = await fetch(`${process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL}/turnos/${data.turnoId}`, {
             method: "GET",
             headers: {
@@ -155,13 +309,13 @@ export const WebSocketProvider = ({ children }) => {
         if (result.status === "SUCCESS") {
             const turno = result.data;
             const changes = data.changes;
-        
+
             // Extract necessary information
             const fecha = new Date(turno.fecha).toLocaleDateString('es-ES');
             const hora = turno.horario;
             const nombrePaciente = turno.nombre;
             const doctor = user.rol !== 'profesional' ? `Doctor: ${turno.doctor}` : '';
-        
+
             // Generate the message based on the operation
             if (data.operation === 'create') {
                 let message = `Turno creado para ${nombrePaciente} el ${fecha} a las ${hora}. ${doctor}`;
@@ -169,46 +323,47 @@ export const WebSocketProvider = ({ children }) => {
             } else if (data.operation === 'update') {
                 let message = `Turno actualizado para ${nombrePaciente} el ${fecha} a las ${hora}. ${doctor}. Cambios: `;
                 let changesMessages = [];
-        
+
                 if (changes.fecha_hora) {
                     const from = new Date(changes.fecha_hora.from).toLocaleString('es-ES');
                     const to = new Date(changes.fecha_hora.to).toLocaleString('es-ES');
-                    toast(message+`
+                    toast(message + `
                     fecha y hora: de ${from} a ${to}`, { type: 'info' });
                     changesMessages.push(`fecha y hora: de ${from} a ${to}`);
                 }
-        
+
                 if (changes.estado) {
                     const from = changes.estado.from;
-                    const to = changes.estado.to; 
-                    if(changes.estado.to === 'Cancelado') {
+                    const to = changes.estado.to;
+                    if (changes.estado.to === 'Cancelado') {
                         message = `Se canceló el turno para ${nombrePaciente} el ${fecha} a las ${hora}. ${doctor}`;
                         toast(message, { type: 'error' });
-                    }else{
-                        toast(message+`
+                    } else {
+                        toast(message + `
                         estado: de ${from} a ${to}`, { type: 'info' });
                     }
                 }
-        
+
                 if (changes.nota) {
                     const from = changes.nota.from;
                     const to = changes.nota.to;
-                    toast(message+ `Se agregó la nota al turno: ${to}`, { type: 'info' }); 
+                    toast(message + `Se agregó la nota al turno: ${to}`, { type: 'info' });
                 }
-         
+
             }
-            updateAgendaCalendar(turno,data.operation,data.horario,data.practica);
+            updateAgendaCalendar(turno, data.operation, data.horario, data.practica);
         }
-                   
+
     }
-    async function processBloqueo(data){
-        if(data.operation === "delete"){
+
+    async function processBloqueo(data) {
+        if (data.operation === "delete") {
             const fecha = new Date(data.data.start).toLocaleDateString('es-ES');
             const fecha_fin = new Date(data.data.end).toLocaleDateString('es-ES');
             const doctor = user.rol !== 'profesional' ? `Doctor: ${data.data.doctor}` : '';
             let message = `Bloqueo creado desde ${fecha} hasta ${fecha_fin}. ${doctor}`;
             toast(message, { type: 'error' });
-            return updateCalendarBloqueo(null,data.operation,data.horario,data.practica);
+            return updateCalendarBloqueo(null, data.operation, data.horario, data.practica);
         }
 
         const response = await fetch(`${process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL}/bloqueo/${data.bloqueoId}`, {
@@ -228,7 +383,7 @@ export const WebSocketProvider = ({ children }) => {
             const fecha = new Date(bloqueo.start).toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' });
             const fecha_fin = new Date(bloqueo.end).toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' });
             const doctor = user.rol !== 'profesional' ? `Doctor: ${bloqueo.doctor}` : '';
-        
+
             // Generate the message based on the operation
             if (data.operation === 'create') {
                 let message = `Bloqueo creado desde ${fecha} hasta ${fecha_fin}. ${doctor}`;
@@ -238,11 +393,12 @@ export const WebSocketProvider = ({ children }) => {
                 toast(message, { type: 'info' });
             }
 
-            updateCalendarBloqueo(bloqueo,data.operation,data.horario,data.practica);
+            updateCalendarBloqueo(bloqueo, data.operation, data.horario, data.practica);
 
         }
-                   
+
     }
+
     useEffect(() => {
         if (user && user['wsToken']) {
             const newSocket = new WebSocket(`${process.env.WS_APP_BASE_URL}?token=${user['wsToken']}`);
@@ -252,13 +408,13 @@ export const WebSocketProvider = ({ children }) => {
             };
 
             newSocket.onmessage = async (event) => {
-                const {codigo,data }= JSON.parse(event.data); //por ahora el codigo es turno sino es el modulo que afecta ahr
-                
-                
+                const { codigo, data } = JSON.parse(event.data); //por ahora el codigo es turno sino es el modulo que afecta ahr
+
+
                 try {
-                    if(data.modelo==="turno")
-                        await processTurno(data);   
-                    if(data.modelo==="bloqueo")
+                    if (data.modelo === "turno")
+                        await processTurno(data);
+                    if (data.modelo === "bloqueo")
                         await processBloqueo(data);
                 } catch (error) {
                     console.error('Error fetching turno:', error);
