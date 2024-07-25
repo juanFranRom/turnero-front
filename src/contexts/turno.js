@@ -309,6 +309,8 @@ export const TurnoContextProvider = ({ children }) => {
             setOpenBloqueo,
             setBloqueo,
             setFiltros,
+            setDias,
+            setTurnos,
             setTurno,
             setLoadingTurnos,
             setOpenCalendar,
