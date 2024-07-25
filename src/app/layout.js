@@ -1,18 +1,13 @@
-// Contexts
-import { UserContextProvider } from '@/contexts/user'
-import { FocusProvider } from '@/contexts/navegacion'
-import { TurnoContextProvider } from "@/contexts/turno"
-import { PacienteContextProvider } from '@/contexts/paciente'
-import { ProfesionalContextProvider } from '@/contexts/profesional'
-import { WebSocketProvider } from '@/contexts/webSocket';
 // Fonts
 import { Open_Sans } from 'next/font/google'
 
+// Context
+import { UserContextProvider } from '@/contexts/user'
+
 // SASS
 import './styles.scss'
+import { TurnoContextProvider } from '@/contexts/turno'
 
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 export const metadata = {
   title: "Turnero Innova",
   description: "Turnero Innova",
@@ -30,20 +25,9 @@ export default function RootLayout({ children }) {
         <link rel="icon" href={metadata.icon}/>
       </head>
       <body className={openSans.className}>
-        <FocusProvider>
-          <UserContextProvider>
-            <TurnoContextProvider>
-              <PacienteContextProvider>
-                <ProfesionalContextProvider>
-                  <WebSocketProvider>
-                    <ToastContainer />
-                      {children}
-                  </WebSocketProvider>
-                </ProfesionalContextProvider>
-              </PacienteContextProvider>
-            </TurnoContextProvider>
-          </UserContextProvider>
-        </FocusProvider>
+        <UserContextProvider>
+          {children}
+        </UserContextProvider>
       </body>
     </html>
   )

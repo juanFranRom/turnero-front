@@ -42,13 +42,12 @@ export const UserContextProvider = ({ children }) => {
         }
         setUser(userRef)
     }
-
     const logOut = () => {
         if(window)
         {
             if(window.localStorage.getItem('user-innova'))
                 window.localStorage.removeItem('user-innova')
-    
+
             setUser(null)
             setLogged(false)
             setTriedLog(false)
@@ -56,6 +55,7 @@ export const UserContextProvider = ({ children }) => {
         }
     }
 
+    console.log(user);
     const logIn = async (e) => {
         e.preventDefault();
         let result = false;

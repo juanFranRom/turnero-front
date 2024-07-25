@@ -18,6 +18,7 @@ import { useUserContext } from '@/contexts/user'
 import { IoMdClose } from "react-icons/io"
 import Textarea from '@/components_UI/Textarea'
 import PopUp from '@/components_UI/PopUp'
+import { checkFetch } from '@/utils/checkFetch'
 
 
 const NuevoBloqueo = () => {
@@ -27,7 +28,7 @@ const NuevoBloqueo = () => {
     })
     const [loading, setLoading] = useState(false)
     const { bloqueo, setBloqueo, openBloqueo, setOpenBloqueo, profesionales } = useTurnoContext()
-    const { user } = useUserContext()
+    const { user, logOut } = useUserContext()
     const router = useRouter()
 
     const handleDatalist = (val, key) => {
@@ -116,6 +117,7 @@ const NuevoBloqueo = () => {
                     }
                 )
                 const json = await response.json()
+                checkFetch(json, logOut)
                 setLoading(false)
                 if (json.status === "SUCCESS") 
                 {

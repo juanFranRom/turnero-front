@@ -17,85 +17,86 @@ import { useUserContext } from "@/contexts/user";
 import { FaRegEdit } from "react-icons/fa";
 import { MdDeleteForever } from "react-icons/md";
 import Loader from "@/components_UI/Loader";
+import { useTurnoContext } from "@/contexts/turno";
+import { checkFetch } from "@/utils/checkFetch";
 
 const headers = [
   {
-    id: "username",
-    text: "Usuario",
+    id: "dni",
+    text: "DNI",
   },
   {
     id: "nombre",
-    text: "Nombre",
+    text: "Nombres",
   },
   {
-    id: "sucursal",
-    text: "Clinica",
+    id: "apellido",
+    text: "Apellido",
   },
   {
-    id: "telefono",
-    text: "Telefono",
+    id: "genero",
+    text: "Genero",
   },
   {
-    id: "mail",
-    text: "Email",
+    id: "coberturas",
+    text: "Obras Sociales",
   },
   {
-    id: "rol",
-    text: "Rol",
+    id: "practicasText",
+    text: "Practicas",
   },
+  {
+    id: "contactosText",
+    text: "Contactos",
+  }, 
 ];
+
+
+const ContactListComponent = ({ contactos }) => (
+  <div style={{ display: 'flex', flexDirection: 'column' }}>
+    {contactos.map(contacto => (
+      <div key={contacto.id} style={{ marginBottom: '4px' }}>
+        <span><strong>{contacto.tipo}:</strong> {contacto.valor}</span>
+      </div>
+    ))}
+  </div>
+);
 
 const TableAux = () => {
   const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [contextMenu, setContextMenu] = useState(null)
   const [deleting, setDeleting] = useState(null)
   const [error, setError] = useState({
     value: false,
     message: ''
   })
-  const { user } = useUserContext();
+  const { profesionales } = useTurnoContext()
+  const { user, logOut } = useUserContext();
   const router = useRouter();
 
-  const getData = async () => {
-    setLoading(true)
-    try {
-      const response = await fetch(`${process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL }/usuarios`,
-        {
-          method: "GET",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            authorization: "Bearer " + user?.token,
-          },
+  const getProfesionales = async () => {
+    try { 
+      setLoading(true)
+      setData(profesionales.map(profesional => {
+        return {
+          ...profesional,
+          coberturas: profesional.coberturas.join(", "),
+          practicasText: profesional.practicas.map(practica => practica.nombre).join(", "),
+          contactosText: <ContactListComponent key={profesional.dni} contactos={profesional.contactos} />
         }
-      );
-      const json = await response.json();
-      console.log(json);
-      if(json.status === 'SUCCESS')
-      {
-        if(json.data.length)
-        {
-          setData(json.data.map(el => { 
-            return({
-              ...el,
-            })
-          }))
-        }
-        else
-          setData([])
-        setLoading(false)
-      } 
+      }))
       setLoading(false)
     } catch (error) {
       console.log(error);
-      //router.push("/");
-    }
+      router.push("/");
+    } 
   }
 
-  const deleteData = async (id) => {
+
+  const deleteProfesional = async (id) => {
     try {
-      const response = await fetch(`${process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL }/pacientes/${id}`,
+      const response = await fetch(`${process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL }/profesionales/${id}`,
         {
           method: "DELETE",
           headers: {
@@ -106,9 +107,10 @@ const TableAux = () => {
         }
       )
       const json = await response.json();
+      checkFetch(json, logOut)
       if(json.status === 'SUCCESS')
       {
-        await getData()
+        await getProfesionales()
       }
       else
       {
@@ -119,38 +121,38 @@ const TableAux = () => {
       }
       setDeleting(null)
     } catch (error) {
-      router.push("/pacientes");
+      router.push("/profesionales");
     }
   }
 
   useEffect(() => {
-    getData();
-  }, [user]);
+    getProfesionales();
+  }, []);
   
   return (
     <>
-      {
-       deleting &&
+      { 
+      deleting &&
        <Overlay>
         <PopUp centered={true}>
-          <p className='u-text--1 u-m3--bottom'>{`¿Esta seguro que desea eliminar al usuario "${`${deleting.nombre}`}"?`}</p>
+          <p className='u-text--1 u-m3--bottom'>{`¿Esta seguro que desea eliminar el Profesional "${deleting.razon_social ? deleting.razon_social : `${deleting.apellido}, ${deleting.nombre}`}"?`}</p>
           <div className='u-1/1 u-flex-end-center'>
-            <Button text={'Aceptar'} clickHandler={() => deleteData(deleting.id)}/>
+            <Button text={'Aceptar'} clickHandler={() => deleteProfesional(deleting.id)}/>
             <Button text={'Rechazar'} clickHandler={() => setDeleting(null)}/>
           </div>
         </PopUp>
        </Overlay> 
       }
       {
-       error.value &&
-       <Overlay>
-        <PopUp centered={true}>
-          <p className='u-text--1 u-m3--bottom'>{error.message}</p>
-          <div className='u-1/1 u-flex-end-center'>
-            <Button text={'Aceptar'} clickHandler={() => setError({value: false, message: ''})}/>
-          </div>
-        </PopUp>
-       </Overlay> 
+        error.value &&
+        <Overlay>
+          <PopUp centered={true}>
+            <p className='u-text--1 u-m3--bottom'>{error.message}</p>
+            <div className='u-1/1 u-flex-end-center'>
+              <Button text={'Aceptar'} clickHandler={() => setError({value: false, message: ''})}/>
+            </div>
+          </PopUp>
+        </Overlay> 
       }
       {
         contextMenu && 
@@ -160,24 +162,24 @@ const TableAux = () => {
           rowData={contextMenu.rowData}
           setContextMenu={setContextMenu}
         >
-          <div className="c-context_menu--item" onClick={() => router.push(`/usuario/crear/${contextMenu?.rowData?.id}`)}>
+          <div className="c-context_menu--item" onClick={() => router.push(`/profesional/crear/${contextMenu?.rowData?.id}`)}>
             <FaRegEdit/>
             <span className="u-6/7">Editar</span>
           </div>
           <div className="c-context_menu--item" onClick={() => setDeleting(contextMenu?.rowData)}>
             <MdDeleteForever/>
             <span className="u-6/7">Eliminar</span>
-          </div> 
+          </div>
         </ContextMenu>
       }
       {
         loading?
           <div className="u-1/1 u-flex-column-center-center">
-            <Loader text="Cargando usuarios..."/>
+            <Loader text="Cargando profesionales..."/>
           </div>
         :
           data && data.length > 0 ?
-            <Table columns={headers} rows={data} setContextMenu={setContextMenu} contextMenu={contextMenu}/>
+              <Table columns={headers} rows={data} setContextMenu={setContextMenu} contextMenu={contextMenu}/>
           :
             <div className="u-1/1 u-flex-column-center-center u-p4--vertical">
               <p>No hay informacion para mostrar</p>

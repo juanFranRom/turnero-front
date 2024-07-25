@@ -16,6 +16,7 @@ import Input from '@/components_UI/Input'
 import Select from '@/components_UI/Select'
 import Loader from '@/components_UI/Loader'
 import Turno from './Turno'
+import { checkFetch } from '@/utils/checkFetch'
 
 
 const NuevoPaciente = ({ id = null, toClose = false }) => {
@@ -40,7 +41,7 @@ const NuevoPaciente = ({ id = null, toClose = false }) => {
     })
     const [loading, setLoading] = useState( id ? true : false )
     const { openPaciente, setOpenPaciente } = usePacienteContext()
-    const { user } = useUserContext()
+    const { user, logOut } = useUserContext()
     const router = useRouter()
 
     const handleChange = (val, key) => {
@@ -160,6 +161,7 @@ const NuevoPaciente = ({ id = null, toClose = false }) => {
               }
             );
             const json = await response.json();
+            checkFetch(json, logOut)
             if(json.status === 'SUCCESS')
             {
                 setOpenPaciente(false)
@@ -229,7 +231,7 @@ const NuevoPaciente = ({ id = null, toClose = false }) => {
               }
             );
             const json = await response.json();
-            console.log(json);
+            checkFetch(json, logOut)
             if(json.status === 'SUCCESS')
             {
                 router.push("/paciente");
@@ -270,7 +272,7 @@ const NuevoPaciente = ({ id = null, toClose = false }) => {
                     }
                 );
                 const json = await response.json();
-                console.log(json);
+                checkFetch(json, logOut)
                 if(json.status === 'SUCCESS')
                 {
                     let emailsBD = json.data.contactos.filter((el) => el.tipo === 'email').map(el => el.valor)

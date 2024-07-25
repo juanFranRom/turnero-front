@@ -2,6 +2,7 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { useUserContext } from './user'
+import { checkFetch } from '@/utils/checkFetch'
 
 const TurnoContext = createContext([])
 
@@ -45,6 +46,14 @@ const getWeekDays = (fecha) => {
     return days
 }
 
+const isSameDay = (fecha1,fecha2) => {
+    return (
+        fecha1.getFullYear() === fecha2.getFullYear() &&
+        fecha1.getMonth() === fecha2.getMonth() &&
+        fecha1.getDate() === fecha2.getDate()
+    );
+};
+
 export const TurnoContextProvider = ({ children }) => {
     const [turno, setTurno] = useState({
         pacienteText: '',
@@ -87,7 +96,7 @@ export const TurnoContextProvider = ({ children }) => {
     const [turnos, setTurnos] = useState([])
     const [reprogramando, setReprogramando] = useState(null)
     const [openCalendar, setOpenCalendar] = useState(false)
-    const { user } = useUserContext()
+    const { user, logOut, logged } = useUserContext()
     const [date, setDate] = useState(typeof window !== 'undefined' && window.sessionStorage.getItem('date-innova') ?
         new Date(window.sessionStorage.getItem('date-innova'))
     :
@@ -101,6 +110,7 @@ export const TurnoContextProvider = ({ children }) => {
     const mes = lenguaje === 'español' ? mesesEspañol[date.getMonth()] : mesesIngles[date.getMonth()]
     const fechaFormateada = diaSemana + ' ' + date.getDate() + ' - ' + mes + ' ' + date.getFullYear()
 
+    console.log(turnos);
     const reiniciarTurno = () => {
         setTurno({
             ...turno,
@@ -117,7 +127,12 @@ export const TurnoContextProvider = ({ children }) => {
             id: null,
             onlyView: false
         })
+        setFiltros({
+            profesional: null,
+            practica: null
+        })
     }
+
 
     const capitalizeFirstLetter = (string) => string.charAt(0).toUpperCase() + string.slice(1);
 
@@ -135,8 +150,9 @@ export const TurnoContextProvider = ({ children }) => {
                 }
             )
             const json = await response.json()
+            checkFetch(json, logOut)
             if (json.status === "SUCCESS") 
-                setTurnos([...json.data[0].turnos])
+                setTurnos([...json.data[0].turnos.filter((el) => isSameDay(new Date(el.fecha), date))])
             else
                 setTurnos([])
             
@@ -162,6 +178,7 @@ export const TurnoContextProvider = ({ children }) => {
                 }
             )
             const json = await response.json()
+            checkFetch(json, logOut)
             //if(window) window.location.reload()
             setCancelandoBloqueo( false )
         } catch (error) {
@@ -183,6 +200,7 @@ export const TurnoContextProvider = ({ children }) => {
                 }
             )
             const json = await response.json()
+            checkFetch(json, logOut)
             if (json.status === "SUCCESS") {
                 if(json.data.length && json.data.length > 0)
                     setProfesionales(
@@ -207,19 +225,21 @@ export const TurnoContextProvider = ({ children }) => {
     }
 
     useEffect(() => {
-        if(user)
+        if(user && user.rol !== 'profesional')
             buscarProfesionales()
     }, [user])
 
     useEffect(() => {
         if(pathname.includes('agenda') && user)
+        {
             buscarTurnos( date, filtros.profesional ?? null )
+        }            
     }, [date, filtros, pathname, user])
 
     useEffect(() => {
         const buscarTurnosCalendario = async ( dia, profesional ) => {
             try {
-                const response = await fetch(`${ process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL}/calendario/disponibilidad/5?fecha=${dia.getFullYear()}-${dia.getMonth() + 1}-${dia.getDate()}&profesionales=${profesional.id}`,
+                const response = await fetch(`${ process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL}/calendario/disponibilidad/5?fecha=${dia.getFullYear()}-${dia.getMonth() + 1}-${dia.getDate()}${profesional ? `&profesionales=${profesional.id}` : ''}`,
                     {
                         method: "GET",
                         headers: {
@@ -230,6 +250,7 @@ export const TurnoContextProvider = ({ children }) => {
                     }
                 )
                 const json = await response.json()
+                checkFetch(json, logOut)
                 if (json.status === "SUCCESS") {
                     let option =  { weekday: 'long' };
                     let aux = json.data.map(day=>{
@@ -260,7 +281,9 @@ export const TurnoContextProvider = ({ children }) => {
 
         if(pathname === '/' && user)
         {
-            if(filtros.profesional)
+            if(user.rol === 'profesional')
+                buscarTurnosCalendario(date, null)
+            else if(filtros.profesional)
                 buscarTurnosCalendario(date, filtros.profesional)
             else
                 setDias(getWeekDays(date ?? new Date()))
@@ -274,6 +297,11 @@ export const TurnoContextProvider = ({ children }) => {
             window.sessionStorage.setItem('filtros-innova', JSON.stringify(filtros))
         }
     }, [date, filtros])
+
+    useEffect(() => {
+        if(!logged)
+            reiniciarTurno()
+    },  [logged])
 
     return (
         <TurnoContext.Provider value={{
@@ -302,6 +330,8 @@ export const TurnoContextProvider = ({ children }) => {
             setOpenBloqueo,
             setBloqueo,
             setFiltros,
+            setDias,
+            setTurnos,
             setTurno,
             setLoadingTurnos,
             setOpenCalendar,

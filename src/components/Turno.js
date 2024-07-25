@@ -1,18 +1,21 @@
 'use client'
 import { useState, useRef, useEffect } from 'react'
 
+// Context
+import { useTurnoContext } from '@/contexts/turno'
+import { useUserContext } from '@/contexts/user'
+
 // Icons
 import { MdInsertComment } from "react-icons/md"
 import { GiInfo } from "react-icons/gi"
 import { IoMdArrowDropright } from "react-icons/io"
 import { IoMdArrowDropdown } from "react-icons/io"
-import Tooltip from '@/components_UI/Tooltip'
-import PopUp from '@/components_UI/PopUp'
-import Overlay from '@/components_UI/Overlay'
-import Button from '@/components_UI/Button'
-import { useTurnoContext } from '@/contexts/turno'
+
+// utils
+import { checkFetch } from '@/utils/checkFetch'
 
 // Components
+import Tooltip from '@/components_UI/Tooltip'
 
 
 const estados = [
@@ -31,6 +34,7 @@ const Turno = ({ data = null, onlyView = false }) => {
     const [currentTime, setCurrentTime] = useState(new Date());
     const botonRef = useRef(null);
     const desplegableRef = useRef(null);
+    const { user, logOut } = useUserContext()
     const { date, turno, setTurno, setOpenTurno } = useTurnoContext()
 
     const primeraLetraMayus = (string) => {
@@ -81,6 +85,7 @@ const Turno = ({ data = null, onlyView = false }) => {
     }
 
     const editarEstado = ( nuevoEstado ) => {
+        setDesplegable(false)
         const editar = async (nuevoEstado) => {
             try {
                 const response = await fetch(`${ process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL}/turnos/${dataTurno.id}`,
@@ -94,7 +99,8 @@ const Turno = ({ data = null, onlyView = false }) => {
                         body: JSON.stringify({ estado: nuevoEstado })
                     }
                 )
-                await response.json()
+                let json = await response.json()
+                checkFetch(json, logOut)
                 //if(window) window.location.reload()
             } catch (error) { }
         }
@@ -153,6 +159,7 @@ const Turno = ({ data = null, onlyView = false }) => {
         setDataTurno(data)
     }, [data])
 
+    console.log(dataTurno);
     return (
         <>
             {

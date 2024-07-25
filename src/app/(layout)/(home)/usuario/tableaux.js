@@ -17,43 +17,32 @@ import { useUserContext } from "@/contexts/user";
 import { FaRegEdit } from "react-icons/fa";
 import { MdDeleteForever } from "react-icons/md";
 import Loader from "@/components_UI/Loader";
+import { checkFetch } from "@/utils/checkFetch";
 
 const headers = [
   {
-    id: "dni",
-    text: "DNI",
+    id: "username",
+    text: "Usuario",
   },
   {
     id: "nombre",
-    text: "Nombres",
+    text: "Nombre",
   },
   {
-    id: "apellido",
-    text: "Apellidos",
+    id: "sucursal",
+    text: "Clinica",
   },
   {
-    id: "genero",
-    text: "Genero",
+    id: "telefono",
+    text: "Telefono",
   },
   {
-    id: "obraSocial",
-    text: "Obra Social",
-  },
-  {
-    id: "obraSocialNum",
-    text: "Numero Obra Social",
-  },
-  {
-    id: "telefono1",
-    text: "Telefono 1",
-  },
-  {
-    id: "telefono2",
-    text: "Telefono 2",
-  },
-  {
-    id: "email",
+    id: "mail",
     text: "Email",
+  },
+  {
+    id: "rol",
+    text: "Rol",
   },
 ];
 
@@ -66,13 +55,13 @@ const TableAux = () => {
     value: false,
     message: ''
   })
-  const { user } = useUserContext();
+  const { user, logOut } = useUserContext();
   const router = useRouter();
 
-  const getPacientes = async () => {
+  const getData = async () => {
     setLoading(true)
     try {
-      const response = await fetch(`${process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL }/pacientes`,
+      const response = await fetch(`${process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL }/usuarios`,
         {
           method: "GET",
           headers: {
@@ -83,22 +72,14 @@ const TableAux = () => {
         }
       );
       const json = await response.json();
-      console.log(json);
+      checkFetch(json, logOut)
       if(json.status === 'SUCCESS')
       {
         if(json.data.length)
         {
           setData(json.data.map(el => { 
-            let telefono1 = el.contactos.find( contacto => contacto.tipo === 'telefono' )?.valor
-            let telefono2 = el.contactos.find( contacto => contacto.tipo === 'telefono' && contacto.valor !== telefono1)?.valor
-            let email = el.contactos.find( contacto => contacto.tipo === 'email' )?.valor
             return({
               ...el,
-              obraSocial: el.coberturas[0]?.nombre,
-              obraSocialNum: el.coberturas[0]?.numero,
-              telefono1: telefono1,
-              telefono2: telefono2,
-              email: email,
             })
           }))
         }
@@ -113,7 +94,7 @@ const TableAux = () => {
     }
   }
 
-  const deletePaciente = async (id) => {
+  const deleteData = async (id) => {
     try {
       const response = await fetch(`${process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL }/pacientes/${id}`,
         {
@@ -126,9 +107,10 @@ const TableAux = () => {
         }
       )
       const json = await response.json();
+      checkFetch(json, logOut)
       if(json.status === 'SUCCESS')
       {
-        await getPacientes()
+        await getData()
       }
       else
       {
@@ -144,7 +126,7 @@ const TableAux = () => {
   }
 
   useEffect(() => {
-    getPacientes();
+    getData();
   }, [user]);
   
   return (
@@ -153,9 +135,9 @@ const TableAux = () => {
        deleting &&
        <Overlay>
         <PopUp centered={true}>
-          <p className='u-text--1 u-m3--bottom'>{`¿Esta seguro que desea eliminar al paciente "${`${deleting.apellido}, ${deleting.nombre}`}"?`}</p>
+          <p className='u-text--1 u-m3--bottom'>{`¿Esta seguro que desea eliminar al usuario "${`${deleting.nombre}`}"?`}</p>
           <div className='u-1/1 u-flex-end-center'>
-            <Button text={'Aceptar'} clickHandler={() => deletePaciente(deleting.id)}/>
+            <Button text={'Aceptar'} clickHandler={() => deleteData(deleting.id)}/>
             <Button text={'Rechazar'} clickHandler={() => setDeleting(null)}/>
           </div>
         </PopUp>
@@ -180,7 +162,7 @@ const TableAux = () => {
           rowData={contextMenu.rowData}
           setContextMenu={setContextMenu}
         >
-          <div className="c-context_menu--item" onClick={() => router.push(`/paciente/crear/${contextMenu?.rowData?.id}`)}>
+          <div className="c-context_menu--item" onClick={() => router.push(`/usuario/crear/${contextMenu?.rowData?.id}`)}>
             <FaRegEdit/>
             <span className="u-6/7">Editar</span>
           </div>
@@ -193,7 +175,7 @@ const TableAux = () => {
       {
         loading?
           <div className="u-1/1 u-flex-column-center-center">
-            <Loader text="Cargando pacientes..."/>
+            <Loader text="Cargando usuarios..."/>
           </div>
         :
           data && data.length > 0 ?

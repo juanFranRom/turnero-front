@@ -13,6 +13,7 @@ import Select from '@/components_UI/Select'
 import Loader from '@/components_UI/Loader'
 import Overlay from '@/components_UI/Overlay'
 import PopUp from '@/components_UI/PopUp'
+import { checkFetch } from '@/utils/checkFetch'
 
 const page = ({ params }) => {
   const [data, setData] = useState({
@@ -33,7 +34,7 @@ const page = ({ params }) => {
   })
   const [loading, setLoading] = useState( params.id ? true : false )
   const [modificandoPass, setModificandoPass] = useState( false )
-  const { user } = useUserContext()
+  const { user, logOut } = useUserContext()
   const router = useRouter()
 
   const handleChange = (val, key) => {
@@ -107,8 +108,8 @@ const page = ({ params }) => {
           body: JSON.stringify(dataToSend)
         }
       )
-
       const json = await response.json();
+      checkFetch(json, logOut)
       if(json.status === 'SUCCESS')
         router.push("/usuario");
       else
@@ -164,8 +165,8 @@ const page = ({ params }) => {
           body: JSON.stringify(dataToSend)
         }
       )
-
       const json = await response.json();
+      checkFetch(json, logOut)
       if(json.status === 'SUCCESS')
         router.push("/usuario");
       else
@@ -201,7 +202,7 @@ const page = ({ params }) => {
             }
           );
           const json = await response.json();
-          console.log(json);
+          checkFetch(json, logOut)
           if(json.status === 'SUCCESS')
           {
             setData({ 
@@ -222,10 +223,14 @@ const page = ({ params }) => {
     {
         buscarUsuario(params.id)
     }
-}, [params.id])
-
+  }, [params.id])
+  
   return (
       <div className='u-1/1 u-flex-center-center u-p2--vertical u-p5--horizontal'>
+        {
+          parseInt(user.id) !== parseInt(params.id[0]) &&
+          <ProtectedPath permisos={["administrar_usuarios"]}/>
+        }
         {
           modificandoPass && 
           <Overlay>
@@ -241,7 +246,6 @@ const page = ({ params }) => {
             </PopUp>
           </Overlay>
         }
-        <ProtectedPath permisos={["administrar_usuarios"]}/>
         <div className='u-absolute--top_right u-zindex--higher'>
           <Button text={'Volver'} url={'/usuario'}/>
         </div>

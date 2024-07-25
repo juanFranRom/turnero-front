@@ -1,11 +1,12 @@
 'use client';
 import Image from 'next/image'
-import {redirect} from 'next/navigation'
+import {redirect, usePathname} from 'next/navigation'
 import {useUserContext} from '@/contexts/user'
 import Loader from '@/components_UI/Loader'
 
 const ProtectedPath = ({ permisos =  null, children }) => {
     const { waitChecking, user, logged  } = useUserContext()
+    const pathname = usePathname()
 
     if(waitChecking ){
         return (
@@ -31,7 +32,7 @@ const ProtectedPath = ({ permisos =  null, children }) => {
     {  //Si la ruta tiene permisos
         if(permisos){
             // Si le falta alguno de los permisos lo mandamos al home segun el tipo
-            if (permisos.filter(element => user['permisos'].includes(element)).length !== permisos.length)
+            if (permisos.filter(element => user['permisos'].includes(element)).length !== permisos.length && pathname !== '/')
             {
                 redirect('/')
             }

@@ -16,6 +16,7 @@ import Input from '@/components_UI/Input'
 import Select from '@/components_UI/Select'
 import Loader from '@/components_UI/Loader'
 import HorariosSemanales from './HorarioSemanal'
+import { checkFetch } from '@/utils/checkFetch'
 
 
 const NuevoProfesional = ({ id = null, toClose = false }) => {
@@ -43,7 +44,7 @@ const NuevoProfesional = ({ id = null, toClose = false }) => {
     })
     const [loading, setLoading] = useState(id ? true : false)
     const { openProfesional, setOpenProfesional } = useProfesionalContext()
-    const { user } = useUserContext()
+    const { user, logOut } = useUserContext()
     const router = useRouter()
 
     const handleChange = (val, key) => {
@@ -189,6 +190,7 @@ const NuevoProfesional = ({ id = null, toClose = false }) => {
                 }
             );
             const json = await response.json();
+            checkFetch(json, logOut)
             if (json.status === 'SUCCESS') {
                 router.push("/profesional");
             }
@@ -260,6 +262,7 @@ const NuevoProfesional = ({ id = null, toClose = false }) => {
                 }
             );
             const json = await response.json();
+            checkFetch(json, logOut)
             if (json.status === 'SUCCESS') {
                 router.push("/profesional");
             }
@@ -302,6 +305,7 @@ const NuevoProfesional = ({ id = null, toClose = false }) => {
                     }
                 );
                 const json = await response.json();
+                checkFetch(json, logOut)
                 if (json.status === 'SUCCESS') {
                     let emails= json.data.contactos.filter((el) => el.tipo === 'email').map(el => el.valor)
                     let telefonos= json.data.contactos.filter((el) => el.tipo === 'telefono').map(el => el.valor)
