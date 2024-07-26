@@ -15,7 +15,7 @@ import { checkFetch } from '@/utils/checkFetch'
 
 
 const Reprogramar = () => {
-    const { reprogramando, setReprogramando, filtros } = useTurnoContext()
+    const { reprogramando, setReprogramando, filtros, profesional } = useTurnoContext()
     const { user, logOut } = useUserContext()
 
     const turnoParaEnviar = ( nuevaFecha, nuevoHorario ) => {
@@ -91,7 +91,7 @@ const Reprogramar = () => {
                             <>
                                 <p className='u-text--1 u-m2--bottom'>¿Seguro desea reprogramar?</p>
                                 <div className='u-1/1 u-flex-column-center-center u-text_align--start u-p4--vertical'>
-                                    <p className='u-1/1'><span className='u-text--1 u-color--primary'>Profesional:</span> {filtros.profesional.apellido}, {filtros.profesional.nombre}</p>
+                                    <p className='u-1/1'><span className='u-text--1 u-color--primary'>Profesional:</span> { user.rol === 'profesional' ? `${profesional.apellido}, ${profesional.nombre}` : `${filtros.profesional.apellido}, ${filtros.profesional.nombre}`}</p>
                                     <p className='u-1/1'>
                                         <span className='u-text--1 u-color--primary'>Fecha anterior: </span>
                                         {capitalizeFirstLetter(new Date(reprogramando.fecha).toLocaleDateString('es-ES', {
