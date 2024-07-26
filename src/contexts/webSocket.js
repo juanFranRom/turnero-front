@@ -305,7 +305,7 @@ export const WebSocketProvider = ({ children }) => {
                 } else {
                     //caso el turno se cambio de dia entonces si esta en el dia filtrado lo borramos
                     if (turnoOld) {
-                        dia.intervalos = dia.intervalos.filter(intervalo => !(intervalo.tipo === "turno" && intervalo.id == turno.id));
+                        dia.intervalos = dia.intervalos.filter(intervalo => !((intervalo.tipo === "turno" || intervalo.tipo === "sobreturno") && intervalo.id == turno.id));
 
                         horarios.forEach(horario => {
                             if(turnoOld.start instanceof Date){
