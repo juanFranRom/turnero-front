@@ -214,11 +214,13 @@ const NuevoPaciente = ({ id = null, toClose = false }) => {
                 coberturas: [], 
             }
 
+            console.log(objectToSend);
             if(objectToSend.obraSocial && objectToSend.obraSocial.length > 0)
                 objectToSend.coberturas.push({ nombre: objectToSend.obraSocial, numero: objectToSend.obraSocialNum })
             objectToSend.contactos = objectToSend.contactos.concat(objectToSend.telefonos.map(el => { return({ tipo: 'telefono', valor: el }) }))
             objectToSend.contactos = objectToSend.contactos.concat(objectToSend.emails.map(el => { return({ tipo: 'email', valor: el }) }))
 
+            console.log(objectToSend);
             const response = await fetch(`${process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL }/pacientes/${paciente.id}`,
               {
                 method: "PUT",
@@ -231,7 +233,8 @@ const NuevoPaciente = ({ id = null, toClose = false }) => {
               }
             );
             const json = await response.json();
-            checkFetch(json, logOut)
+            console.log(json);
+            /*checkFetch(json, logOut)
             if(json.status === 'SUCCESS')
             {
                 router.push("/paciente");
@@ -242,7 +245,7 @@ const NuevoPaciente = ({ id = null, toClose = false }) => {
                     value: true,
                     mensaje: json.message
                 })
-            }
+            }*/
         } catch (error) {
             console.log(error)
             setError({

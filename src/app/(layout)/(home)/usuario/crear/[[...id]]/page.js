@@ -228,7 +228,7 @@ const page = ({ params }) => {
   return (
       <div className='u-1/1 u-flex-center-center u-p2--vertical u-p5--horizontal'>
         {
-          parseInt(user.id) !== parseInt(params.id[0]) &&
+          params.id && parseInt(user.id) !== parseInt(params.id[0]) &&
           <ProtectedPath permisos={["administrar_usuarios"]}/>
         }
         {
@@ -251,7 +251,7 @@ const page = ({ params }) => {
         </div>
         <div className='c-nuevo_paciente'>
           {
-            parseInt(user.id) === parseInt(params.id[0]) ?
+            params.id && parseInt(user.id) === parseInt(params.id[0]) ?
               <h2 className='u-color--primary'>Mi Perfil</h2>
             :
               <h2 className='u-color--primary'>{ params.id  ? 'Editar' : 'Nuevo'} Usuario</h2>
