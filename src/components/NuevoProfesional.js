@@ -134,7 +134,7 @@ const NuevoProfesional = ({ id = null, toClose = false }) => {
             let vls = Object.values(object.horarios);
             for (const v of vls) {
                 if(!v.every(time=>time.start!==''&&time.end!==''))
-                    return 'Completá hora de inicio y hora de fin para todos los dias que seleccionaeste.'
+                    return 'Completá hora de inicio y hora de fin para todos los dias que seleccionaste.'
                 let x = v.find(time => timeToMinutes(time.start) > timeToMinutes(time.end))
                 if(x != undefined)
                     return `Formato incorrecto para el horario: ${time.start.slice(0,5)} a ${time.end.slice(0,5)} el horario de inicio es posterior al horario de fin`

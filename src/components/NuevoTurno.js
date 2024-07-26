@@ -1,6 +1,6 @@
 'use client'
 // React
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 // components
@@ -34,6 +34,7 @@ const NuevoTurno = () => {
     })
     const { turno, setTurno, openTurno, setOpenTurno, filtros, setReprogramando, profesionales, profesional } = useTurnoContext()
     const { user, logOut } = useUserContext()
+    const debounceTimeout = useRef(null)
     const router = useRouter()
 
     const handleDatalist = (val, key) => {
@@ -296,18 +297,33 @@ const NuevoTurno = () => {
 
     useEffect(() => {
         if(turno.pacienteText.length > 2)
-            buscar(
-                'pacientes', 
-                turno.pacienteText, 
-                (pacientes) => {
-                    setTurno({
-                        ...turno,
-                        pacienteList: pacientes.map(( ele ) => {
-                            return { ...ele, value: `${ele.apellido}, ${ele.nombre}` }
-                        })
-                    })
-                }
-            )
+        {
+            if (debounceTimeout.current) {
+                clearTimeout(debounceTimeout.current);
+            }
+
+            debounceTimeout.current = setTimeout(() => {
+                buscar(
+                    'pacientes',
+                    turno.pacienteText,
+                    (pacientes) => {
+                        setTurno((prevTurno) => ({
+                            ...prevTurno,
+                            pacienteList: pacientes.map((ele) => ({
+                                ...ele,
+                                value: `${ele.apellido}, ${ele.nombre}`
+                            }))
+                        }));
+                    }
+                );
+            }, 300);
+        }
+        
+        return () => {
+            if (debounceTimeout.current) {
+                clearTimeout(debounceTimeout.current);
+            }
+        };
     }, [turno.pacienteText])
 
     useEffect(() => {

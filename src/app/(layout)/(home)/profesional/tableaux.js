@@ -108,9 +108,7 @@ const TableAux = () => {
       const json = await response.json();
       checkFetch(json, logOut)
       if(json.status === 'SUCCESS')
-      {
-        await getProfesionales()
-      }
+        if(window) window.location.reload()
       else
       {
         setError({
