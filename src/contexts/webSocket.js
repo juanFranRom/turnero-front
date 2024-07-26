@@ -255,7 +255,7 @@ export const WebSocketProvider = ({ children }) => {
                         intervalos.push(turnoData);
                     }
 
-                    if (turno.estado === 'Cancelado' && turnoOld) {
+                    if ((turno.estado === 'Cancelado' && turnoOld )||( turnoOld && turnoOld.text !== turnoData.text) ) {
 
                         horarios.forEach(horario => {
                             if(turnoOld.start instanceof Date){
