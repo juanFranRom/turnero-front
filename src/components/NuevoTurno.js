@@ -56,7 +56,7 @@ const NuevoTurno = () => {
         if(key === 'profesional')
             aux.practicaText = ''
             
-        setTurno()
+        setTurno(aux)
     }
     
     const minutesToTime = (duracion) => {
