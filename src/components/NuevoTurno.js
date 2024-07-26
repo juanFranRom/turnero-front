@@ -32,6 +32,7 @@ const NuevoTurno = () => {
         mensaje: '',
         accion: null
     })
+    const [esSobreTurno, setEsSobreTurno] = useState(false)
     const { turno, setTurno, openTurno, setOpenTurno, filtros, setReprogramando, profesionales, profesional } = useTurnoContext()
     const { user, logOut } = useUserContext()
     const debounceTimeout = useRef(null)
@@ -106,7 +107,6 @@ const NuevoTurno = () => {
         
         if(crear)
         {
-            console.log(turno);
             turnoParaEnviar.profesional_id = turno.profesional ? turno.profesional.id : null
             turnoParaEnviar.paciente_id = turno.paciente ? turno.paciente.id : null
             turnoParaEnviar.cobertura_id = turno.cobertura ? turno.cobertura.id : null
@@ -350,12 +350,35 @@ const NuevoTurno = () => {
                 tipo: turno.id ? turno.tipo : 'turno',
             })
         }
+        else
+        {
+            setTurno({
+                pacienteText: '',
+                pacienteList: [],
+                paciente: null,
+                profesionalText: '',
+                profesionalList: [],
+                profesional: null,
+                practicasText: '',
+                practicaText: '',
+                practica: null,
+                coberturaText: '',
+                cobertura: null,
+                fecha: null,
+                hora: null
+            })
+        }
         setError({
             value: false,
             mensaje: ''
         })
     }, [filtros, openTurno, profesional])
 
+    useEffect(() => {
+        console.log(turno);
+        if(openTurno && turno && turno.tipo === 'sobreturno')
+            setEsSobreTurno(true)
+    }, [openTurno])
     
     return (
         <>
@@ -526,16 +549,12 @@ const NuevoTurno = () => {
                                         }
                                     />
                                     {
-                                        turno.id && !turno.onlyView && 
-                                        <>
+                                        turno.id && !esSobreTurno && !turno.onlyView && 
                                             <Button text={'Reprogramar'} clickHandler={() => {setOpenTurno(false); setReprogramando(turno);}}/>
-                                        </>
                                     }
                                     {
                                         turno.id && !turno.onlyView &&
-                                        <>
                                             <Button text={'Cancelar Turno'} clickHandler={() => setAccion({ value: true, text: '¿Estas seguro que deseas cancelar el turno?', accion: cancelarTurno})}/>
-                                        </>
                                     }
                                 </div>
                         }

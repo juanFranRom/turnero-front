@@ -136,7 +136,6 @@ export const TurnoContextProvider = ({ children }) => {
         })
     }
 
-
     const capitalizeFirstLetter = (string) => string.charAt(0).toUpperCase() + string.slice(1);
 
     const buscarTurnos = async ( dia, profesional = null ) => {

@@ -436,7 +436,6 @@ export const WebSocketProvider = ({ children }) => {
 
     async function processBloqueo(data) {
         if (data.operation === "delete") {
-            debugger;
             const fecha = new Date(data.data.start).toLocaleDateString('es-ES');
             const fecha_fin = new Date(data.data.end).toLocaleDateString('es-ES');
             const doctor = user.rol !== 'profesional' ? `Doctor: ${data.data.doctor}` : '';
