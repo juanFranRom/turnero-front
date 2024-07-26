@@ -375,9 +375,10 @@ const NuevoTurno = () => {
     }, [filtros, openTurno, profesional])
 
     useEffect(() => {
-        console.log(turno);
         if(openTurno && turno && turno.tipo === 'sobreturno')
             setEsSobreTurno(true)
+        else if(openTurno && turno)
+            setEsSobreTurno(false)
     }, [openTurno])
     
     return (
