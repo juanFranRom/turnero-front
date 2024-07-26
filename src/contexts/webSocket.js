@@ -14,6 +14,7 @@ export const WebSocketProvider = ({ children }) => {
     const { user } = useUserContext();
     const { lenguaje, fechaFormateada, date, setTurnos, setDias } = useTurnoContext()
     const [socket, setSocket] = useState(null);
+
     const formatTime = (date) => {
         if(typeof date === 'string')
             date = new Date(date) 
@@ -21,7 +22,7 @@ export const WebSocketProvider = ({ children }) => {
         const minutes = date.getMinutes().toString().padStart(2, '0');
         return `${hours}:${minutes}`;
     };
-    const pathname = usePathname()
+    
     // Función para convertir una fecha formateada en un objeto Date
     const parseFechaFormateada = (fechaFormateada, lenguaje) => {
         const [diaSemana, diaMes, mes, anio] = fechaFormateada
@@ -354,16 +355,20 @@ export const WebSocketProvider = ({ children }) => {
 
         // Update setTurnos
         setTurnos(prev => {
+            console.log(prev);
             if (!prev) return prev;
 
             // Filtrar turnos previos
-            prev = prev.filter(t => t.id !== turno.id);
+            prev.turnos = prev.turnos.filter(t => t.id !== turno.id);
 
-            if (isSameDay(new Date(turno.fecha), parseFechaFormateada(fechaFormateada, lenguaje))) {
+            console.log(new Date(turno.fecha));
+            console.log(new Date(prev.fecha));
+            if (isSameDay(new Date(turno.fecha), new Date(prev.fecha))) {
                 if (operation === 'create' || operation === 'update') {
-                    prev.push(turnoData);
+                    prev.turnos.push(turnoData);
                 }
-                prev.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+                prev.turnos.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+                console.log(prev);
                 return prev;
             }
             return prev;

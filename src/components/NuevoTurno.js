@@ -37,17 +37,26 @@ const NuevoTurno = () => {
     const router = useRouter()
 
     const handleDatalist = (val, key) => {
+        let aux = null
         if(typeof val === 'string')
-            setTurno({
+            aux = {
                 ...turno,
                 [`${key}Text`]: val
-            })
+            }
         else
-            setTurno({
+            aux = {
                 ...turno,
                 [`${key}Text`]: val ? val.value : '',
                 [`${key}`]: val,
-            })
+            }
+        
+        if(key === 'paciente')
+            aux.coberturaText = ''
+
+        if(key === 'profesional')
+            aux.practicaText = ''
+            
+        setTurno()
     }
     
     const minutesToTime = (duracion) => {
@@ -309,6 +318,7 @@ const NuevoTurno = () => {
                 profesional: profesional,
                 paciente: null,
                 pacienteText: '',
+                nota: ''
             })
         }
         else if(filtros && filtros.profesional)
@@ -319,8 +329,13 @@ const NuevoTurno = () => {
                 profesionalText: filtros.profesional.value,
                 paciente: null,
                 pacienteText: '',
+                nota: ''
             })
         }
+        setError({
+            value: false,
+            mensaje: ''
+        })
     }, [filtros, openTurno, profesional])
 
     

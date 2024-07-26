@@ -37,10 +37,10 @@ const Agenda = ({}) => {
             <>
               <div ref={printRef}>
                 {
-                  turnos && turnos.length > 0 &&
-                  turnos.map((turno) => {
+                  turnos.turnos && turnos.turnos.length > 0 &&
+                  turnos.turnos.map((turno, index) => {
                     return (
-                      <Turno data={turno} key={turno.id} />
+                      <Turno data={turno} key={turno.id}/>
                     )
                   })
                 }

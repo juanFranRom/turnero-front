@@ -175,7 +175,7 @@ const TableAux = () => {
        </Overlay> 
       }
       {
-        contextMenu && 
+        contextMenu &&
         <ContextMenu
           x={contextMenu.x}
           y={contextMenu.y}

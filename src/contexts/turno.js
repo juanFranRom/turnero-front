@@ -94,15 +94,18 @@ export const TurnoContextProvider = ({ children }) => {
     const [openTurno, setOpenTurno] = useState(false)
     const [openBloqueo, setOpenBloqueo] = useState(false)
     const [loadingTurnos, setLoadingTurnos] = useState(true)
-    const [turnos, setTurnos] = useState([])
-    const [reprogramando, setReprogramando] = useState(null)
-    const [openCalendar, setOpenCalendar] = useState(false)
-    const { user, logOut, logged } = useUserContext()
     const [date, setDate] = useState(typeof window !== 'undefined' && window.sessionStorage.getItem('date-innova') ?
         new Date(window.sessionStorage.getItem('date-innova'))
     :
         new Date()
     )
+    const [turnos, setTurnos] = useState({
+        fecha: date,
+        turnos: []
+    })
+    const [reprogramando, setReprogramando] = useState(null)
+    const [openCalendar, setOpenCalendar] = useState(true)
+    const { user, logOut, logged } = useUserContext()
     const pathname = usePathname()
     const diaSemana = lenguaje === 'español' ? 
             ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'][date.getDay()] 
@@ -152,13 +155,13 @@ export const TurnoContextProvider = ({ children }) => {
             const json = await response.json()
             checkFetch(json, logOut)
             if (json.status === "SUCCESS") 
-                setTurnos([...json.data[0].turnos.filter((el) => isSameDay(new Date(el.fecha), date))])
-            else
-                setTurnos([])
+                setTurnos((prev) => ({
+                    fecha: prev.date ?? date,
+                    turnos: [...json.data[0].turnos.filter((el) => isSameDay(new Date(el.fecha), date))]
+                }))
             
             setLoadingTurnos(false)
         } catch (error) {
-            setTurnos([])
             setLoadingTurnos(false)
             console.log(error);
         }
@@ -235,10 +238,16 @@ export const TurnoContextProvider = ({ children }) => {
 
     useEffect(() => {
         if(pathname.includes('agenda') && user)
-        {
             buscarTurnos( date, filtros.profesional ?? null )
-        }            
     }, [date, filtros, pathname, user])
+
+    useEffect(() => {
+        if(date)
+            setTurnos((prev) => ({
+                fecha: date,
+                turnos: prev.turnos
+            }))
+    }, [date])
 
     useEffect(() => {
         const buscarTurnosCalendario = async ( dia, profesional ) => {

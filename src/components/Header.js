@@ -35,7 +35,7 @@ const Header = ({ blocked }) => {
     const pathname = usePathname()
 
     useEffect(() => {
-        if(pathname.length > 1 && !pathname.includes('calendario'))
+        if(pathname.length > 1 && !pathname.includes('agenda') && !pathname.includes('calendario'))
             setOpenCalendar(false)
         else
             setOpenCalendar(true)
