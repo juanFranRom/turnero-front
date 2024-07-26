@@ -334,7 +334,8 @@ const NuevoTurno = () => {
                 profesional: profesional,
                 paciente: null,
                 pacienteText: '',
-                nota: ''
+                nota: turno.id ? turno.nota : '',
+                tipo: 'turno'
             })
         }
         else if(filtros && filtros.profesional)
@@ -345,7 +346,8 @@ const NuevoTurno = () => {
                 profesionalText: filtros.profesional.value,
                 paciente: null,
                 pacienteText: '',
-                nota: ''
+                nota: turno.id ? turno.nota : '',
+                tipo: 'turno'
             })
         }
         setError({

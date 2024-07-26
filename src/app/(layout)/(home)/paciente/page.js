@@ -11,6 +11,7 @@ import ProtectedPath from '@/components/ProtectedPath'
 
 const page = () => {
   const { user } = useUserContext()
+  console.log(user);
   return (
     <ProtectedPath permisos={['ver_pacientes']}>
       <div className='u-1/1 u-flex-column-center-end u-p4'>

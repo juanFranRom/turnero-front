@@ -32,7 +32,6 @@ const NuevoBloqueo = () => {
     const router = useRouter()
 
     const handleDatalist = (val, key) => {
-        console.log(val);
         setBloqueo({
             ...bloqueo,
             [`${key}`]: val,
@@ -142,6 +141,13 @@ const NuevoBloqueo = () => {
         }
         crear()
     }
+
+    useEffect(() => {
+        setError({
+            value: false,
+            mensaje: ''
+        })
+    }, [])
 
     return (
         <>

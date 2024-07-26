@@ -234,7 +234,7 @@ export const WebSocketProvider = ({ children }) => {
                 const diaString = diaDate.toDateString();
                 const inTurnoRange = daysArray.some(day => day.toDateString() === diaString);
                 // busco el turno viejo
-                let turnoOld = dia.intervalos.find(intervalo => intervalo.tipo === "turno" && intervalo.id === turno.id);
+                let turnoOld = dia.intervalos.find(intervalo => (intervalo.tipo === "turno" || intervalo.tipo === "sobreturno") && intervalo.id === turno.id);
                 // caso el turno se movio dentro del mismo dia, se cancelo o se creo uno nuevo
                 if (inTurnoRange) {
                     let intervalos = dia.intervalos.filter(intervalo => {
