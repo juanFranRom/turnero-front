@@ -355,14 +355,11 @@ export const WebSocketProvider = ({ children }) => {
 
         // Update setTurnos
         setTurnos(prev => {
-            console.log(prev);
             if (!prev) return prev;
 
             // Filtrar turnos previos
             prev.turnos = prev.turnos.filter(t => t.id !== turno.id);
 
-            console.log(new Date(turno.fecha));
-            console.log(new Date(prev.fecha));
             if (isSameDay(new Date(turno.fecha), new Date(prev.fecha))) {
                 if (operation === 'create' || operation === 'update') {
                     prev.turnos.push(turnoData);
