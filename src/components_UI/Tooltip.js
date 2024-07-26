@@ -11,14 +11,14 @@ const Tooltip = ({ children, childrenRef, text, className }) => {
             const tooltipRect = tooltipRef.current.getBoundingClientRect();
 
             const newPosition = {
-                top: childRect.top - tooltipRect.height - 10,
+                top: childRect.top - tooltipRect.height,
                 left: childRect.left,
                 tooltip: tooltipRect,
                 direction: 'up'
             };
 
             if (newPosition.top < 0) {
-                newPosition.top = childRect.top - tooltipRect.height - 10;
+                newPosition.top = childRect.top - tooltipRect.height;
                 newPosition.direction = 'down';
             }
 

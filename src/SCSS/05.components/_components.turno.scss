@@ -296,7 +296,7 @@ $turno-color-secondary: rgba(108, 117, 125, 1);
     @include flex-column-center-start();
     gap: 0;
     @include font-size(10px);
-    margin-bottom: 10px;
+    padding-bottom: 10px;
 }
 
 .c-turno__text--secondary{

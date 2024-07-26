@@ -132,13 +132,23 @@ const Turno = ({ data = null, onlyView = false }) => {
         return(
             <div className='u-p1--vertical u-p2--horizontal'>
                 {
-                    dataTurno.historial_cambios.map( cambio => {
-                        return(
-                            <div className='c-turno__cambio'>
-                                <p className='c-turno__cambio--titulo'>{ cambio.campo_modificado === "Creador" ? cambio.campo_modificado : cambio.nuevo_valor }</p>
-                                <p className='c-turno__cambio--fecha'>Fecha: { new Date(cambio.fecha).toLocaleDateString() }</p>
-                                <p className='c-turno__cambio--usuario'>Usuario: { cambio.usuario.nombre && cambio.usuario.nombre !== '' ? cambio.usuario.nombre : cambio.usuario.username }</p>
-                            </div>
+                    dataTurno.historial_cambios.sort((a, b) => new Date(a.fecha) - new Date(b.fecha)).map( cambio => {
+                        if(cambio.campo_modificado === 'fecha_hora')
+                            return(
+                                <div className='c-turno__cambio'>
+                                    <p className='c-turno__cambio--titulo'>Reprogramado</p>
+                                    <p className='c-turno__cambio--fecha'>Fecha anterior: { new Date(cambio.valor_anterior).toLocaleDateString() } { new Date(cambio.valor_anterior).toLocaleTimeString() }</p>
+                                    <p className='c-turno__cambio--fecha'>Fecha nueva: { new Date(cambio.nuevo_valor).toLocaleDateString() } { new Date(cambio.nuevo_valor).toLocaleTimeString() }</p>
+                                    <p className='c-turno__cambio--usuario'>Usuario: { cambio.usuario.nombre && cambio.usuario.nombre !== '' ? cambio.usuario.nombre : cambio.usuario.username }</p>
+                                </div>
+                            )
+                        else
+                            return(
+                                <div className='c-turno__cambio'>
+                                    <p className='c-turno__cambio--titulo'>{ cambio.campo_modificado === "Creador" ? cambio.campo_modificado : cambio.nuevo_valor }</p>
+                                    <p className='c-turno__cambio--fecha'>Fecha: { new Date(cambio.fecha).toLocaleDateString() }</p>
+                                    <p className='c-turno__cambio--usuario'>Usuario: { cambio.usuario.nombre && cambio.usuario.nombre !== '' ? cambio.usuario.nombre : cambio.usuario.username }</p>
+                                </div>
                         )
                     })
                 }
@@ -195,6 +205,7 @@ const Turno = ({ data = null, onlyView = false }) => {
         setDataTurno(data)
     }, [data])
 
+    console.log(dataTurno);
     return (
         <>
             {
