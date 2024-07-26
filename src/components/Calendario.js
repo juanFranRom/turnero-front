@@ -153,7 +153,7 @@ const Calendario = () => {
                                         day.intervalos && day.intervalos.length > 0 ?
                                             <div key={index} className="c-daily_calendar__day_header">
                                                 {
-                                                    !reprogramando && !day.intervalos.find(el => el.tipo === 'turno' || el.tipo === 'sobreturno') &&
+                                                    !reprogramando && !day.intervalos.find(el => el.tipo === 'turno' || el.tipo === 'sobreturno') && day.intervalos.find(el => el.tipo === 'disponibilidad') &&
                                                     <FaLock className='c-daily_calendar__lock' onClick={(e) => handleBloqueo(e, day, null)}/>
                                                 }
                                                 <div>
