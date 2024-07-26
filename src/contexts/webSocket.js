@@ -205,7 +205,6 @@ export const WebSocketProvider = ({ children }) => {
             start: new Date(turno.fecha),
             end: new Date(new Date(turno.fecha).getTime() + turno.duracion * 60000),
             hora: turno.horario,
-            tipo: "turno",
             text: `${turno.horario} - ${formatTime(new Date(new Date(turno.fecha).getTime() + turno.duracion * 60000))}`,
             estado: turno.estado
         };
@@ -238,7 +237,7 @@ export const WebSocketProvider = ({ children }) => {
                 // caso el turno se movio dentro del mismo dia, se cancelo o se creo uno nuevo
                 if (inTurnoRange) {
                     let intervalos = dia.intervalos.filter(intervalo => {
-                        if (intervalo.tipo === "turno" && intervalo.id === turno.id) return false;
+                        if ((intervalo.tipo === "turno" || intervalo.tipo === "sobreturno") && intervalo.id === turno.id) return false;
 
                         let intervaloStart = new Date(intervalo.start);
                         let intervaloEnd = new Date(intervalo.end);
@@ -356,19 +355,19 @@ export const WebSocketProvider = ({ children }) => {
         // Update setTurnos
         setTurnos(prev => {
             if (!prev) return prev;
-
+            let aux = {...prev}
             // Filtrar turnos previos
-            prev.turnos = prev.turnos.filter(t => t.id !== turno.id);
+            aux.turnos = aux.turnos.filter(t => t.id !== turno.id);
 
-            if (isSameDay(new Date(turno.fecha), new Date(prev.fecha))) {
+            if (isSameDay(new Date(turno.fecha), new Date(aux.fecha))) {
                 if (operation === 'create' || operation === 'update') {
-                    prev.turnos.push(turnoData);
+                    aux.turnos.push(turnoData);
                 }
-                prev.turnos.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
-                console.log(prev);
-                return prev;
+                aux.turnos.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+                console.log(aux);
+                return aux;
             }
-            return prev;
+            return aux;
         });
     }
 
