@@ -41,15 +41,15 @@ const Tooltip = ({ children, childrenRef, text, className }) => {
         }
     };
 
-    /*const hideTooltip = () => {
+    const hideTooltip = () => {
         setPosition({ top: 0, left: 0, direction: 'up' }); // Reset position when hiding tooltip
-    };*/
+    };
 
     useEffect(() => {
-        /*window.addEventListener('scroll', hideTooltip);
+        window.addEventListener('scroll', hideTooltip);
         return () => {
             window.removeEventListener('scroll', hideTooltip);
-        };*/
+        };
     }, []);
 
     return (
