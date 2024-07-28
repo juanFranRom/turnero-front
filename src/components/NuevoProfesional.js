@@ -340,7 +340,7 @@ const NuevoProfesional = ({ id = null, toClose = false }) => {
                         <h2 className='u-color--primary'>{id!==null? 'Editar': 'Nuevo'} Profesional</h2>
                         <div className='c-nuevo_paciente__item'>
                             <div>
-                                <span className='u-m2--bottom'>Nombre</span>
+                                <span className='u-m3--bottom'>Nombre</span>
                                 <Input defaultValue={profesional.nombre} handleChange={(val) => handleChange(val, 'nombre')} />
                             </div>
                         </div>

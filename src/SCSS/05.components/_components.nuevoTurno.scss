@@ -1,9 +1,9 @@
 .c-nuevo_turno{
     width: max(400px, 40vw);
-    height: 80vh;
+    max-height: 90vh;
     position: relative;
     left: calc(50% - max(400px, 40vw)/2);
-    top: calc(50% - 40vh);
+    top: calc(50% - 45vh);
     background-color: white;
     padding: 25px 15px;
     overflow: auto;

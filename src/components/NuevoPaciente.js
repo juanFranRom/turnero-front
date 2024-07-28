@@ -214,7 +214,6 @@ const NuevoPaciente = ({ id = null, toClose = false }) => {
                 coberturas: [], 
             }
 
-            console.log(objectToSend);
             if(objectToSend.obraSocial && objectToSend.obraSocial.length > 0)
                 objectToSend.coberturas.push({ nombre: objectToSend.obraSocial, numero: objectToSend.obraSocialNum })
             objectToSend.contactos = objectToSend.contactos.concat(objectToSend.telefonos.map(el => { return({ tipo: 'telefono', valor: el }) }))
@@ -259,57 +258,66 @@ const NuevoPaciente = ({ id = null, toClose = false }) => {
         })
     }
 
-    useEffect(() => {
-        const buscarPaciente = async (id) => {
-            setLoading(true)
+    const buscarPaciente = async (id) => {
+        setLoading(true)
 
-            try {
-                const response = await fetch(`${process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL }/pacientes/${id}`,
-                    {
-                        method: "GET",
-                        headers: {
-                            Accept: "application/json",
-                            "Content-Type": "application/json",
-                            authorization: "Bearer " + user.token,
-                        },
-                    }
-                );
-                const json = await response.json();
-                checkFetch(json, logOut)
-                if(json.status === 'SUCCESS')
+        try {
+            const response = await fetch(`${process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL }/pacientes/${id}`,
                 {
-                    let emailsBD = json.data.contactos.filter((el) => el.tipo === 'email').map(el => el.valor)
-                    let telefonosBD = json.data.contactos.filter((el) => el.tipo === 'telefono').map(el => el.valor)
-                    
-                    setPaciente({ 
-                        ...json.data, 
-                        genero: { value: json.data.genero ? json.data.genero.charAt(0).toUpperCase() + json.data.genero.slice(1).toLowerCase() : ""},
-                        obraSocial: json.data.coberturas && json.data.coberturas.length > 0? json.data.coberturas[0].nombre :"",
-                        obraSocialNum: json.data.coberturas && json.data.coberturas.length > 0? json.data.coberturas[0].numero :"",
-                        emails: emailsBD.length > 0 ? emailsBD : [''],
-                        telefonos: telefonosBD.length > 0 ? telefonosBD : [''],
-                    })
-                    setLoading(false)
+                    method: "GET",
+                    headers: {
+                        Accept: "application/json",
+                        "Content-Type": "application/json",
+                        authorization: "Bearer " + user.token,
+                    },
                 }
-                else
-                {
-                    router.push("/paciente");
-                }
-            } catch (error) {
-                console.log(error);
+            );
+            const json = await response.json();
+            checkFetch(json, logOut)
+            if(json.status === 'SUCCESS')
+            {
+                let emailsBD = json.data.contactos.filter((el) => el.tipo === 'email').map(el => el.valor)
+                let telefonosBD = json.data.contactos.filter((el) => el.tipo === 'telefono').map(el => el.valor)
+                
+                setPaciente({ 
+                    ...json.data, 
+                    genero: { value: json.data.genero ? json.data.genero.charAt(0).toUpperCase() + json.data.genero.slice(1).toLowerCase() : ""},
+                    obraSocial: json.data.coberturas && json.data.coberturas.length > 0? json.data.coberturas[0].nombre :"",
+                    obraSocialNum: json.data.coberturas && json.data.coberturas.length > 0? json.data.coberturas[0].numero :"",
+                    emails: emailsBD.length > 0 ? emailsBD : [''],
+                    telefonos: telefonosBD.length > 0 ? telefonosBD : [''],
+                })
+                setLoading(false)
             }
-
-            setLoading(false)
+            else
+            {
+                router.push("/paciente");
+            }
+        } catch (error) {
+            console.log(error);
         }
+
+        setLoading(false)
+    }
+
+    useEffect(() => {
         if(id !== null)
         {
             buscarPaciente(id)
         }
     }, [id])
 
+    useEffect(() => {
+        if(openPaciente !== null && typeof openPaciente !== 'boolean')
+        {
+            setLoading(true)
+            buscarPaciente(openPaciente)
+        }
+    }, [openPaciente])
+
     return (
         <div className='u-1/1 u-flex-column-center-center'>
-            <div className='c-nuevo_paciente u-p5--horizontal'>
+            <div className='c-nuevo_paciente u-p3--horizontal u-p1--horizontal@mobile'>
                 <h2 className='u-color--primary'>{id!==null? 'Editar': 'Nuevo'} Paciente</h2>
                 {
                     !loading ?

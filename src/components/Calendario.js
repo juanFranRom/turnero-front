@@ -43,6 +43,7 @@ const Calendario = () => {
             })
         }
         else
+        {
             setTurno((prev) => {
                 return(
                     {
@@ -55,10 +56,13 @@ const Calendario = () => {
                         nombrePractica: `${interval.duracion}' - ${primeraLetraMayus(interval.practica)}`,
                         nota: interval.nota,
                         tipo: interval.tipo,
-                        onlyView: false
+                        onlyView: false,
+                        estado: interval.estado,
+                        idPaciente: interval.idPaciente,
                     }
                 )
             })
+        }
         setOpenTurno(true)
     }
 

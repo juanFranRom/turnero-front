@@ -4,11 +4,11 @@ import { useState, useRef, useEffect } from 'react'
 // Context
 import { useTurnoContext } from '@/contexts/turno'
 import { useUserContext } from '@/contexts/user'
+import { usePacienteContext } from '@/contexts/paciente'
 
 // Icons
 import { MdInsertComment } from "react-icons/md"
 import { GiInfo } from "react-icons/gi"
-import { IoMdArrowDropright } from "react-icons/io"
 import { IoMdArrowDropdown } from "react-icons/io"
 
 // utils
@@ -36,6 +36,7 @@ const Turno = ({ data = null, onlyView = false }) => {
     const desplegableRef = useRef(null);
     const { user, logOut } = useUserContext()
     const { date, turno, setTurno, setOpenTurno } = useTurnoContext()
+    const { setOpenPaciente } = usePacienteContext()
     const infoRef = useRef()
 
     const primeraLetraMayus = (string) => {
@@ -121,6 +122,7 @@ const Turno = ({ data = null, onlyView = false }) => {
                     nombrePractica:  `${dataTurno.duracion}' - ${primeraLetraMayus(dataTurno.practica)}`,
                     nota: dataTurno.nota,
                     tipo: dataTurno.tipo,
+                    estado: dataTurno.estado,
                     onlyView: true,
                 }
             )
@@ -154,6 +156,13 @@ const Turno = ({ data = null, onlyView = false }) => {
                 }
             </div>
         )
+    }
+
+    const showEstado = () => {
+        let fecha = new Date(dataTurno.fecha)
+        let actual = new Date()
+
+        return fecha.getDate() === actual.getDate && fecha.getMonth() === actual.getMonth() && fecha.getFullYear() === actual.getFullYear()
     }
 
     useEffect(() => {
@@ -193,13 +202,13 @@ const Turno = ({ data = null, onlyView = false }) => {
         adjustDropdownPosition();
     }, [desplegable]);
 
-    /*useEffect(() => {
+    useEffect(() => {
         const interval = setInterval(() => {
             setCurrentTime(new Date());
-        }, 1000);
+        }, 10000);
 
         return () => clearInterval(interval);
-    }, []);*/
+    }, []);
 
     useEffect(() => {
         setDataTurno(data)
@@ -233,33 +242,39 @@ const Turno = ({ data = null, onlyView = false }) => {
                         {
                             dataTurno.nota &&
                             <Tooltip className={'u-flex-center-center'} text={dataTurno.nota}>
-                                <MdInsertComment onClick={ handleModificarTurno } className='u-cursor'/>
+                                <MdInsertComment onClick={ !onlyView ? handleModificarTurno : null } className='u-cursor'/>
                             </Tooltip>
                         }
-                        <span onClick={ handleModificarTurno }>{dataTurno.horario}</span>
+                        <span onClick={ !onlyView ? handleModificarTurno : null }>{dataTurno.horario}</span>
                     </div>
                     <div className='c-turno__div c-turno__informacion--column'>
                         <span>{haceTanto(dataTurno.ultimaModificacion)}</span>
                         <span>{dataTurno.estado}</span>
                     </div>
                 </div>
-                <div className='c-turno__paciente'>
-                    <span className='c-turno__nombre'>{primeraLetraMayus(dataTurno.nombre)}</span>
-                    <div className='c-turno__informacion'>
-                        {
-                            dataTurno.telefono &&
-                            <>
-                                <a class="c-turno__telefono" href={`http://web.whatsapp.com/send?phone=${dataTurno.telefono}`} target="_blank">{dataTurno.telefono}</a>
-                                <a class="c-turno__telefono--mobile" href={`whatsapp://send?phone=${dataTurno.telefono}`} target="_blank">{dataTurno.telefono}</a>
-                            </>
-                        }
-                        <span className='c-turno__dni'>{dataTurno.dni}</span>
+                {
+                    !onlyView &&
+                    <div className='c-turno__paciente'>
+                        <span className='c-turno__nombre' onClick={() => setOpenPaciente(dataTurno.idPaciente)}>{primeraLetraMayus(dataTurno.nombre)}</span>
+                        <div className='c-turno__informacion'>
+                            {
+                                dataTurno.telefono &&
+                                <>
+                                    <a class="c-turno__telefono" href={`http://web.whatsapp.com/send?phone=${dataTurno.telefono}`} target="_blank">{dataTurno.telefono}</a>
+                                    <a class="c-turno__telefono--mobile" href={`whatsapp://send?phone=${dataTurno.telefono}`} target="_blank">{dataTurno.telefono}</a>
+                                </>
+                            }
+                            <span className='c-turno__dni'>{dataTurno.dni}</span>
+                        </div>
                     </div>
-                </div>
+                }
                 <div className='c-turno__clinica'>
-                    <div className='u-m3--right'>
-                        <span className='c-turno__obra'>{primeraLetraMayus(dataTurno.obraSocial)}</span>
-                    </div>
+                    {
+                        !onlyView &&
+                        <div className='u-m3--right'>
+                            <span className='c-turno__obra'>{primeraLetraMayus(dataTurno.obraSocial)}</span>
+                        </div>
+                    }
                     <div className='c-turno__doctor'>
                         <div className='c-turno__hora'>
                             <span className='u-text--bold'>Practica - {primeraLetraMayus(dataTurno.practica)}</span>
@@ -270,7 +285,7 @@ const Turno = ({ data = null, onlyView = false }) => {
                     </div>
                 </div>
                 {
-                    !onlyView &&
+                    !onlyView && showEstado() &&
                     <div className='c-turno__estado'>
                         <button ref={botonRef} onClick={() => setDesplegable( (prev) => !prev )}>
                             <IoMdArrowDropdown/>

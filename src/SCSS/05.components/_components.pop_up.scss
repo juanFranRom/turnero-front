@@ -3,7 +3,7 @@
     right: 15px;
     position: fixed;
     height: max-content;
-    max-height: 75vh;
+    max-height: 90vh;
     max-width: 80vw;
     width: max-content;
     z-index: 999;
@@ -16,7 +16,8 @@
 
     @media (max-width: 550px) {
         right: 0;
-        width: 100%;
+        width: 100vw;
+        max-width: unset;
     }
 }
 
@@ -24,6 +25,11 @@
     top: 50%;
     right: 50%;
     transform: translate(50%, -50%);
+
+    @media (max-width: 550px) {
+        right: 0;
+        transform: translate(0, -50%);
+    }
 }
 
 .c-pop_up__close{

@@ -226,7 +226,7 @@ const page = ({ params }) => {
   }, [params.id])
   
   return (
-      <div className='u-1/1 u-flex-center-center u-p2--vertical u-p5--horizontal'>
+      <div className='u-1/1 u-flex-center-center u-p2--vertical u-p5--horizontal u-p1--horizontal@mobile'>
         {
           params.id && parseInt(user.id) !== parseInt(params.id[0]) &&
           <ProtectedPath permisos={["administrar_usuarios"]}/>
@@ -252,9 +252,9 @@ const page = ({ params }) => {
         <div className='c-nuevo_paciente'>
           {
             params.id && parseInt(user.id) === parseInt(params.id[0]) ?
-              <h2 className='u-color--primary'>Mi Perfil</h2>
+              <h2 className='u-color--primary u-m3--bottom'>Mi Perfil</h2>
             :
-              <h2 className='u-color--primary'>{ params.id  ? 'Editar' : 'Nuevo'} Usuario</h2>
+              <h2 className='u-color--primary u-m3--bottom'>{ params.id  ? 'Editar' : 'Nuevo'} Usuario</h2>
           }
             {
                 !loading ?

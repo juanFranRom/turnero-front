@@ -3,22 +3,36 @@
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
+// context
+import { useTurnoContext } from '@/contexts/turno'
+import { usePacienteContext } from '@/contexts/paciente'
+import { useUserContext } from '@/contexts/user'
+
+// Utils
+import { checkFetch } from '@/utils/checkFetch'
+
+// Icons
+import { IoMdClose } from "react-icons/io"
+
 // components
 import Overlay from '@/components_UI/Overlay'
 import Datalist from '@/components_UI/Datalist'
 import Button from '@/components_UI/Button'
 import Input from '@/components_UI/Input'
 import Loader from '@/components_UI/Loader'
-
-// context
-import { useTurnoContext } from '@/contexts/turno'
-import { useUserContext } from '@/contexts/user'
-
-// Icons
-import { IoMdClose } from "react-icons/io"
 import Textarea from '@/components_UI/Textarea'
 import PopUp from '@/components_UI/PopUp'
-import { checkFetch } from '@/utils/checkFetch'
+import Select from '@/components_UI/Select'
+
+
+const estados = [
+    {id: 1, value: 'Reservado'},
+    {id: 2, value: 'Esperando'},
+    {id: 3, value: 'En Consulta'},
+    {id: 4, value: 'Atendido'},
+    {id: 5, value: 'Cancelado'},
+    {id: 6, value: 'Ausente'},
+]
 
 
 const NuevoTurno = () => {
@@ -34,9 +48,13 @@ const NuevoTurno = () => {
     })
     const [esSobreTurno, setEsSobreTurno] = useState(false)
     const { turno, setTurno, openTurno, setOpenTurno, filtros, setReprogramando, profesionales, profesional } = useTurnoContext()
+    const { setOpenPaciente, openPaciente } = usePacienteContext()
     const { user, logOut } = useUserContext()
     const debounceTimeout = useRef(null)
     const router = useRouter()
+
+    console.log(openPaciente)
+    console.log(turno)
 
     const handleDatalist = (val, key) => {
         let aux = null
@@ -123,10 +141,14 @@ const NuevoTurno = () => {
         }
         turnoParaEnviar.nota = turno.nota ? turno.nota : null
         turnoParaEnviar.tipo = turno.tipo ? turno.tipo : 'turno'
+        turnoParaEnviar.estado = turno.estado ?? null
+        
+        if(!turnoParaEnviar.estado)
+            delete turnoParaEnviar.estado
 
         return turnoParaEnviar
     }
-    
+
     const validar = ( turno, crear = true ) => {
         
         if (!turno.profesional_id && crear)
@@ -293,6 +315,13 @@ const NuevoTurno = () => {
             } catch (error) { console.log(error); setAccion({ value: false, text: '', accion: null }) }
         }
         cancelar( )
+    }
+    
+    const showEstado = () => {
+        let fecha = new Date(turno.fecha)
+        let actual = new Date()
+
+        return fecha.getDate() === actual.getDate && fecha.getMonth() === actual.getMonth() && fecha.getFullYear() === actual.getFullYear()
     }
 
     useEffect(() => {
@@ -465,7 +494,10 @@ const NuevoTurno = () => {
                                 <span>Paciente</span>
                                 {
                                     turno.id ?
-                                        <Input className={'u-1/1'} defaultValue={turno.nombrePaciente} isReadOnly={true}/>
+                                        <div className='u-1/1 u-flex-center-center'>
+                                            <Input className={'u-flex--1'} defaultValue={turno.nombrePaciente} isReadOnly={true}/>
+                                            {<Button text={'Editar'} clickHandler={() => setOpenPaciente(turno.idPaciente)}/>}
+                                        </div>
                                     :
                                         <div className='u-1/1 u-flex-center-center'>
                                             <Datalist
@@ -474,6 +506,7 @@ const NuevoTurno = () => {
                                                 defaultOption={ { value: turno.pacienteText } } 
                                                 setter={(val) => handleDatalist(val, "paciente")}
                                             />
+                                            {/*<Button text={'Editar'} clickHandler={() => setOpenPaciente(turno.idPaciente)}/>*/}
                                             <IoMdClose className='u-color--red u-cursor--pointer' onClick={() => handleDatalist(null, "paciente")}/>
                                         </div>
                                 }
@@ -515,6 +548,21 @@ const NuevoTurno = () => {
                                 }
                             </div>
                         </div>
+                        {
+                            turno.id &&
+                            <div className='c-nuevo_turno__item c-nuevo_turno__hora'>
+                                <div className='u-flex-column-center-start'>
+                                    <span>Estado</span>
+                                    {
+                                        !showEstado() ?
+                                            <Input className={'u-1/1'} defaultValue={turno.estado} isReadOnly={true}/>
+                                        :
+                                            <Select className={'u-1/1'} defaultOption={{value: turno.estado}} options={estados} handleChange={(val) => setTurno({...turno, estado: val.value})}/>
+
+                                    }
+                                </div>
+                            </div>
+                        }
                         <div className='c-nuevo_turno__item c-nuevo_turno__hora'>
                             <div className='u-flex-column-center-start'>
                                 <span>Nota</span>

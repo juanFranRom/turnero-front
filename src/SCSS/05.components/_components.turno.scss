@@ -176,7 +176,7 @@ $turno-color-secondary: rgba(108, 117, 125, 1);
 .c-turno__clinica{
     flex: 1;
     height: 100%;
-    @include flex-center-space-around();
+    @include flex-start-center();
 
     & div{
         @include flex-center-center();
@@ -192,13 +192,13 @@ $turno-color-secondary: rgba(108, 117, 125, 1);
         @include flex-column-center-start();
         gap: 0;
 
-        @media (max-width: 1590px) {
+        @media (max-width: 1060px) {
             width: 0;
             display: none;
         }
     }
 
-    @media (max-width: 1090px) {
+    @media (max-width: 890px) {
         width: 0;
         display: none;
     }

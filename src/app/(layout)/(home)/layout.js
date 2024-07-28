@@ -37,7 +37,7 @@ export default function RootLayout({ children }) {
         openPaciente && 
         <Overlay>
           <PopUp centered={true}>
-            <NuevoPaciente width={'600px'} height={'80vh'} toClose={true}/>
+            <NuevoPaciente toClose={true}/>
           </PopUp>
         </Overlay> 
       }
