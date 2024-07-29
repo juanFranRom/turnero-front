@@ -525,7 +525,7 @@ const NuevoTurno = () => {
                                             <Button 
                                                 text={'Crear'} 
                                                 clickHandler={() => {
-                                                    setOpenPaciente(turno.idPaciente)
+                                                    setOpenPaciente(true)
                                                     setTurno({
                                                         ...turno,
                                                         paciente: null,
