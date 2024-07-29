@@ -45,7 +45,7 @@ export default function RootLayout({ children }) {
         changePass && 
         <Overlay>
           <PopUp centered={true}>
-            <div className='u-1/1 u-p5 u-flex-column-center-center'>
+            <div className='u-1/1 u-p4--vertical u-p5--horizontal u-p1--horizontal@mobile u-flex-column-center-center'>
               <p className='u-text--2 u-color--primary u-m3--bottom'>¡Atencion!</p>
               <p>Has ingresado con la contraseña por defecto.</p>
               <p className='u-m3--bottom'>Por razones de seguridad, te pedimos que actualices tu contraseña en la seccion "Mi Perfil".</p>
