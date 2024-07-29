@@ -110,22 +110,24 @@ const Turno = ({ data = null, onlyView = false }) => {
     }
 
     const handleModificarTurno = () => {
+        let aux = {
+            fecha: date,
+            hora: dataTurno.horario,
+            id: dataTurno.id,
+            nombrePaciente: primeraLetraMayus(dataTurno.nombre),
+            nombreProfesional: primeraLetraMayus(dataTurno.doctor),
+            nombrePractica:  `${dataTurno.duracion}' - ${primeraLetraMayus(dataTurno.practica)}`,
+            nota: dataTurno.nota,
+            tipo: dataTurno.tipo,
+            estado: dataTurno.estado,
+            onlyView: true,
+        }
+        console.log(aux);
         setTurno((prev) => {
-            return(
-                {
-                    ...prev,
-                    fecha: date,
-                    hora: dataTurno.horario,
-                    id: dataTurno.id,
-                    nombrePaciente: primeraLetraMayus(dataTurno.nombre),
-                    nombreProfesional: primeraLetraMayus(dataTurno.doctor),
-                    nombrePractica:  `${dataTurno.duracion}' - ${primeraLetraMayus(dataTurno.practica)}`,
-                    nota: dataTurno.nota,
-                    tipo: dataTurno.tipo,
-                    estado: dataTurno.estado,
-                    onlyView: true,
-                }
-            )
+            return({
+                ...prev,
+                ...aux,
+            })
         })
         setOpenTurno(true)
     }
@@ -214,7 +216,6 @@ const Turno = ({ data = null, onlyView = false }) => {
         setDataTurno(data)
     }, [data])
 
-    console.log(dataTurno);
     return (
         <>
             {
@@ -242,7 +243,10 @@ const Turno = ({ data = null, onlyView = false }) => {
                         {
                             dataTurno.nota &&
                             <Tooltip className={'u-flex-center-center'} text={dataTurno.nota}>
-                                <MdInsertComment onClick={ !onlyView ? handleModificarTurno : null } className='u-cursor'/>
+                                !onlyView ?
+                                    <MdInsertComment onClick={  handleModificarTurno } className='u-cursor'/>
+                                :
+                                    <MdInsertComment className='u-cursor'/>
                             </Tooltip>
                         }
                         <span onClick={ !onlyView ? handleModificarTurno : null }>{dataTurno.horario}</span>

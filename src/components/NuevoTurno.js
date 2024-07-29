@@ -356,46 +356,50 @@ const NuevoTurno = () => {
     }, [turno.pacienteText])
 
     useEffect(() => {
-        if(profesional)
+        if(!turno.id)
         {
-            setTurno({
-                ...turno,
-                profesional: profesional,
-                paciente: null,
-                pacienteText: '',
-                nota: turno.id ? turno.nota : '',
-                tipo: turno.id ? turno.tipo : 'turno',
-            })
-        }
-        else if(filtros && filtros.profesional)
-        {
-            setTurno({
-                ...turno,
-                profesional: filtros.profesional,
-                profesionalText: filtros.profesional.value,
-                paciente: null,
-                pacienteText: '',
-                nota: turno.id ? turno.nota : '',
-                tipo: turno.id ? turno.tipo : 'turno',
-            })
-        }
-        else
-        {
-            setTurno({
-                pacienteText: '',
-                pacienteList: [],
-                paciente: null,
-                profesionalText: '',
-                profesionalList: [],
-                profesional: null,
-                practicasText: '',
-                practicaText: '',
-                practica: null,
-                coberturaText: '',
-                cobertura: null,
-                fecha: null,
-                hora: null
-            })
+
+            if(profesional)
+            {
+                setTurno({
+                    ...turno,
+                    profesional: profesional,
+                    paciente: null,
+                    pacienteText: '',
+                    nota: turno.id ? turno.nota : '',
+                    tipo: turno.id ? turno.tipo : 'turno',
+                })
+            }
+            else if(filtros && filtros.profesional)
+            {
+                setTurno({
+                    ...turno,
+                    profesional: filtros.profesional,
+                    profesionalText: filtros.profesional.value,
+                    paciente: null,
+                    pacienteText: '',
+                    nota: turno.id ? turno.nota : '',
+                    tipo: turno.id ? turno.tipo : 'turno',
+                })
+            }
+            else
+            {
+                setTurno({
+                    pacienteText: '',
+                    pacienteList: [],
+                    paciente: null,
+                    profesionalText: '',
+                    profesionalList: [],
+                    profesional: null,
+                    practicasText: '',
+                    practicaText: '',
+                    practica: null,
+                    coberturaText: '',
+                    cobertura: null,
+                    fecha: null,
+                    hora: null
+                })
+            }
         }
         setError({
             value: false,
@@ -410,6 +414,7 @@ const NuevoTurno = () => {
             setEsSobreTurno(false)
     }, [openTurno])
     
+    console.log(turno);
     return (
         <>
             {
