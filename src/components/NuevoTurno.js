@@ -511,8 +511,8 @@ const NuevoTurno = () => {
                                                 defaultOption={ { value: turno.pacienteText } } 
                                                 setter={(val) => handleDatalist(val, "paciente")}
                                             />
-                                            {/*<Button text={'Editar'} clickHandler={() => setOpenPaciente(turno.idPaciente)}/>*/}
                                             <IoMdClose className='u-color--red u-cursor--pointer' onClick={() => handleDatalist(null, "paciente")}/>
+                                            <Button text={'Crear'} clickHandler={() => setOpenPaciente(true)}/>
                                         </div>
                                 }
                             </div>

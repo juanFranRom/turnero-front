@@ -43,7 +43,7 @@ export const FocusProvider = ({ children }) => {
                     // Si solo se presiona Tab, ir al siguiente elemento
                     if (index !== -1 && index < elements.length - 1)
                         elements[index + 1].focus();
-                    else if (index === elements.length - 1)
+                    else if (index === elements.length - 1 && elements[0])
                         elements[0].focus();
                 }
             }

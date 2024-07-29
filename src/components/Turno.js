@@ -163,8 +163,10 @@ const Turno = ({ data = null, onlyView = false }) => {
     const showEstado = () => {
         let fecha = new Date(dataTurno.fecha)
         let actual = new Date()
+        console.log(fecha);
+        console.log(actual);
 
-        return fecha.getDate() === actual.getDate && fecha.getMonth() === actual.getMonth() && fecha.getFullYear() === actual.getFullYear()
+        return fecha.getDate() === actual.getDate() && fecha.getMonth() === actual.getMonth() && fecha.getFullYear() === actual.getFullYear()
     }
 
     useEffect(() => {
