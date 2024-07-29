@@ -93,14 +93,6 @@ const NuevoPaciente = ({ id = null, toClose = false }) => {
             return 'El campo "Apellidos" es obligatorio.'
         }
 
-        if (!object.genero) {
-            return 'El campo "Genero" es obligatorio.'
-        }
-
-        if (!object.fecha_nacimiento) {
-            return 'El campo "Fecha de Nacimiento" es obligatorio.'
-        }
-
         return true
     }
 

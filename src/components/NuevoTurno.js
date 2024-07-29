@@ -501,7 +501,17 @@ const NuevoTurno = () => {
                                     turno.id ?
                                         <div className='u-1/1 u-flex-center-center'>
                                             <Input className={'u-flex--1'} defaultValue={turno.nombrePaciente} isReadOnly={true}/>
-                                            {<Button text={'Editar'} clickHandler={() => setOpenPaciente(turno.idPaciente)}/>}
+                                            <Button 
+                                                text={'Editar'} 
+                                                clickHandler={() => {
+                                                    setOpenPaciente(turno.idPaciente)
+                                                    setTurno({
+                                                        ...turno,
+                                                        paciente: null,
+                                                        pacienteText: '',
+                                                    })
+                                                }}
+                                            />
                                         </div>
                                     :
                                         <div className='u-1/1 u-flex-center-center'>
@@ -512,7 +522,17 @@ const NuevoTurno = () => {
                                                 setter={(val) => handleDatalist(val, "paciente")}
                                             />
                                             <IoMdClose className='u-color--red u-cursor--pointer' onClick={() => handleDatalist(null, "paciente")}/>
-                                            <Button text={'Crear'} clickHandler={() => setOpenPaciente(true)}/>
+                                            <Button 
+                                                text={'Crear'} 
+                                                clickHandler={() => {
+                                                    setOpenPaciente(turno.idPaciente)
+                                                    setTurno({
+                                                        ...turno,
+                                                        paciente: null,
+                                                        pacienteText: '',
+                                                    })
+                                                }}
+                                            />
                                         </div>
                                 }
                             </div>

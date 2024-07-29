@@ -245,10 +245,12 @@ const Turno = ({ data = null, onlyView = false }) => {
                         {
                             dataTurno.nota &&
                             <Tooltip className={'u-flex-center-center'} text={dataTurno.nota}>
-                                !onlyView ?
-                                    <MdInsertComment onClick={  handleModificarTurno } className='u-cursor'/>
-                                :
-                                    <MdInsertComment className='u-cursor'/>
+                                {
+                                    !onlyView ?
+                                        <MdInsertComment onClick={  handleModificarTurno } className='u-cursor'/>
+                                    :
+                                        <MdInsertComment className='u-cursor'/>
+                                }
                             </Tooltip>
                         }
                         <span onClick={ !onlyView ? handleModificarTurno : null }>{dataTurno.horario}</span>
