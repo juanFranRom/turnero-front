@@ -96,6 +96,7 @@ const NuevoPaciente = ({ id = null, toClose = false }) => {
         return true
     }
 
+    console.log(paciente);
     const crear = async (object) => {
         setAccion({
             text: 'Creando paciente...',
@@ -118,16 +119,21 @@ const NuevoPaciente = ({ id = null, toClose = false }) => {
 
             let objectToSend = { 
                 ...object, 
-                genero: object.genero.value ? object.genero.value : object.genero,
                 contactos: [], 
                 coberturas: [], 
             }
 
+            if(objectToSend.genero)
+                objectToSend.genero = object.genero.value ? object.genero.value : object.genero
+
             if(objectToSend.obraSocial && objectToSend.obraSocial.length > 0)
                 objectToSend.coberturas.push({ nombre: objectToSend.obraSocial, numero: objectToSend.obraSocialNum })
-    
-            objectToSend.contactos = objectToSend.contactos.concat(objectToSend.telefonos.map(el => { return({ tipo: 'telefono', valor: el }) }))
-            objectToSend.contactos = objectToSend.contactos.concat(objectToSend.emails.map(el => { return({ tipo: 'email', valor: el }) }))
+            
+            if(objectToSend.telefonos.length > 0 && objectToSend.telefonos[0] !== '')
+                objectToSend.contactos = objectToSend.contactos.concat(objectToSend.telefonos.map(el => { return({ tipo: 'telefono', valor: el }) }))
+
+            if(objectToSend.emails.length > 0 && objectToSend.emails[0] !== '')
+                objectToSend.contactos = objectToSend.contactos.concat(objectToSend.emails.map(el => { return({ tipo: 'email', valor: el }) }))
 
             const response = await fetch(`${process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL }/pacientes`,
               {
@@ -144,8 +150,10 @@ const NuevoPaciente = ({ id = null, toClose = false }) => {
             checkFetch(json, logOut)
             if(json.status === 'SUCCESS')
             {
-                setOpenPaciente(false)
-                router.push("/paciente");
+                if(openPaciente)
+                    setOpenPaciente(false)
+                else
+                    router.push("/paciente");
             }
             else
             {
