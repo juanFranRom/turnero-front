@@ -100,18 +100,6 @@ const NuevoPaciente = ({ id = null, toClose = false }) => {
         if (!object.fecha_nacimiento) {
             return 'El campo "Fecha de Nacimiento" es obligatorio.'
         }
-        
-        if (!object.telefonos.find((el) => el && el.length > 0)) {
-            return 'Debe ingresar al menos un telefono.'
-        }
-
-        if (!object.emails.find((el) => el && el.length > 0)) {
-            return 'Debe ingresar al menos un email.'
-        }
-
-        if (object.obraSocial && object.obraSocial.length > 0 && object.obraSocial.toLowerCase() !== "particular" && !object.obraSocialNum) {
-            return 'Ha ingresado que el paciente posee obra social, ingrese el numero de la misma.'
-        }
 
         return true
     }
@@ -232,19 +220,16 @@ const NuevoPaciente = ({ id = null, toClose = false }) => {
               }
             );
             const json = await response.json();
-            console.log(json);
-            /*checkFetch(json, logOut)
+            checkFetch(json, logOut)
             if(json.status === 'SUCCESS')
-            {
                 router.push("/paciente");
-            }
             else
             {
                 setError({
                     value: true,
                     mensaje: json.message
                 })
-            }*/
+            }
         } catch (error) {
             console.log(error)
             setError({

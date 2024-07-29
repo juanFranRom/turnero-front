@@ -340,7 +340,7 @@ const NuevoTurno = () => {
                             ...prevTurno,
                             pacienteList: pacientes.map((ele) => ({
                                 ...ele,
-                                value: `${ele.apellido}, ${ele.nombre}`
+                                value: `${ele.apellido}, ${ele.nombre} ${ele.dni ? `(${ele.dni})` : ''}`
                             }))
                         }));
                     }
