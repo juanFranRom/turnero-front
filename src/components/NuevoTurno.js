@@ -372,6 +372,8 @@ const NuevoTurno = () => {
                     pacienteText: '',
                     nota: turno.id ? turno.nota : '',
                     tipo: turno.id ? turno.tipo : 'turno',
+                    practicaText: '',
+                    practica: null,
                 })
             }
             else if(filtros && filtros.profesional)
@@ -382,6 +384,8 @@ const NuevoTurno = () => {
                     profesionalText: filtros.profesional.value,
                     paciente: null,
                     pacienteText: '',
+                    practicaText: '',
+                    practica: null,
                     nota: turno.id ? turno.nota : '',
                     tipo: turno.id ? turno.tipo : 'turno',
                 })
@@ -395,7 +399,6 @@ const NuevoTurno = () => {
                     profesionalText: '',
                     profesionalList: [],
                     profesional: null,
-                    practicasText: '',
                     practicaText: '',
                     practica: null,
                     coberturaText: '',
