@@ -4,8 +4,8 @@ $turno-color-secondary: rgba(108, 117, 125, 1);
 .c-turno{
     width: 100%;
     height: 100px;
-    box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .075);
-    background-color: rgba(0, 179, 164, 0.25);
+    box-shadow: inset 0 -4px 4px rgba(0, 0, 0, .075);
+    background-color: white;
     color: $turno-color-primary;
     @include flex-start-center();
     text-wrap: nowrap;
