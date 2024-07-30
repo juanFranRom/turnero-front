@@ -200,7 +200,6 @@ export const WebSocketProvider = ({ children }) => {
     }
 
     function updateAgendaCalendar(turno, operation, horarios, practica) {
-        let mismoProfesional = false
         const turnoData = {
             ...turno,
             start: new Date(turno.fecha),
@@ -256,7 +255,12 @@ export const WebSocketProvider = ({ children }) => {
                         }
 
                         if ((turno.estado === 'Cancelado' && turnoOld )||( turnoOld && turnoOld.text !== turnoData.text) ) {
+                            let diasNombres = [ 'lunes','martes','miércoles','jueves','viernes','sábado','domingo' ]
+                            let diaNombre = diasNombres[diaDate.getDay() - 1]
                             horarios.forEach(horario => {
+                                if(diaNombre.toLowerCase() !== horario.dia.toLowerCase())
+                                    return
+
                                 if(turnoOld.start instanceof Date){
                                     turnoOld.start = turnoOld.start.toISOString();
                                 }
