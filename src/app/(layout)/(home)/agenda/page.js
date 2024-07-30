@@ -1,8 +1,11 @@
 'use client'
 // react
 import React, { useRef } from 'react'
+
+// Icons
 import { useReactToPrint } from 'react-to-print';
 import { FiPrinter } from "react-icons/fi";
+
 // Context
 import { useTurnoContext } from '@/contexts/turno'
 
@@ -12,7 +15,7 @@ import Loader from '@/components_UI/Loader'
 import ProtectedPath from '@/components/ProtectedPath'
 
 const Agenda = ({}) => {
-  const { fechaFormateada, loadingTurnos, turnos } = useTurnoContext()
+  const { fechaFormateada, loadingTurnos, turnos, filtros } = useTurnoContext()
   const printRef = useRef()
 
   const handlePrint = useReactToPrint({
@@ -21,10 +24,10 @@ const Agenda = ({}) => {
 
   return (
     <ProtectedPath permisos={['ver_agenda']}>
-      <div className='u-1/1 u-background--white'>
+      <div className='u-1/1 u-background--white' ref={printRef}>
         <div className='u-bordered__bottom--thick u-p2 u-1/1 u-flex-center-space-between'>
           <span className=' u-color--primary'>
-            {fechaFormateada}
+            {fechaFormateada}{filtros.profesional ? ` / ${filtros.profesional.apellido}, ${filtros.profesional.nombre}` : ''}
           </span>
           <FiPrinter  className='c-fixed-print-button' size={50} onClick={handlePrint} />
         </div>
@@ -35,7 +38,7 @@ const Agenda = ({}) => {
             </div>
           :
             <>
-              <div ref={printRef}>
+              <div>
                 {
                   turnos.turnos && turnos.turnos.length > 0 &&
                   turnos.turnos.map((turno, index) => {
