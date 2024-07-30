@@ -212,11 +212,8 @@ $turno-color-secondary: rgba(108, 117, 125, 1);
     gap: 0;
 
     & button{
-        position: absolute;
-        right: 5px;
         height: 34px;
         border: solid 1px #ccc;
-        border-radius: 50%;
         padding: $global-spacing-unit-tiny $global-spacing-unit-small;
         color: $global-primary-color;
         background-color: white;

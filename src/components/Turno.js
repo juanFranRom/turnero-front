@@ -10,6 +10,7 @@ import { usePacienteContext } from '@/contexts/paciente'
 import { MdInsertComment } from "react-icons/md"
 import { GiInfo } from "react-icons/gi"
 import { IoMdArrowDropdown } from "react-icons/io"
+import { FaLongArrowAltRight } from "react-icons/fa";
 
 // utils
 import { checkFetch } from '@/utils/checkFetch'
@@ -109,6 +110,29 @@ const Turno = ({ data = null, onlyView = false }) => {
         editar( nuevoEstado )
     }
 
+    console.log(dataTurno);
+    const next = () => {
+        setDesplegable(false)
+        const editar = async () => {
+            try {
+                const response = await fetch(`${ process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL}/turnos/${dataTurno.id}`,
+                    {
+                        method: "PUT",
+                        headers: {
+                            Accept: "application/json",
+                            "Content-Type": "application/json",
+                            authorization: "Bearer " + user.token,
+                        },
+                        body: JSON.stringify({ estado: estados[estados.findIndex( el => el.toLowerCase() === dataTurno.estado.toLowerCase()) + 1] })
+                    }
+                )
+                let json = await response.json()
+                checkFetch(json, logOut)
+            } catch (error) { }
+        }
+        editar()
+    }
+
     const handleModificarTurno = () => {
         let aux = {
             fecha: date,
@@ -122,7 +146,6 @@ const Turno = ({ data = null, onlyView = false }) => {
             estado: dataTurno.estado,
             onlyView: true,
         }
-        console.log(aux);
         setTurno((prev) => {
             return({
                 ...prev,
@@ -295,6 +318,14 @@ const Turno = ({ data = null, onlyView = false }) => {
                 {
                     !onlyView && showEstado() &&
                     <div className='c-turno__estado'>
+                        {
+                            dataTurno.estado !== 'Cancelado' && dataTurno.estado !== 'Atendido' && dataTurno.estado !== 'Ausente' &&
+                            <Tooltip text={'Siguiente Estado'}>
+                                <button onClick={next}>
+                                    <FaLongArrowAltRight/>
+                                </button>
+                            </Tooltip>
+                        }
                         <button ref={botonRef} onClick={() => setDesplegable( (prev) => !prev )}>
                             <IoMdArrowDropdown/>
                         </button>
