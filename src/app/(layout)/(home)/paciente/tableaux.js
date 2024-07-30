@@ -212,9 +212,14 @@ const TableAux = () => {
           data && data.length > 0 ?
             <Table columns={headers} rows={data} setContextMenu={setContextMenu} contextMenu={contextMenu} loading={loading} filtroPlaceholder={'Filtro (Nombre, Apellido, DNI)'} filtro={paginado.filtro} setFiltro={(val) => setPaginado(prev => ({ ...prev, filtro: val }))} totalPages={paginado.totalPages} realPage={paginado.page} changePage={(val) => handlePaginado(val, 'page')} realSize={paginado.pageSize} changeSize={(val) => handlePaginado(val, 'pageSize')}/>
           :
-            <div className="u-1/1 u-flex-column-center-center u-p4--vertical">
-              <p>No hay informacion para mostrar</p>
-            </div>
+            data === null ?
+              <div className="u-1/1 u-p5">
+                <Loader text="Cargando pacientes..."/>
+              </div>
+            :
+              <div className="u-1/1 u-flex-column-center-center u-p4--vertical">
+                <p>No hay informacion para mostrar</p>
+              </div>
       }
     </>
   )
