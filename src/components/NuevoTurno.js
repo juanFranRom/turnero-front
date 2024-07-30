@@ -74,7 +74,10 @@ const NuevoTurno = () => {
             aux.coberturaText = ''
 
         if(key === 'profesional')
+        {
             aux.practicaText = ''
+            aux.practica = null
+        }
             
         setTurno(aux)
     }
@@ -337,7 +340,6 @@ const NuevoTurno = () => {
                     turno.pacienteText,
                     (pacientes) => {
                         setTurno((prevTurno) => {
-                            console.log(pacientes);
                             return{
                                 ...prevTurno,
                                 pacienteList: pacientes.pacientes.map((ele) => ({
@@ -362,7 +364,6 @@ const NuevoTurno = () => {
     useEffect(() => {
         if(!turno.id)
         {
-
             if(profesional)
             {
                 setTurno({
@@ -421,7 +422,6 @@ const NuevoTurno = () => {
             setEsSobreTurno(false)
     }, [openTurno])
     
-    console.log(turno);
     return (
         <>
             {
