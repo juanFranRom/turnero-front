@@ -138,6 +138,30 @@ export const TurnoContextProvider = ({ children }) => {
 
     const capitalizeFirstLetter = (string) => string.charAt(0).toUpperCase() + string.slice(1);
 
+
+    const compararTurnos = (a, b) => {
+        const estadoOrden = {
+            'En consulta': 1,
+            'Esperando': 2,
+            'Reservado': 3,
+            'Atendido': 4,
+            'Cancelado': 5,
+            'Ausente': 6
+        };
+
+        // Comparar por estado primero
+        const estadoA = estadoOrden[a.estado];
+        const estadoB = estadoOrden[b.estado];
+        if (estadoA !== estadoB) {
+            return estadoA - estadoB;
+        }
+    
+        // Si los estados son iguales, comparar por fecha
+        const fechaA = new Date(a.fecha);
+        const fechaB = new Date(b.fecha);
+        return fechaA - fechaB;
+    };
+    
     const buscarTurnos = async ( dia, profesional = null ) => {
         try {
             setLoadingTurnos(true)
@@ -156,7 +180,7 @@ export const TurnoContextProvider = ({ children }) => {
             if (json.status === "SUCCESS") 
                 setTurnos((prev) => ({
                     fecha: prev.date ?? date,
-                    turnos: [...json.data[0].turnos.filter((el) => isSameDay(new Date(el.fecha), date))]
+                    turnos: [...json.data[0].turnos.filter((el) => isSameDay(new Date(el.fecha), date))].sort(compararTurnos)
                 }))
             
             setLoadingTurnos(false)
@@ -339,6 +363,7 @@ export const TurnoContextProvider = ({ children }) => {
             dias,
             profesionales,
             profesional,
+            compararTurnos,
             setProfesional,
             cancelarBloqueo,
             setReprogramando,

@@ -12,7 +12,7 @@ export const useWebSocketContext = () => useContext(WebSocketContext);
 
 export const WebSocketProvider = ({ children }) => {
     const { user } = useUserContext();
-    const { lenguaje, fechaFormateada, date, setTurnos, setDias } = useTurnoContext()
+    const { lenguaje, fechaFormateada, date, setTurnos, setDias, compararTurnos } = useTurnoContext()
     const [socket, setSocket] = useState(null);
 
     const formatTime = (date) => {
@@ -363,8 +363,7 @@ export const WebSocketProvider = ({ children }) => {
                 if (operation === 'create' || operation === 'update') {
                     aux.turnos.push(turnoData);
                 }
-                aux.turnos.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
-                console.log(aux);
+                aux.turnos.sort(compararTurnos);
                 return aux;
             }
             return aux;
