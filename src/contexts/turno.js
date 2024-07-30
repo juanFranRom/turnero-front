@@ -328,6 +328,7 @@ export const TurnoContextProvider = ({ children }) => {
         }
     },[date, filtros, pathname, user])
 
+    console.log(dias);
     useEffect(() => {
         if(window) 
         {

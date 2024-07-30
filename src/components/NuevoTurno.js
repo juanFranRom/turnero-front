@@ -321,7 +321,7 @@ const NuevoTurno = () => {
         let fecha = new Date(turno.fecha)
         let actual = new Date()
 
-        return fecha.getDate() === actual.getDate && fecha.getMonth() === actual.getMonth() && fecha.getFullYear() === actual.getFullYear()
+        return fecha.getDate() === actual.getDate() && fecha.getMonth() === actual.getMonth() && fecha.getFullYear() === actual.getFullYear()
     }
 
     useEffect(() => {
@@ -560,21 +560,11 @@ const NuevoTurno = () => {
                         <div className='c-nuevo_turno__item c-nuevo_turno__hora'>
                             <div className='u-flex-column-center-start'>
                                 <span>Fecha</span>
-                                {
-                                    turno.id ?
-                                        <Input className={'u-1/1'} type={'date'} defaultValue={turno.fecha} isReadOnly={true}/>
-                                    :
-                                        <Input className={'u-1/1'} type={'date'} defaultValue={turno.fecha} handleChange={(val) => setTurno({...turno, fecha: val})}/>
-                                }
+                                <Input className={'u-1/1'} type={'date'} defaultValue={turno.fecha} handleChange={(val) => setTurno({...turno, fecha: val})}/>
                             </div>
                             <div className='u-flex-column-center-start'>
                                 <span>Hora</span>
-                                {
-                                    turno.id ?
-                                        <Input className={'u-1/1'} type={'time'} defaultValue={turno.hora} isReadOnly={true}/>
-                                    :
-                                        <Input className={'u-1/1'} type={'time'} defaultValue={turno.hora} handleChange={(val) => setTurno({...turno, hora: val})}/>
-                                }
+                                <Input className={'u-1/1'} type={'time'} defaultValue={turno.hora} handleChange={(val) => setTurno({...turno, hora: val})}/>
                             </div>
                         </div>
                         {

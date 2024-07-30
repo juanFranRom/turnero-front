@@ -321,12 +321,12 @@ const Turno = ({ data = null, onlyView = false }) => {
                         {
                             dataTurno.estado !== 'Cancelado' && dataTurno.estado !== 'Atendido' && dataTurno.estado !== 'Ausente' &&
                             <Tooltip text={'Siguiente Estado'}>
-                                <button onClick={next}>
+                                <button className='c-turno__estadoNext' onClick={next}>
                                     <FaLongArrowAltRight/>
                                 </button>
                             </Tooltip>
                         }
-                        <button ref={botonRef} onClick={() => setDesplegable( (prev) => !prev )}>
+                        <button className='c-turno__estadoDropdown' ref={botonRef} onClick={() => setDesplegable( (prev) => !prev )}>
                             <IoMdArrowDropdown/>
                         </button>
                     </div>

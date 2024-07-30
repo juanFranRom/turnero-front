@@ -12,7 +12,7 @@ export const useWebSocketContext = () => useContext(WebSocketContext);
 
 export const WebSocketProvider = ({ children }) => {
     const { user } = useUserContext();
-    const { lenguaje, fechaFormateada, date, setTurnos, setDias, compararTurnos } = useTurnoContext()
+    const { lenguaje, fechaFormateada, date, setTurnos, setDias, compararTurnos, filtros } = useTurnoContext()
     const [socket, setSocket] = useState(null);
 
     const formatTime = (date) => {
@@ -200,6 +200,7 @@ export const WebSocketProvider = ({ children }) => {
     }
 
     function updateAgendaCalendar(turno, operation, horarios, practica) {
+        let mismoProfesional = false
         const turnoData = {
             ...turno,
             start: new Date(turno.fecha),
@@ -223,134 +224,132 @@ export const WebSocketProvider = ({ children }) => {
         const turnoStart = new Date(turno.fecha);
         const turnoEnd = new Date(turnoStart.getTime() + turno.duracion * 60000);
         const daysArray = getDaysArray(turnoStart, turnoEnd);
+        
+        if((filtros.profesional && turno.profesional_id === filtros.profesional.id) || !filtros.profesional)
+            setDias(prev => {
+                if (!prev) return prev;
+                return prev.map(dia => {
+                    const diaDate = new Date(dia.fecha);
+                    const diaString = diaDate.toDateString();
+                    const inTurnoRange = daysArray.some(day => day.toDateString() === diaString);
+                    // busco el turno viejo
+                    let turnoOld = dia.intervalos.find(intervalo => (intervalo.tipo === "turno" || intervalo.tipo === "sobreturno") && intervalo.id === turno.id);
+                    // caso el turno se movio dentro del mismo dia, se cancelo o se creo uno nuevo
+                    if (inTurnoRange) {
+                        let intervalos = dia.intervalos.filter(intervalo => {
+                            if ((intervalo.tipo === "turno" || intervalo.tipo === "sobreturno") && intervalo.id === turno.id) return false;
 
+                            let intervaloStart = new Date(intervalo.start);
+                            let intervaloEnd = new Date(intervalo.end);
 
-        // Update setDias
-        setDias(prev => {
-            if (!prev) return prev;
-            return prev.map(dia => {
-                const diaDate = new Date(dia.fecha);
-                const diaString = diaDate.toDateString();
-                const inTurnoRange = daysArray.some(day => day.toDateString() === diaString);
-                // busco el turno viejo
-                let turnoOld = dia.intervalos.find(intervalo => (intervalo.tipo === "turno" || intervalo.tipo === "sobreturno") && intervalo.id === turno.id);
-                // caso el turno se movio dentro del mismo dia, se cancelo o se creo uno nuevo
-                if (inTurnoRange) {
-                    let intervalos = dia.intervalos.filter(intervalo => {
-                        if ((intervalo.tipo === "turno" || intervalo.tipo === "sobreturno") && intervalo.id === turno.id) return false;
-
-                        let intervaloStart = new Date(intervalo.start);
-                        let intervaloEnd = new Date(intervalo.end);
-
-                        return (
-                            !(
-                                (intervalo.tipo === "disponibilidad" &&
-                                    (intervaloStart < turnoData.end && intervaloEnd > turnoData.start)) ||
-                                (intervalo.tipo === "disponibilidad" &&
-                                    (intervaloStart == turnoData.start && intervaloEnd == turnoData.end))
-                            )
-                        );
-                    });
-                    if (operation === 'create' || (operation === 'update' && turno.estado !== 'Cancelado')) {
-                        intervalos.push(turnoData);
-                    }
-
-                    if ((turno.estado === 'Cancelado' && turnoOld )||( turnoOld && turnoOld.text !== turnoData.text) ) {
-
-                        horarios.forEach(horario => {
-                            if(turnoOld.start instanceof Date){
-                                turnoOld.start = turnoOld.start.toISOString();
-                            }
-                            if(turnoOld.end instanceof Date){
-                                turnoOld.end = turnoOld.end.toISOString();
-                            }
-                            let horarioInicio = new Date(`${turnoOld.start.split('T')[0]}T${horario.hora_inicio}`);
-                            let intervaloFin = new Date(turnoOld.end);
-
-                            // Crear intervalos durante el turno viejo
-                            while (horarioInicio < intervaloFin) {
-                                let disponibilidadFin = new Date(horarioInicio.getTime() + practica * 60000);
-                                if (disponibilidadFin > intervaloFin) {
-                                    disponibilidadFin = new Date(intervaloFin);
-                                }
-                                intervalos.push({
-                                    tipo: "disponibilidad",
-                                    duracion: practica,
-                                    start: horarioInicio,
-                                    end: disponibilidadFin,
-                                    text: `${formatTime(horarioInicio)} - ${formatTime(disponibilidadFin)}`,
-                                    hora: formatTime(horarioInicio),
-                                });
-                                horarioInicio = new Date(disponibilidadFin);
-                            } 
+                            return (
+                                !(
+                                    (intervalo.tipo === "disponibilidad" &&
+                                        (intervaloStart < turnoData.end && intervaloEnd > turnoData.start)) ||
+                                    (intervalo.tipo === "disponibilidad" &&
+                                        (intervaloStart == turnoData.start && intervaloEnd == turnoData.end))
+                                )
+                            );
                         });
-                        // Asegurarse de que los intervalos estén ordenados
+                        if (operation === 'create' || (operation === 'update' && turno.estado !== 'Cancelado')) {
+                            intervalos.push(turnoData);
+                        }
+
+                        if ((turno.estado === 'Cancelado' && turnoOld )||( turnoOld && turnoOld.text !== turnoData.text) ) {
+                            horarios.forEach(horario => {
+                                if(turnoOld.start instanceof Date){
+                                    turnoOld.start = turnoOld.start.toISOString();
+                                }
+                                if(turnoOld.end instanceof Date){
+                                    turnoOld.end = turnoOld.end.toISOString();
+                                }
+                                let horarioInicio = new Date(`${turnoOld.start.split('T')[0]}T${horario.hora_inicio}`);
+                                let intervaloFin = new Date(turnoOld.end);
+
+                                // Crear intervalos durante el turno viejo
+                                while (horarioInicio < intervaloFin) {
+                                    let disponibilidadFin = new Date(horarioInicio.getTime() + practica * 60000);
+                                    if (disponibilidadFin > intervaloFin) {
+                                        disponibilidadFin = new Date(intervaloFin);
+                                    }
+                                    intervalos.push({
+                                        tipo: "disponibilidad",
+                                        duracion: practica,
+                                        start: horarioInicio,
+                                        end: disponibilidadFin,
+                                        text: `${formatTime(horarioInicio)} - ${formatTime(disponibilidadFin)}`,
+                                        hora: formatTime(horarioInicio),
+                                    });
+                                    horarioInicio = new Date(disponibilidadFin);
+                                } 
+                            });
+                            // Asegurarse de que los intervalos estén ordenados
+                            intervalos.sort((a, b) => new Date(a.start) - new Date(b.start));
+                            // Eliminar intervalos duplicados o solapados
+                            let result = [];
+                            for (let i = 0; i < intervalos.length; i++) {
+                                if (i === 0 || new Date(intervalos[i].start) >= new Date(result[result.length - 1].end)) {
+                                    result.push(intervalos[i]);
+                                } else {
+                                    result[result.length - 1].end = new Date(Math.max(new Date(result[result.length - 1].end), new Date(intervalos[i].end)));
+                                    result[result.length - 1].text = `${formatTime(result[result.length - 1].start)} - ${formatTime(result[result.length - 1].end)}`;
+                                }
+                            }
+                            intervalos = result;
+                        }
+
                         intervalos.sort((a, b) => new Date(a.start) - new Date(b.start));
-                        // Eliminar intervalos duplicados o solapados
-                        let result = [];
-                        for (let i = 0; i < intervalos.length; i++) {
-                            if (i === 0 || new Date(intervalos[i].start) >= new Date(result[result.length - 1].end)) {
-                                result.push(intervalos[i]);
-                            } else {
-                                result[result.length - 1].end = new Date(Math.max(new Date(result[result.length - 1].end), new Date(intervalos[i].end)));
-                                result[result.length - 1].text = `${formatTime(result[result.length - 1].start)} - ${formatTime(result[result.length - 1].end)}`;
-                            }
-                        }
-                        intervalos = result;
-                    }
+                        return { ...dia, intervalos };
+                    } else {
+                        //caso el turno se cambio de dia entonces si esta en el dia filtrado lo borramos
+                        if (turnoOld) {
+                            dia.intervalos = dia.intervalos.filter(intervalo => !((intervalo.tipo === "turno" || intervalo.tipo === "sobreturno") && intervalo.id == turno.id));
 
-                    intervalos.sort((a, b) => new Date(a.start) - new Date(b.start));
-                    return { ...dia, intervalos };
-                } else {
-                    //caso el turno se cambio de dia entonces si esta en el dia filtrado lo borramos
-                    if (turnoOld) {
-                        dia.intervalos = dia.intervalos.filter(intervalo => !((intervalo.tipo === "turno" || intervalo.tipo === "sobreturno") && intervalo.id == turno.id));
-
-                        horarios.forEach(horario => {
-                            if(turnoOld.start instanceof Date){
-                                turnoOld.start = turnoOld.start.toISOString();
-                            }
-                            if(turnoOld.end instanceof Date){
-                                turnoOld.end = turnoOld.end.toISOString();
-                            }
-                            let horarioInicio = new Date(`${turnoOld.start.split('T')[0]}T${horario.hora_inicio}`);
-                            let intervaloFin = new Date(turnoOld.end);
-                            // Crear intervalos durante el turno viejo
-                            while (horarioInicio < intervaloFin) {
-                                let disponibilidadFin = new Date(horarioInicio.getTime() + practica * 60000);
-                                if (disponibilidadFin > intervaloFin) {
-                                    disponibilidadFin = new Date(intervaloFin);
+                            horarios.forEach(horario => {
+                                if(turnoOld.start instanceof Date){
+                                    turnoOld.start = turnoOld.start.toISOString();
                                 }
-                                dia.intervalos.push({
-                                    tipo: "disponibilidad",
-                                    duracion: practica,
-                                    start: horarioInicio,
-                                    end: disponibilidadFin,
-                                    text: `${formatTime(horarioInicio)} - ${formatTime(disponibilidadFin)}`,
-                                    hora: formatTime(horarioInicio),
-                                });
-                                horarioInicio = new Date(disponibilidadFin);
-                            } 
-                        });
+                                if(turnoOld.end instanceof Date){
+                                    turnoOld.end = turnoOld.end.toISOString();
+                                }
+                                let horarioInicio = new Date(`${turnoOld.start.split('T')[0]}T${horario.hora_inicio}`);
+                                let intervaloFin = new Date(turnoOld.end);
+                                // Crear intervalos durante el turno viejo
+                                while (horarioInicio < intervaloFin) {
+                                    let disponibilidadFin = new Date(horarioInicio.getTime() + practica * 60000);
+                                    if (disponibilidadFin > intervaloFin) {
+                                        disponibilidadFin = new Date(intervaloFin);
+                                    }
+                                    dia.intervalos.push({
+                                        tipo: "disponibilidad",
+                                        duracion: practica,
+                                        start: horarioInicio,
+                                        end: disponibilidadFin,
+                                        text: `${formatTime(horarioInicio)} - ${formatTime(disponibilidadFin)}`,
+                                        hora: formatTime(horarioInicio),
+                                    });
+                                    horarioInicio = new Date(disponibilidadFin);
+                                } 
+                            });
 
-                        // Asegurarse de que los intervalos estén ordenados
-                        dia.intervalos.sort((a, b) => new Date(a.start) - new Date(b.start));
-                        // Eliminar intervalos duplicados o solapados
-                        let result = [];
-                        for (let i = 0; i < dia.intervalos.length; i++) {
-                            if (i === 0 || new Date(dia.intervalos[i].start) >= new Date(result[result.length - 1].end)) {
-                                result.push(dia.intervalos[i]);
-                            } else {
-                                result[result.length - 1].end = new Date(Math.max(new Date(result[result.length - 1].end), new Date(dia.intervalos[i].end)));
-                                result[result.length - 1].text = `${formatTime(result[result.length - 1].start)} - ${formatTime(result[result.length - 1].end)}`;
+                            // Asegurarse de que los intervalos estén ordenados
+                            dia.intervalos.sort((a, b) => new Date(a.start) - new Date(b.start));
+                            // Eliminar intervalos duplicados o solapados
+                            let result = [];
+                            for (let i = 0; i < dia.intervalos.length; i++) {
+                                if (i === 0 || new Date(dia.intervalos[i].start) >= new Date(result[result.length - 1].end)) {
+                                    result.push(dia.intervalos[i]);
+                                } else {
+                                    result[result.length - 1].end = new Date(Math.max(new Date(result[result.length - 1].end), new Date(dia.intervalos[i].end)));
+                                    result[result.length - 1].text = `${formatTime(result[result.length - 1].start)} - ${formatTime(result[result.length - 1].end)}`;
+                                }
                             }
+                            dia.intervalos = result;
                         }
-                        dia.intervalos = result;
                     }
-                }
-                return dia;
+                    return dia;
+                });
             });
-        });
 
         // Update setTurnos
         setTurnos(prev => {
@@ -485,7 +484,6 @@ export const WebSocketProvider = ({ children }) => {
 
             newSocket.onmessage = async (event) => {
                 const { codigo, data } = JSON.parse(event.data); //por ahora el codigo es turno sino es el modulo que afecta ahr
-
 
                 try {
                     if (data.modelo === "turno")

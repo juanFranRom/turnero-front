@@ -230,6 +230,17 @@ $turno-color-secondary: rgba(108, 117, 125, 1);
             background-color: $global-primary-color;
         }
     }
+
+    
+    @media (max-width: 470px) {
+        .c-turno__estadoNext{
+            display: none;
+        }
+        .c-turno__estadoDropdown{
+            position: fixed;
+            right: 10px;
+        }
+    }
 }
 
 .c-turno__desplegable{
