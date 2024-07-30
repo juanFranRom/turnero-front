@@ -210,7 +210,7 @@ const TableAux = () => {
       }
       {
           data && data.length > 0 ?
-            <Table columns={headers} rows={data} setContextMenu={setContextMenu} contextMenu={contextMenu} loading={loading} filtroPlaceholder={'Filtro (Nombre, Apellido, DNI)'} filtro={paginado.filtro} setFiltro={(val) => setPaginado(prev => ({ ...prev, filtro: val }))} totalPages={paginado.totalPages} realPage={paginado.page} changePage={(val) => handlePaginado(val, 'page')} realSize={paginado.pageSize} changeSize={(val) => handlePaginado(val, 'pageSize')}/>
+            <Table columns={headers} rows={data} setContextMenu={setContextMenu} contextMenu={contextMenu} loading={loading} filtroPlaceholder={'Filtro (Nombre, Apellido, DNI)'} filtro={paginado.filtro} setFiltro={(val) => setPaginado(prev => ({ ...prev, filtro: val }))} totalPages={paginado.totalPages} realPage={paginado.page} changePage={(val) => setPaginado(prev => ({ ...prev, page: val }))} realSize={paginado.pageSize} changeSize={(val) => setPaginado(prev => ({ ...prev, pageSize: val }))}/>
           :
             data === null ?
               <div className="u-1/1 u-p5">
