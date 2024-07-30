@@ -60,7 +60,7 @@ const headers = [
 ];
 
 const TableAux = () => {
-  const [data, setData] = useState([]);
+  const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true)
   const [contextMenu, setContextMenu] = useState(null)
   const [deleting, setDeleting] = useState(null)
@@ -105,7 +105,6 @@ const TableAux = () => {
       checkFetch(json, logOut)
       if(json.status === 'SUCCESS')
       {
-        console.log(json);
         if(json.data.pacientes.length)
         {
           setData(json.data.pacientes.map(el => { 
