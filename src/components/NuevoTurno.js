@@ -53,9 +53,6 @@ const NuevoTurno = () => {
     const debounceTimeout = useRef(null)
     const router = useRouter()
 
-    console.log(openPaciente)
-    console.log(turno)
-
     const handleDatalist = (val, key) => {
         let aux = null
         if(typeof val === 'string')
