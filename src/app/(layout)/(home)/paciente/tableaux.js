@@ -18,6 +18,7 @@ import { FaRegEdit } from "react-icons/fa";
 import { MdDeleteForever } from "react-icons/md";
 import Loader from "@/components_UI/Loader";
 import { checkFetch } from "@/utils/checkFetch";
+import Input from "@/components_UI/Input";
 
 const headers = [
   {
@@ -67,13 +68,30 @@ const TableAux = () => {
     value: false,
     message: ''
   })
+  const [paginado, setPaginado] = useState({
+    totalPages: 1,
+    page: 0,
+    pageSize: 5,
+    filtro: ''
+  })
   const { user, logOut } = useUserContext();
   const router = useRouter();
 
   const getPacientes = async () => {
     setLoading(true)
+    const generarFiltro = ( ) => {
+      let result = ''
+
+      if(paginado.filtro)
+        result += `searchValue=${paginado.filtro}&`
+
+      result += `page=${paginado.page}&`
+      result += `pageSize=${paginado.pageSize}`
+
+      return result
+    }
     try {
-      const response = await fetch(`${process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL }/pacientes`,
+      const response = await fetch(`${process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL }/pacientes/search?${generarFiltro()}`,
         {
           method: "GET",
           headers: {
@@ -87,9 +105,10 @@ const TableAux = () => {
       checkFetch(json, logOut)
       if(json.status === 'SUCCESS')
       {
-        if(json.data.length)
+        console.log(json);
+        if(json.data.pacientes.length)
         {
-          setData(json.data.map(el => { 
+          setData(json.data.pacientes.map(el => { 
             let telefono1 = el.contactos.find( contacto => contacto.tipo === 'telefono' )?.valor
             let telefono2 = el.contactos.find( contacto => contacto.tipo === 'telefono' && contacto.valor !== telefono1)?.valor
             let email = el.contactos.find( contacto => contacto.tipo === 'email' )?.valor
@@ -102,6 +121,7 @@ const TableAux = () => {
               email: email,
             })
           }))
+          setPaginado( { ...paginado, totalPages: json.data.totalPages })
         }
         else
           setData([])
@@ -129,25 +149,22 @@ const TableAux = () => {
       const json = await response.json();
       checkFetch(json, logOut)
       if(json.status === 'SUCCESS')
-      {
         await getPacientes()
-      }
       else
-      {
         setError({
           value: true,
           message: json.message
         })
-      }
       setDeleting(null)
     } catch (error) {
       router.push("/pacientes");
     }
   }
 
+  
   useEffect(() => {
     getPacientes();
-  }, [user]);
+  }, [user, paginado.page, paginado.pageSize, paginado.filtro]);
   
   return (
     <>
@@ -193,13 +210,8 @@ const TableAux = () => {
         </ContextMenu>
       }
       {
-        loading?
-          <div className="u-1/1 u-flex-column-center-center">
-            <Loader text="Cargando pacientes..."/>
-          </div>
-        :
           data && data.length > 0 ?
-            <Table columns={headers} rows={data} setContextMenu={setContextMenu} contextMenu={contextMenu}/>
+            <Table columns={headers} rows={data} setContextMenu={setContextMenu} contextMenu={contextMenu} loading={loading} filtroPlaceholder={'Filtro (Nombre, Apellido, DNI)'} filtro={paginado.filtro} setFiltro={(val) => setPaginado(prev => ({ ...prev, filtro: val }))} totalPages={paginado.totalPages} realPage={paginado.page} changePage={(val) => handlePaginado(val, 'page')} realSize={paginado.pageSize} changeSize={(val) => handlePaginado(val, 'pageSize')}/>
           :
             <div className="u-1/1 u-flex-column-center-center u-p4--vertical">
               <p>No hay informacion para mostrar</p>

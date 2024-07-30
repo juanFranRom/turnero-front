@@ -29,12 +29,22 @@ const Table = ({
     exportTitle = 'Exportable Tabla',
     contextMenu = null,
     setContextMenu = null,
-    onClick = null
+    onClick = null,
+    noFiltro = false,
+    totalPages = null,
+    realPage = null,
+    changePage = null,
+    realSize = null,
+    changeSize = null,
+    filtro = null,
+    setFiltro = null,
+    filtroPlaceholder = 'Filtro',
+    loading = null
 }) => {
     const [pagination, setPagination] = useState({
-        pages: 1,
-        actual: 0,
-        size: {id: 1, value: 5}
+        pages: totalPages ? totalPages : 1,
+        actual: realPage ? realPage : 0,
+        size: realSize ? realSize : {id: 1, value: 5}
     })
     const [globalFilter, setGlobalFilter] = useState('')
     const [filter, setFilter] = useState({})
@@ -137,7 +147,10 @@ const Table = ({
             if(pagination.actual + 1 < pagination.pages)
             {
                 aux.actual = aux.actual + 1
-                setPagination(aux)
+                if(changePage)
+                    changePage(aux.actual)
+                else
+                    setPagination(aux)
             }
         }
     }
@@ -147,7 +160,10 @@ const Table = ({
         if(pagination.actual >= 1)
         {
             aux.actual--
-            setPagination(aux)
+            if(changePage)
+                changePage(aux.actual)
+            else
+                setPagination(aux)
         }
     }
 
@@ -156,7 +172,10 @@ const Table = ({
         let aux = {...pagination}
         if(i >= 0 && i < pagination.pages) {
             aux.actual = i
-            setPagination(aux)
+            if(changePage)
+                changePage(aux.actual)
+            else
+                setPagination(aux)
         }
     }
 
@@ -175,39 +194,66 @@ const Table = ({
     }
 
     useEffect(() => {
-        let _rows = [...rows]
-        let filterKeys = Object.keys(filter)
+        if(realPage)
+            setPagination({
+                ...pagination,
+                actual: realPage
+            })
+    }, [realPage])
 
-        if (filterKeys.length > 0) {
-            filterKeys.map((key) => {
-                _rows = _rows.filter((_row) => {
-                    let add = customfilters[key].checker(_row, filter)
+    useEffect(() => {
+        if(realSize)
+            setPagination({
+                ...pagination,
+                size: realSize
+            })
+    }, [realSize])
+
+    useEffect(() => {
+        if(totalPages)
+            setPagination({
+                ...pagination,
+                pages: totalPages
+            })
+    }, [totalPages])
+
+    useEffect(() => {
+        if(filtro)
+        {
+            let _rows = [...rows]
+            let filterKeys = Object.keys(filter)
+    
+            if (filterKeys.length > 0) {
+                filterKeys.map((key) => {
+                    _rows = _rows.filter((_row) => {
+                        let add = customfilters[key].checker(_row, filter)
+                        return add
+                    })
+                })
+            }
+    
+            if(globalFilter && globalFilter !== '')
+            {
+                _rows = _rows.filter((val) => {
+                    let add = false
+                    for(const column of columns)
+                    {
+                        if(val[column.id] && typeof val[column.id] !== "object" && String(val[column.id]).toLowerCase().includes(globalFilter.toLowerCase()))
+                        {
+                            add = true
+                            break;
+                        }
+                    }
                     return add
                 })
-            })
+            }
+    
+            setFilteredRows(_rows)
         }
-
-        if(globalFilter && globalFilter !== '')
-        {
-            _rows = _rows.filter((val) => {
-                let add = false
-                for(const column of columns)
-                {
-                    if(val[column.id] && typeof val[column.id] !== "object" && String(val[column.id]).toLowerCase().includes(globalFilter.toLowerCase()))
-                    {
-                        add = true
-                        break;
-                    }
-                }
-                return add
-            })
-        }
-
-        setFilteredRows(_rows)
     },[globalFilter, filter])
 
     useEffect(() => {
-        let pages = (Object.keys(filter).length > 0 || globalFilter !== '' ? filteredRows.length : rows.length) > pagination.size.value ?
+        let pages = totalPages ? totalPages : (Object.keys(filter).length > 0 || globalFilter !== '' ? filteredRows.length : rows.length) > pagination.size.value ?
             Math.ceil((Object.keys(filter).length > 0 || globalFilter !== '' ? filteredRows.length : rows.length) / pagination.size.value)
             :
             1
@@ -238,17 +284,29 @@ const Table = ({
                         <Loader text="Generando exportable.."/>
                     </div>
                     :
-                    <div className='u-1/1 u-m3--bottom u-flex-center-space-between u-flex-column-center-start@tablet'>
+                    <div className={`u-1/1 u-m3--bottom ${!noFiltro ? 'u-flex-center-space-between' : 'u-flex-end-center'} u-flex-column-center-start@tablet`}>
                         <Select
                             className={'u-1/12 u-m2--vertical'}
                             options={ [ {id: 1, value: 5}, {id: 2, value: 10}, {id: 3, value: 15}, {id: 4, value: 20} ] }
-                            defaultOption={pagination.size}
-                            handleChange={(newOption) => setPagination({ ...pagination, size: newOption })}
+                            defaultOption={typeof pagination.size === 'object' ? pagination.size : {value: pagination.size} }
+                            handleChange={
+                                (newOption) => {
+                                    if(changeSize)
+                                        changeSize(newOption.value)
+                                    else
+                                        setPagination({ ...pagination, size: newOption })}
+                                }
                         />
-                        <div className='u-flex-end-center u-flex-start-center@tablet u-1/1 u-cursor'>
-                            <Input className={'u-3/12 u-4/12@desktop u-7/12@tablet u-8/12@mobile'} defaultValue={globalFilter} handleChange={(val) => setGlobalFilter(val)} placeholder={'Filtro'}/>
-                            <PiMicrosoftExcelLogoFill className='u-m2--left u-color--green u-text--2' onClick={handleExport}/>
-                        </div>
+                        {
+                            !noFiltro &&   
+                            <div className='u-flex-end-center u-flex-start-center@tablet u-1/1 u-cursor'>
+                                <Input className={'u-3/12 u-4/12@desktop u-7/12@tablet u-8/12@mobile'} defaultValue={filtro ? filtro : globalFilter} handleChange={(val) => {setGlobalFilter(val); setFiltro(val)}} placeholder={filtroPlaceholder}/>
+                                {
+                                    typeof exportData === 'boolean' && exportData &&
+                                    <PiMicrosoftExcelLogoFill className='u-m2--left u-color--green u-text--2' onClick={handleExport}/>
+                                }
+                            </div>
+                        }
                     </div>
             }
             {
@@ -268,41 +326,46 @@ const Table = ({
                     </div>
                 </div>
             }
-            <table 
-                className='c-table'
-                ref={tableRef} 
-                onMouseDown={handleStart}
-                onMouseMove={handleMove}
-                onMouseUp={handleEnd}
-                onMouseLeave={handleEnd}
-                onTouchStart={handleStart}
-                onTouchMove={handleMove}
-                onTouchEnd={handleEnd} 
-            >
-                <TableHeader columns={ columns } tableRef={tableRef}/>
-                {
-                    handleClick ?
-                        <TableBody rows={Object.keys(filter).length > 0 || globalFilter !== '' ? filteredRows : rows && rows.length ? rows : []}
-                                columns={columns} pagination={pagination} handleContextMenu={handleContextMenu}
-                                handleClick={handleClick} tableRef={tableRef} selectedRow={selectedRow}
-                        />
-                    :
-                        <TableBody
-                            rows={Object.keys(filter).length > 0 || globalFilter !== '' ? filteredRows : rows && rows.length ? rows : []}
-                            columns={columns} pagination={pagination} tableRef={tableRef} handleContextMenu={handleContextMenu}
-                        />
-                }
-            </table>
+            {
+                <table 
+                    className='c-table'
+                    ref={tableRef} 
+                    onMouseDown={handleStart}
+                    onMouseMove={handleMove}
+                    onMouseUp={handleEnd}
+                    onMouseLeave={handleEnd}
+                    onTouchStart={handleStart}
+                    onTouchMove={handleMove}
+                    onTouchEnd={handleEnd} 
+                >
+                    <TableHeader columns={ columns } tableRef={tableRef}/>
+                    {
+                        handleClick ?
+                            <TableBody rows={Object.keys(filter).length > 0 || globalFilter !== '' ? filteredRows : rows && rows.length ? rows : []}
+                                    columns={columns} pagination={pagination} handleContextMenu={handleContextMenu}
+                                    handleClick={handleClick} tableRef={tableRef} selectedRow={selectedRow}
+                            />
+                        :
+                            <TableBody
+                                rows={Object.keys(filter).length > 0 || globalFilter !== '' ? filteredRows : rows && rows.length ? rows : []}
+                                columns={columns} pagination={pagination} tableRef={tableRef} handleContextMenu={handleContextMenu}
+                            />
+                    }
+                </table>
+            }
             {
                 exportando?
                     <></>
                 :
-                    <Paginado
-                        pagination={pagination}
-                        next={ nextPage }
-                        prev={ prevPage }
-                        goToPage={goToPage}
-                    />
+                    <div className='u-1/1 u-flex-column-center-end'>
+                        <Paginado
+                            pagination={pagination}
+                            next={ nextPage }
+                            prev={ prevPage }
+                            goToPage={goToPage}
+                        />
+                        <p>Pagina {pagination.actual + 1} de {pagination.pages}</p>
+                    </div>
             }
         </>
     )
@@ -376,12 +439,14 @@ const TableHeader = ({ columns, tableRef }) => {
 
 const TableBody = ({ rows, columns, pagination, handleContextMenu, handleClick, tableRef, selectedRow }) => {
     let ancho = parseInt(tableRef?.current?.offsetWidth / columns.length) - 24 - 48
-    let start = pagination.size.value * pagination.actual
+    let size = typeof pagination.size === 'object' ? pagination.size.value : pagination.size 
+    let start = size * pagination.actual >= rows.length ? 0 : size * pagination.actual
+
     return (
         <tbody>
         {
             rows.map((value, index) => {
-                if (value && index >= start && index < pagination.size.value + start) {
+                if (value && index >= start && index < size + start) {
                     let row = <tr
                         className={`c-table__tr ${selectedRow === value ? 'c-table__tr--selected' : ''}`}
                         key={index}
@@ -391,8 +456,8 @@ const TableBody = ({ rows, columns, pagination, handleContextMenu, handleClick, 
                             {
                                 columns.map((element, index) => {
                                     let style = element.setStyle ? {...element.setStyle(value)} : {};
-                                    style.minWidth = `max(${ancho}px, 125px)`;
-                                    style.maxWidth = `max(${ancho}px, 125px)`;
+                                    style.minWidth = `max(${ancho}px, 200px)`;
+                                    style.maxWidth = `max(${ancho}px, 200px)`;
                                     return (
                                         <td
                                             className='c-table__td'
