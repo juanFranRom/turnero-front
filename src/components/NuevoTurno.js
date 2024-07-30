@@ -112,7 +112,7 @@ const NuevoTurno = () => {
             const json = await response.json()
             checkFetch(json, logOut)
             if (json.status === "SUCCESS") {
-                if(json.data.length && json.data.length > 0)
+                if(json.data[ruta].length && json.data[ruta].length > 0)
                     setter(json.data)
             } 
         } catch (error) {
@@ -336,13 +336,17 @@ const NuevoTurno = () => {
                     'pacientes',
                     turno.pacienteText,
                     (pacientes) => {
-                        setTurno((prevTurno) => ({
-                            ...prevTurno,
-                            pacienteList: pacientes.map((ele) => ({
-                                ...ele,
-                                value: `${ele.apellido}, ${ele.nombre} ${ele.dni ? `(${ele.dni})` : ''}`
-                            }))
-                        }));
+                        setTurno((prevTurno) => {
+                            console.log(pacientes);
+                            return{
+                                ...prevTurno,
+                                pacienteList: pacientes.pacientes.map((ele) => ({
+                                    ...ele,
+                                    value: `${ele.apellido}, ${ele.nombre} ${ele.dni ? `(${ele.dni})` : ''}`
+                                }))
+                            }
+                        })
+                        
                     }
                 );
             }, 300);
