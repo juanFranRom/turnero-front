@@ -36,7 +36,7 @@ const Turno = ({ data = null, onlyView = false }) => {
     const botonRef = useRef(null);
     const desplegableRef = useRef(null);
     const { user, logOut } = useUserContext()
-    const { date, turno, setTurno, setOpenTurno } = useTurnoContext()
+    const { date, turno, setTurno, setOpenTurno, fechaFormateada } = useTurnoContext()
     const { setOpenPaciente } = usePacienteContext()
     const infoRef = useRef()
 
@@ -191,6 +191,11 @@ const Turno = ({ data = null, onlyView = false }) => {
         return fecha.getDate() === actual.getDate() && fecha.getMonth() === actual.getMonth() && fecha.getFullYear() === actual.getFullYear()
     }
 
+    const mensajeWhatsApp = () => {
+        return `Hola, ${primeraLetraMayus(dataTurno.nombre)}! Recuerda que el ${fechaFormateada} ${dataTurno.horario} hs tienes un turno con ${primeraLetraMayus(dataTurno.doctor)}.%0A%0AAdjunto los detalles del turno:%0A%0APráctica: ${primeraLetraMayus(dataTurno.practica)}%0ADirección: - 377. Juan Martín de Pueyrredón - Juan W. Gez - San Luis.%0A%0A¡Muchas gracias!`;
+    }
+
+    console.log(dataTurno);
     useEffect(() => {
         const adjustDropdownPosition = () => {
             if (desplegable && botonRef.current && desplegableRef.current) {
@@ -229,11 +234,11 @@ const Turno = ({ data = null, onlyView = false }) => {
     }, [desplegable]);
 
     useEffect(() => {
-        /*const interval = setInterval(() => {
+        const interval = setInterval(() => {
             setCurrentTime(new Date());
         }, 10000);
 
-        return () => clearInterval(interval);*/
+        return () => clearInterval(interval);
     }, []);
 
     useEffect(() => {
@@ -290,8 +295,8 @@ const Turno = ({ data = null, onlyView = false }) => {
                             {
                                 dataTurno.telefono &&
                                 <>
-                                    <a class="c-turno__telefono" href={`http://web.whatsapp.com/send?phone=${dataTurno.telefono}`} target="_blank">{dataTurno.telefono}</a>
-                                    <a class="c-turno__telefono--mobile" href={`whatsapp://send?phone=${dataTurno.telefono}`} target="_blank">{dataTurno.telefono}</a>
+                                    <a class="c-turno__telefono" href={`http://web.whatsapp.com/send?phone=${dataTurno.telefono}&text=${mensajeWhatsApp()}`} target="_blank">{dataTurno.telefono}</a>
+                                    <a class="c-turno__telefono--mobile" href={`whatsapp://send?phone=${dataTurno.telefono}&text=${mensajeWhatsApp()}`} target="_blank">{dataTurno.telefono}</a>
                                 </>
                             }
                             <span className='c-turno__dni'>{dataTurno.dni}</span>

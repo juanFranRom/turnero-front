@@ -218,7 +218,7 @@ const Table = ({
     }, [totalPages])
 
     useEffect(() => {
-        if(filtro)
+        if(filtro === null)
         {
             let _rows = [...rows]
             let filterKeys = Object.keys(filter)
@@ -234,6 +234,7 @@ const Table = ({
     
             if(globalFilter && globalFilter !== '')
             {
+                console.log('entro 2');
                 _rows = _rows.filter((val) => {
                     let add = false
                     for(const column of columns)
@@ -246,6 +247,7 @@ const Table = ({
                     }
                     return add
                 })
+                console.log(_rows);
             }
     
             setFilteredRows(_rows)
@@ -300,7 +302,7 @@ const Table = ({
                         {
                             !noFiltro &&   
                             <div className='u-flex-end-center u-flex-start-center@tablet u-1/1 u-cursor'>
-                                <Input className={'u-3/12 u-4/12@desktop u-7/12@tablet u-8/12@mobile'} defaultValue={filtro ? filtro : globalFilter} handleChange={(val) => {setGlobalFilter(val); setFiltro(val)}} placeholder={filtroPlaceholder}/>
+                                <Input className={'u-3/12 u-4/12@desktop u-7/12@tablet u-8/12@mobile'} defaultValue={filtro ? filtro : globalFilter} handleChange={(val) => {setGlobalFilter(val); if(setFiltro) setFiltro(val)}} placeholder={filtroPlaceholder}/>
                                 {
                                     typeof exportData === 'boolean' && exportData &&
                                     <PiMicrosoftExcelLogoFill className='u-m2--left u-color--green u-text--2' onClick={handleExport}/>
