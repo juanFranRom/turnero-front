@@ -41,6 +41,7 @@ const NuevoTurno = () => {
         mensaje: ''
     })
     const [loading, setLoading] = useState(false)
+    const [cambioFecha, setCambioFecha] = useState(false)
     const [accion, setAccion] = useState({
         value: false,
         mensaje: '',
@@ -132,12 +133,12 @@ const NuevoTurno = () => {
 
         turnoParaEnviar.practica_id = turno.practica ? turno.practica.id : null
         turnoParaEnviar.duracion = turno.practica ? timeToMinutes(turno.practica.duracion_moda) : null
-        turnoParaEnviar.fecha_hora = null
 
-        if(turno.fecha && turno.hora)
+        if(turno.fecha && turno.hora && cambioFecha)
         {
             let aux = new Date(turno.fecha.getFullYear(), turno.fecha.getMonth(), turno.fecha.getDate(), turno.hora.split(':')[0], turno.hora.split(':')[1])
-            turnoParaEnviar.fecha_hora = aux.toISOString()
+            if(aux > new Date())
+                turnoParaEnviar.fecha_hora = aux.toISOString()
         }
         turnoParaEnviar.nota = turno.nota ? turno.nota : null
         turnoParaEnviar.tipo = turno.tipo ? turno.tipo : 'turno'
@@ -169,20 +170,20 @@ const NuevoTurno = () => {
             return false
         }
 
+        if (!turno.fecha_hora && crear)
+        {
+            setError({
+                value: true,
+                mensaje: "Falta seleccionar la fecha o hora del turno."
+            })
+            return false
+        }
+
         if (!turno.practica_id)
         {
             setError({
                 value: true,
                 mensaje: "Falta seleccionar la practica del turno."
-            })
-            return false
-        }
-
-        if (!turno.fecha_hora)
-        {
-            setError({
-                value: true,
-                mensaje: "Falta seleccionar la fecha o hora del turno."
             })
             return false
         }
@@ -429,6 +430,7 @@ const NuevoTurno = () => {
         })
         setLoading(false)
         setAccion({ value: false, text: '', accion: null })
+        setCambioFecha(false)
     }, [filtros, openTurno, profesional])
 
     useEffect(() => {
@@ -575,11 +577,11 @@ const NuevoTurno = () => {
                         <div className='c-nuevo_turno__item c-nuevo_turno__hora'>
                             <div className='u-flex-column-center-start'>
                                 <span>Fecha</span>
-                                <Input className={'u-1/1'} type={'date'} defaultValue={turno.fecha} handleChange={(val) => setTurno({...turno, fecha: val})}/>
+                                <Input className={'u-1/1'} type={'date'} defaultValue={turno.fecha} handleChange={(val) => {setTurno({...turno, fecha: val}); setCambioFecha(true) }}/>
                             </div>
                             <div className='u-flex-column-center-start'>
                                 <span>Hora</span>
-                                <Input className={'u-1/1'} type={'time'} defaultValue={turno.hora} handleChange={(val) => setTurno({...turno, hora: val})}/>
+                                <Input className={'u-1/1'} type={'time'} defaultValue={turno.hora} handleChange={(val) => { setTurno({...turno, hora: val}); setCambioFecha(true) }}/>
                             </div>
                         </div>
                         {
