@@ -631,11 +631,11 @@ const NuevoTurno = () => {
                                         }
                                     />
                                     {
-                                        turno.id && !esSobreTurno && !turno.onlyView && 
+                                        turno.id && !turno.onlyView && 
                                             <Button text={'Reprogramar'} clickHandler={() => {setOpenTurno(false); setReprogramando(turno);}}/>
                                     }
                                     {
-                                        turno.id && !turno.onlyView &&
+                                        turno.id &&
                                             <Button text={'Cancelar Turno'} clickHandler={() => setAccion({ value: true, text: '¿Estas seguro que deseas cancelar el turno?', accion: cancelarTurno})}/>
                                     }
                                 </div>
