@@ -134,7 +134,7 @@ const NuevoTurno = () => {
         turnoParaEnviar.practica_id = turno.practica ? turno.practica.id : null
         turnoParaEnviar.duracion = turno.practica ? timeToMinutes(turno.practica.duracion_moda) : null
 
-        if(turno.fecha && turno.hora && cambioFecha)
+        if(turno.fecha && turno.hora && (cambioFecha || crear))
         {
             let aux = new Date(turno.fecha.getFullYear(), turno.fecha.getMonth(), turno.fecha.getDate(), turno.hora.split(':')[0], turno.hora.split(':')[1])
             if(aux > new Date())
@@ -196,7 +196,7 @@ const NuevoTurno = () => {
             try {
                 setLoading(true)
                 let turnoListo = turnoParaEnviar(turno)
-    
+                debugger;
                 if(!validar(turnoListo))
                 {
                     setLoading(false)
