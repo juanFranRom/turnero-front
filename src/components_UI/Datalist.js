@@ -124,7 +124,6 @@ const Datalist = ({ className, list, setBlank = false, defaultOption = null, set
     
     useEffect(() => {
         // Filtrar opciones cuando el valor del input cambia
-        console.log(value);
         if(value.text === '')
             setFilteredOptions(list)
         else if(value.text)
