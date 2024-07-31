@@ -1,7 +1,9 @@
+import { useTurnoContext } from '@/contexts/turno';
 import React, { useState, useRef, useEffect } from 'react';
 
 const Tooltip = ({ children, text, className }) => {
     const [position, setPosition] = useState({ top: 0, left: 0, direction: 'up' });
+    const { openCalendar } = useTurnoContext()
     const tooltipRef = useRef(null);
     const childRef = useRef(null);
 
@@ -14,18 +16,24 @@ const Tooltip = ({ children, text, className }) => {
             const tooltipHeight = tooltipRect.height;
             const childWidth = childRect.width;
 
-            let top = childRect.top - tooltipHeight - 10;
+            let top = childRect.top - tooltipHeight;
             let direction = 'up';
 
             if (top < 0) {
-                top = childRect.bottom + 10;
+                top = childRect.top - childHeight + 10;
                 direction = 'down';
             }
 
             let left = childRect.left + (childWidth / 2) - (tooltipRect.width / 2);
 
             // Adjust if tooltip overflows the viewport to the left
-            if (left < 0) {
+            if(openCalendar)
+            {
+                if (left - 300 < 0) {
+                    left = 300; // Padding from the left edge
+                }
+            }
+            else if (left < 0) {
                 left = 10; // Padding from the left edge
             }
 
