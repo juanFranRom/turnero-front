@@ -237,7 +237,7 @@ $turno-color-secondary: rgba(108, 117, 125, 1);
             display: none;
         }
         .c-turno__estadoDropdown{
-            position: fixed;
+            position: absolute;
             right: 20px;
         }
     }
