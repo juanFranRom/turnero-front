@@ -195,7 +195,6 @@ const Turno = ({ data = null, onlyView = false }) => {
         return `Hola, ${primeraLetraMayus(dataTurno.nombre)}! Recuerda que el ${fechaFormateada} ${dataTurno.horario} hs tienes un turno con ${primeraLetraMayus(dataTurno.doctor)}.%0A%0AAdjunto los detalles del turno:%0A%0APráctica: ${primeraLetraMayus(dataTurno.practica)}%0ADirección: - 377. Juan Martín de Pueyrredón - Juan W. Gez - San Luis.%0A%0A¡Muchas gracias!`;
     }
 
-    console.log(dataTurno);
     useEffect(() => {
         const adjustDropdownPosition = () => {
             if (desplegable && botonRef.current && desplegableRef.current) {

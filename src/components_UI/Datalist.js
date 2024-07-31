@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
 
-const Datalist = ({ className, list, setBlank = false, defaultOption = null, setter = null, auxRef = null, autoSelect = false }) => {
+const Datalist = ({ className, list, setBlank = false, defaultOption = null, setter = null, auxRef = null, autoSelect = false, filter = true }) => {
     const [value, setValue] = useState(
         !defaultOption?
             {
@@ -124,7 +124,7 @@ const Datalist = ({ className, list, setBlank = false, defaultOption = null, set
     
     useEffect(() => {
         // Filtrar opciones cuando el valor del input cambia
-        if(value.text === '')
+        if(value.text === '' || !filter)
             setFilteredOptions(list)
         else if(value.text)
         {

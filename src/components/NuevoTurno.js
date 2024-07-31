@@ -538,6 +538,7 @@ const NuevoTurno = () => {
                                                 list={ turno.pacienteList } 
                                                 defaultOption={ { value: turno.pacienteText } } 
                                                 setter={(val) => handleDatalist(val, "paciente")}
+                                                filter={false}
                                             />
                                             <IoMdClose className='u-color--red u-cursor--pointer' onClick={() => handleDatalist(null, "paciente")}/>
                                             <Button 
