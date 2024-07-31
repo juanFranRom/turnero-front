@@ -79,7 +79,10 @@ export const TurnoContextProvider = ({ children }) => {
         fechaHasta: null,
         horaHasta: null,
     })
-    const [dias, setDias] = useState(null)
+    const [dias, setDias] = useState({
+        dias: [],
+        profesional: null
+    })
     const [profesionales, setProfesionales] = useState( [] )
     const [profesional, setProfesional] = useState( null )
     const [cancelandoBloqueo, setCancelandoBloqueo] = useState(null)
@@ -273,6 +276,24 @@ export const TurnoContextProvider = ({ children }) => {
     }, [date])
 
     useEffect(() => {
+        if(filtros.profesional)
+            setDias((prev) => ({
+                ...prev,
+                profesional: filtros.profesional
+            }))
+        else if(profesional)
+            setDias((prev) => ({
+                ...prev,
+                profesional: profesional
+            }))
+        else
+            setDias((prev) => ({
+                ...prev,
+                profesional: null
+            }))
+    }, [filtros, profesional])
+
+    useEffect(() => {
         const buscarTurnosCalendario = async ( dia, profesional ) => {
             try {
                 const response = await fetch(`${ process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL}/calendario/disponibilidad/5?fecha=${dia.getFullYear()}-${dia.getMonth() + 1}-${dia.getDate()}${profesional ? `&profesionales=${profesional.id}` : ''}`,
@@ -308,7 +329,10 @@ export const TurnoContextProvider = ({ children }) => {
                             })
                         }
                     });
-                    setDias(aux)
+                    setDias((prev) => ({
+                        ...prev,
+                        dias: aux,
+                    }))
                 }
                 else
                     setDias('error')
@@ -324,7 +348,7 @@ export const TurnoContextProvider = ({ children }) => {
             else if(filtros.profesional)
                 buscarTurnosCalendario(date, filtros.profesional)
             else
-                setDias(getWeekDays(date ?? new Date()))
+                setDias({dias: getWeekDays(date ?? new Date()), profesional: null})
         }
     },[date, filtros, pathname, user])
 

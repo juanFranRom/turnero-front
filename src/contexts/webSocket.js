@@ -47,6 +47,7 @@ export const WebSocketProvider = ({ children }) => {
     function updateCalendarBloqueo(bloqueo, operation, horarios, practica) {
         setDias(prev => {
             if (!prev) return prev;
+            if (!prev.profesional || (prev.profesional && prev.profesional.id !== bloqueo.profesional_id)) return prev;
 
             // Función para obtener el rango de días entre dos fechas
             function getDaysArray(start, end) {
@@ -63,7 +64,7 @@ export const WebSocketProvider = ({ children }) => {
             const bloqueoEnd = new Date(bloqueo.end);
             const daysArray = getDaysArray(bloqueoStart, bloqueoEnd);
 
-            return prev.map(dia => {
+            return prev.dias.map(dia => {
                 let diaDate = new Date(dia.fecha);
                 let diaString = diaDate.toDateString();
                 let inBloqueoRange = daysArray.some(day => day.toDateString() === diaString);
@@ -224,10 +225,12 @@ export const WebSocketProvider = ({ children }) => {
         const turnoEnd = new Date(turnoStart.getTime() + turno.duracion * 60000);
         const daysArray = getDaysArray(turnoStart, turnoEnd);
         
-        if((filtros.profesional && turno.profesional_id === filtros.profesional.id) || !filtros.profesional)
-            setDias(prev => {
-                if (!prev) return prev;
-                return prev.map(dia => {
+        setDias(prev => {
+            if (!prev) return prev;
+            if (!prev.profesional || (prev.profesional && prev.profesional.id !== turno.profesional_id)) return prev;
+            return {
+                ...prev,
+                dias: prev.dias.map(dia => {
                     const diaDate = new Date(dia.fecha);
                     const diaString = diaDate.toDateString();
                     const inTurnoRange = daysArray.some(day => day.toDateString() === diaString);
@@ -237,10 +240,10 @@ export const WebSocketProvider = ({ children }) => {
                     if (inTurnoRange) {
                         let intervalos = dia.intervalos.filter(intervalo => {
                             if ((intervalo.tipo === "turno" || intervalo.tipo === "sobreturno") && intervalo.id === turno.id) return false;
-
+    
                             let intervaloStart = new Date(intervalo.start);
                             let intervaloEnd = new Date(intervalo.end);
-
+    
                             return (
                                 !(
                                     (intervalo.tipo === "disponibilidad" &&
@@ -253,14 +256,14 @@ export const WebSocketProvider = ({ children }) => {
                         if (operation === 'create' || (operation === 'update' && turno.estado !== 'Cancelado')) {
                             intervalos.push(turnoData);
                         }
-
+    
                         if ((turno.estado === 'Cancelado' && turnoOld )||( turnoOld && turnoOld.text !== turnoData.text) ) {
                             let diasNombres = [ 'lunes','martes','miércoles','jueves','viernes','sábado','domingo' ]
                             let diaNombre = diasNombres[diaDate.getDay() - 1]
                             horarios.forEach(horario => {
                                 if(diaNombre.toLowerCase() !== horario.dia.toLowerCase())
                                     return
-
+    
                                 if(turnoOld.start instanceof Date){
                                     turnoOld.start = turnoOld.start.toISOString();
                                 }
@@ -269,7 +272,7 @@ export const WebSocketProvider = ({ children }) => {
                                 }
                                 let horarioInicio = new Date(`${turnoOld.start.split('T')[0]}T${horario.hora_inicio}`);
                                 let intervaloFin = new Date(turnoOld.end);
-
+    
                                 // Crear intervalos durante el turno viejo
                                 while (horarioInicio < intervaloFin) {
                                     let disponibilidadFin = new Date(horarioInicio.getTime() + practica * 60000);
@@ -301,14 +304,14 @@ export const WebSocketProvider = ({ children }) => {
                             }
                             intervalos = result;
                         }
-
+    
                         intervalos.sort((a, b) => new Date(a.start) - new Date(b.start));
                         return { ...dia, intervalos };
                     } else {
                         //caso el turno se cambio de dia entonces si esta en el dia filtrado lo borramos
                         if (turnoOld) {
                             dia.intervalos = dia.intervalos.filter(intervalo => !((intervalo.tipo === "turno" || intervalo.tipo === "sobreturno") && intervalo.id == turno.id));
-
+    
                             horarios.forEach(horario => {
                                 if(turnoOld.start instanceof Date){
                                     turnoOld.start = turnoOld.start.toISOString();
@@ -335,7 +338,7 @@ export const WebSocketProvider = ({ children }) => {
                                     horarioInicio = new Date(disponibilidadFin);
                                 } 
                             });
-
+    
                             // Asegurarse de que los intervalos estén ordenados
                             dia.intervalos.sort((a, b) => new Date(a.start) - new Date(b.start));
                             // Eliminar intervalos duplicados o solapados
@@ -352,8 +355,9 @@ export const WebSocketProvider = ({ children }) => {
                         }
                     }
                     return dia;
-                });
-            });
+                })
+            }
+        });
 
         // Update setTurnos
         setTurnos(prev => {

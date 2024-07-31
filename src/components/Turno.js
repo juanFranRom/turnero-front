@@ -110,7 +110,6 @@ const Turno = ({ data = null, onlyView = false }) => {
         editar( nuevoEstado )
     }
 
-    console.log(dataTurno);
     const next = () => {
         setDesplegable(false)
         const editar = async () => {
@@ -145,6 +144,8 @@ const Turno = ({ data = null, onlyView = false }) => {
             tipo: dataTurno.tipo,
             estado: dataTurno.estado,
             onlyView: true,
+            profesional_id: dataTurno.profesional_id,
+            practica_id: dataTurno.practica_id,
         }
         setTurno((prev) => {
             return({
@@ -186,8 +187,6 @@ const Turno = ({ data = null, onlyView = false }) => {
     const showEstado = () => {
         let fecha = new Date(dataTurno.fecha)
         let actual = new Date()
-        console.log(fecha);
-        console.log(actual);
 
         return fecha.getDate() === actual.getDate() && fecha.getMonth() === actual.getMonth() && fecha.getFullYear() === actual.getFullYear()
     }
@@ -230,11 +229,11 @@ const Turno = ({ data = null, onlyView = false }) => {
     }, [desplegable]);
 
     useEffect(() => {
-        const interval = setInterval(() => {
+        /*const interval = setInterval(() => {
             setCurrentTime(new Date());
         }, 10000);
 
-        return () => clearInterval(interval);
+        return () => clearInterval(interval);*/
     }, []);
 
     useEffect(() => {

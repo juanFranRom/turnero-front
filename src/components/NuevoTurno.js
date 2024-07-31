@@ -80,7 +80,6 @@ const NuevoTurno = () => {
     }
     
     const minutesToTime = (duracion) => {
-        console.log(duracion);
         let hours = Math.floor(duracion/60);
         if(hours <= 9){
             hours = "0"+hours
@@ -129,11 +128,12 @@ const NuevoTurno = () => {
             turnoParaEnviar.paciente_id = turno.paciente ? turno.paciente.id : null
             turnoParaEnviar.cobertura_id = turno.cobertura ? turno.cobertura.id : null
             turnoParaEnviar.clinica_id = turno.profesional && turno.profesional.clinicas ? turno.profesional.clinicas[0].id : turno.profesional.clinica.id ?? null
-            turnoParaEnviar.practica_id = turno.practica ? turno.practica.id : null
-            turnoParaEnviar.duracion = turno.practica ? timeToMinutes(turno.practica.duracion_moda) : null
         }
-        
+
+        turnoParaEnviar.practica_id = turno.practica ? turno.practica.id : null
+        turnoParaEnviar.duracion = turno.practica ? timeToMinutes(turno.practica.duracion_moda) : null
         turnoParaEnviar.fecha_hora = null
+
         if(turno.fecha && turno.hora)
         {
             let aux = new Date(turno.fecha.getFullYear(), turno.fecha.getMonth(), turno.fecha.getDate(), turno.hora.split(':')[0], turno.hora.split(':')[1])
@@ -169,7 +169,7 @@ const NuevoTurno = () => {
             return false
         }
 
-        if (!turno.practica_id && crear)
+        if (!turno.practica_id)
         {
             setError({
                 value: true,
@@ -406,10 +406,29 @@ const NuevoTurno = () => {
                 })
             }
         }
+        else
+        {
+            let profesionalAux
+            if(profesional)
+                profesionalAux = profesional
+            else
+                profesionalAux = profesionales.find( el => el.id === turno.profesional_id)
+            let practicaAux = profesionalAux.practicas.find( el => turno.practica_id === el.id )
+
+            setTurno({
+                ...turno,
+                profesional: profesionalAux,
+                practica: { ...practicaAux, value: `${practicaAux.nombre} (${practicaAux.duracion_moda})` },
+                practicaText: `${practicaAux.nombre} (${practicaAux.duracion_moda})`
+            })
+
+        }
         setError({
             value: false,
             mensaje: ''
         })
+        setLoading(false)
+        setAccion({ value: false, text: '', accion: null })
     }, [filtros, openTurno, profesional])
 
     useEffect(() => {
@@ -481,20 +500,15 @@ const NuevoTurno = () => {
                             <div className='c-nuevo_turno__item'>
                                 <div className='u-flex-column-center-start'>
                                     <span>Practica</span>
-                                    {
-                                        turno.id ?
-                                            <Input className={'u-1/1'} defaultValue={turno.nombrePractica} isReadOnly={true}/>
-                                        :
-                                            <div className='u-1/1 u-flex-center-center'>
-                                                <Datalist
-                                                    className={'u-1/1'}
-                                                    list={ turno.profesional.practicas.map((el) => { return ({ ...el, value: `${el.nombre} (${el.duracion_moda})` }) }) } 
-                                                    defaultOption={ { value: turno.practicaText } } 
-                                                    setter={(val) => handleDatalist(val, "practica")}
-                                                />
-                                                <IoMdClose className='u-color--red u-cursor--pointer' onClick={() => handleDatalist(null, "practica")}/>
-                                            </div>
-                                    }
+                                    <div className='u-1/1 u-flex-center-center'>
+                                        <Datalist
+                                            className={'u-1/1'}
+                                            list={ turno.profesional?.practicas.map((el) => { return ({ ...el, value: `${el.nombre} (${el.duracion_moda})` }) }) } 
+                                            defaultOption={ { value: turno.practicaText } } 
+                                            setter={(val) => handleDatalist(val, "practica")}
+                                        />
+                                        <IoMdClose className='u-color--red u-cursor--pointer' onClick={() => handleDatalist(null, "practica")}/>
+                                    </div>
                                 </div>
                             </div>
                         }

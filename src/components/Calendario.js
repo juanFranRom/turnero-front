@@ -59,6 +59,8 @@ const Calendario = () => {
                         onlyView: false,
                         estado: interval.estado,
                         idPaciente: interval.idPaciente,
+                        practica_id: interval.practica_id,
+                        profesional_id: interval.profesional_id,
                     }
                 )
             })
@@ -113,13 +115,13 @@ const Calendario = () => {
 
     useEffect(() => {
         const handleResize = () => {
-            if (calendarRef.current && dias) {
+            if (calendarRef.current && dias.dias) {
                 const calendarWidth = calendarRef.current.offsetWidth
                 const minWidthPerDay = 160 + 70 // Ancho mínimo por columna
                 const maxVisibleDays = Math.min(Math.floor(calendarWidth / minWidthPerDay), 5)
                 let aux = []
 
-                for(let dia of dias)
+                for(let dia of dias.dias)
                 {
                     if(dia.intervalos && dia.intervalos.length > 0)
                         aux.push(dia)
@@ -135,7 +137,7 @@ const Calendario = () => {
         handleResize()
         window.addEventListener('resize', handleResize)
         return () => window.removeEventListener('resize', handleResize)
-    }, [dias, calendarRef.current?.offsetWidth, openTurno])
+    }, [dias.dias, calendarRef.current?.offsetWidth, openTurno])
     
     
     return (
