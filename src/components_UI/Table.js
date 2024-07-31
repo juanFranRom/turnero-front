@@ -31,10 +31,10 @@ const Table = ({
     setContextMenu = null,
     onClick = null,
     noFiltro = false,
-    totalPages = null,
-    realPage = null,
+    totalPages = 1,
+    realPage = 0,
     changePage = null,
-    realSize = null,
+    realSize = {id: 1, value: 5},
     changeSize = null,
     filtro = null,
     setFiltro = null,
@@ -194,29 +194,26 @@ const Table = ({
     }
 
     useEffect(() => {
-        if(realPage)
-            setPagination({
-                ...pagination,
-                actual: realPage
-            })
+        setPagination({
+            ...pagination,
+            actual: realPage
+        })
     }, [realPage])
 
     useEffect(() => {
-        if(realSize)
-            setPagination({
-                ...pagination,
-                size: realSize
-            })
+        setPagination({
+            ...pagination,
+            size: realSize
+        })
     }, [realSize])
 
     useEffect(() => {
-        if(totalPages)
-            setPagination({
-                ...pagination,
-                pages: totalPages
-            })
+        setPagination({
+            ...pagination,
+            pages: totalPages
+        })
     }, [totalPages])
-
+    
     useEffect(() => {
         if(filtro === null)
         {
@@ -252,6 +249,8 @@ const Table = ({
     
             setFilteredRows(_rows)
         }
+        else
+            setFilteredRows([...rows])
     },[globalFilter, filter])
 
     useEffect(() => {
