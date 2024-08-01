@@ -71,23 +71,22 @@ const TableAux = () => {
   const [paginado, setPaginado] = useState({
     totalPages: 1,
     page: 0,
-    pageSize: 5,
-    filtro: ''
+    pageSize: 5
   })
+  const [filtro, setFiltro] = useState('')
   const { user, logOut } = useUserContext();
   const debounceTimeout = useRef(null)
   const router = useRouter();
 
   const getPacientes = async () => {
-    setLoading(true)
     const generarFiltro = ( ) => {
       let result = ''
 
-      if(paginado.filtro)
-        result += `searchValue=${paginado.filtro}&`
+      if(filtro !== '')
+        result += `searchValue=${filtro}&`
 
       result += `page=${paginado.page}&`
-      result += `pageSize=${paginado.pageSize}`
+      result += `pageSize=${paginado.pageSize}` 
 
       return result
     }
@@ -168,30 +167,14 @@ const TableAux = () => {
 
     debounceTimeout.current = setTimeout(() => {
       getPacientes();
-    }, 200);
+    }, 300);
     
     return () => {
       if (debounceTimeout.current) {
         clearTimeout(debounceTimeout.current);
       }
     }
-  }, [user, paginado.page, paginado.pageSize]);
-
-  useEffect(() => {
-    if (debounceTimeout.current) {
-      clearTimeout(debounceTimeout.current);
-    }
-
-    debounceTimeout.current = setTimeout(() => {
-      getPacientes();
-    }, 100);
-    
-    return () => {
-      if (debounceTimeout.current) {
-        clearTimeout(debounceTimeout.current);
-      }
-    }
-  }, [paginado.filtro]);
+  }, [user, paginado.page, paginado.pageSize, filtro]);
   
   return (
     <>
@@ -238,7 +221,7 @@ const TableAux = () => {
       }
       {
           data !== null ?
-            <Table columns={headers} rows={data} setContextMenu={setContextMenu} contextMenu={contextMenu} loading={loading} filtroPlaceholder={'Filtro (Nombre, Apellido, DNI)'} filtro={paginado.filtro} setFiltro={(val) => setPaginado(prev => ({ ...prev, filtro: val }))} totalPages={paginado.totalPages} realPage={paginado.page} changePage={(val) => setPaginado(prev => ({ ...prev, page: val }))} realSize={paginado.pageSize} changeSize={(val) => setPaginado(prev => ({ ...prev, pageSize: val }))}/>
+            <Table columns={headers} rows={data} setContextMenu={setContextMenu} contextMenu={contextMenu} loading={loading} filtroPlaceholder={'Filtro (Nombre, Apellido, DNI)'} filtro={ filtro } setFiltro={(val) => setFiltro( val )} totalPages={paginado.totalPages} realPage={paginado.page} changePage={(val) => setPaginado(prev => ({ ...prev, page: val }))} realSize={paginado.pageSize} changeSize={(val) => setPaginado(prev => ({ ...prev, pageSize: val }))}/>
           :
             <div className="u-1/1 u-p5">
               <Loader text="Cargando pacientes..."/>

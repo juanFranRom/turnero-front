@@ -300,7 +300,7 @@ const Table = ({
                         {
                             !noFiltro &&   
                             <div className='u-flex-end-center u-flex-start-center@tablet u-1/1 u-cursor'>
-                                <Input className={'u-3/12 u-4/12@desktop u-7/12@tablet u-8/12@mobile'} defaultValue={filtro ? filtro : globalFilter} handleChange={(val) => {setGlobalFilter(val); if(setFiltro) setFiltro(val)}} placeholder={filtroPlaceholder}/>
+                                <Input className={'u-3/12 u-4/12@desktop u-7/12@tablet u-8/12@mobile'} defaultValue={filtro ? filtro : globalFilter} handleChange={(val) => {if(setFiltro) {setFiltro(val)} else {setGlobalFilter(val)}}} placeholder={filtroPlaceholder}/>
                                 {
                                     typeof exportData === 'boolean' && exportData &&
                                     <PiMicrosoftExcelLogoFill className='u-m2--left u-color--green u-text--2' onClick={handleExport}/>
