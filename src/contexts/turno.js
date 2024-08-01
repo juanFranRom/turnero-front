@@ -104,7 +104,8 @@ export const TurnoContextProvider = ({ children }) => {
     )
     const [turnos, setTurnos] = useState({
         fecha: date,
-        turnos: []
+        turnos: [],
+        profesional: null
     })
     const [reprogramando, setReprogramando] = useState(null)
     const [openCalendar, setOpenCalendar] = useState(true)
@@ -182,6 +183,7 @@ export const TurnoContextProvider = ({ children }) => {
             checkFetch(json, logOut)
             if (json.status === "SUCCESS") 
                 setTurnos((prev) => ({
+                    ...prev,
                     fecha: prev.date ?? date,
                     turnos: [...json.data[0].turnos.filter((el) => isSameDay(new Date(el.fecha), date))].sort(compararTurnos)
                 }))
@@ -269,28 +271,49 @@ export const TurnoContextProvider = ({ children }) => {
 
     useEffect(() => {
         if(date)
+        {
             setTurnos((prev) => ({
+                ...prev,
                 fecha: date,
                 turnos: prev.turnos
             }))
+        }
     }, [date])
 
     useEffect(() => {
         if(filtros.profesional)
+        {
             setDias((prev) => ({
                 ...prev,
                 profesional: filtros.profesional
             }))
+            setTurnos((prev) => ({
+                ...prev,
+                profesional: filtros.profesional
+            }))
+        }
         else if(profesional)
+        {
             setDias((prev) => ({
                 ...prev,
                 profesional: profesional
             }))
+            setTurnos((prev) => ({
+                ...prev,
+                profesional: profesional
+            }))
+        }
         else
+        {
             setDias((prev) => ({
                 ...prev,
                 profesional: null
             }))
+            setTurnos((prev) => ({
+                ...prev,
+                profesional: null
+            }))
+        }
     }, [filtros, profesional])
 
     useEffect(() => {

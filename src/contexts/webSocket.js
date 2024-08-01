@@ -365,6 +365,8 @@ export const WebSocketProvider = ({ children }) => {
         // Update setTurnos
         setTurnos(prev => {
             if (!prev) return prev;
+            if (!prev.profesional || (prev.profesional && prev.profesional.id !== turno.profesional_id)) return prev;
+            
             let aux = {...prev}
             // Filtrar turnos previos
             aux.turnos = aux.turnos.filter(t => t.id !== turno.id);
