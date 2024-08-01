@@ -241,81 +241,87 @@ export const WebSocketProvider = ({ children }) => {
                     let turnoOld = dia.intervalos.find(intervalo => (intervalo.tipo === "turno" || intervalo.tipo === "sobreturno") && intervalo.id === turno.id);
                     // caso el turno se movio dentro del mismo dia, se cancelo o se creo uno nuevo
                     if (inTurnoRange) {
-                        let intervalos = dia.intervalos.filter(intervalo => {
-                            if ((intervalo.tipo === "turno" || intervalo.tipo === "sobreturno") && intervalo.id === turno.id) return false;
-    
-                            let intervaloStart = new Date(intervalo.start);
-                            let intervaloEnd = new Date(intervalo.end);
-    
-                            return (
-                                !(
-                                    (intervalo.tipo === "disponibilidad" &&
-                                        (intervaloStart < turnoData.end && intervaloEnd > turnoData.start)) ||
-                                    (intervalo.tipo === "disponibilidad" &&
-                                        (intervaloStart == turnoData.start && intervaloEnd == turnoData.end))
-                                )
-                            );
-                        });
+                        let intervalos = dia.intervalos.filter(intervalo => !(intervalo.tipo === "disponibilidad" || ((intervalo.tipo === "turno" || intervalo.tipo === "sobreturno") && intervalo.id === turno.id)));
                         if (operation === 'create' || (operation === 'update' && turno.estado !== 'Cancelado')) {
                             intervalos.push(turnoData);
                         }
-    
-                        if ((turno.estado === 'Cancelado' && turnoOld )||( turnoOld && turnoOld.text !== turnoData.text) ) {
-                            let diasNombres = [ 'lunes','martes','miércoles','jueves','viernes','sábado','domingo' ]
-                            let diaNombre = diasNombres[diaDate.getDay() - 1]
-                            horarios.forEach(horario => {
-                                if(diaNombre.toLowerCase() !== horario.dia.toLowerCase())
-                                    return
-    
-                                if(turnoOld.start instanceof Date){
-                                    turnoOld.start = turnoOld.start.toISOString();
+                        
+                        // Asegurarse de que los intervalos estén ordenados
+                        intervalos.sort((a, b) => new Date(a.start) - new Date(b.start));
+
+                        let slotDuration = practica * 60000; // Convertir a milisegundos
+                        let diasNombres = [ 'lunes','martes','miércoles','jueves','viernes','sábado','domingo' ]
+                        let diaNombre = diasNombres[diaDate.getDay() - 1]
+                        // Calculate free slots
+                        let freeSlots = [];
+                        horarios.forEach(horario => {
+                            if(diaNombre.toLowerCase() !== horario.dia.toLowerCase())
+                                return
+                            let start = new Date(date);
+                            start.setHours(...horario.hora_inicio.split(':'), 0);
+                            let end = new Date(date);
+                            end.setHours(...horario.hora_fin.split(':'), 0);
+
+                            let currentStart = start;
+                            if(intervalos[0] && intervalos[0].end > currentStart && intervalos[0].start < currentStart){
+                                currentStart = intervalos[0].end;
+                            }
+                            intervalos.forEach(slot => {
+                                if( typeof slot.start === "string"){
+                                    slot.start = new Date(slot.start);
                                 }
-                                if(turnoOld.end instanceof Date){
-                                    turnoOld.end = turnoOld.end.toISOString();
+                                if( typeof slot.end === "string"){
+                                    slot.end = new Date(slot.end);
                                 }
-                                let horarioInicio = new Date(`${turnoOld.start.split('T')[0]}T${horario.hora_inicio}`);
-                                let intervaloFin = new Date(turnoOld.end);
-    
-                                // Crear intervalos durante el turno viejo
-                                while (horarioInicio < intervaloFin) {
-                                    let disponibilidadFin = new Date(horarioInicio.getTime() + practica * 60000);
-                                    if (disponibilidadFin > intervaloFin) {
-                                        disponibilidadFin = new Date(intervaloFin);
+                                while (currentStart < slot.start) {
+                                    let currentEnd = new Date(currentStart.getTime() + slotDuration);
+                                    if (currentEnd <= slot.start) {
+                                        let newDisp = {
+                                            tipo: "disponibilidad",
+                                            duracion: practica,
+                                            start: currentStart,
+                                            end: currentEnd,
+                                            text: `${formatTime(currentStart)} - ${formatTime(currentEnd)}`,
+                                            hora: formatTime(currentStart),
+                                        }
+                                        freeSlots.push(newDisp);
                                     }
-                                    intervalos.push({
+                                    currentStart = currentEnd;
+                                }
+                                if (new Date(slot.end) > currentStart) {
+                                    currentStart = new Date(slot.end);
+                                }
+                            });
+
+                            while (currentStart < end) {
+                                let currentEnd = new Date(currentStart.getTime() + slotDuration);
+                                if (currentEnd <= end) { 
+                                    let newDisp = {
                                         tipo: "disponibilidad",
                                         duracion: practica,
-                                        start: horarioInicio,
-                                        end: disponibilidadFin,
-                                        text: `${formatTime(horarioInicio)} - ${formatTime(disponibilidadFin)}`,
-                                        hora: formatTime(horarioInicio),
-                                    });
-                                    horarioInicio = new Date(disponibilidadFin);
-                                } 
-                            });
-                            // Asegurarse de que los intervalos estén ordenados
-                            intervalos.sort((a, b) => new Date(a.start) - new Date(b.start));
-                            // Eliminar intervalos duplicados o solapados
-                            let result = [];
-                            for (let i = 0; i < intervalos.length; i++) {
-                                if (i === 0 || new Date(intervalos[i].start) >= new Date(result[result.length - 1].end)) {
-                                    result.push(intervalos[i]);
-                                } else {
-                                    result[result.length - 1].end = new Date(Math.max(new Date(result[result.length - 1].end), new Date(intervalos[i].end)));
-                                    result[result.length - 1].text = `${formatTime(result[result.length - 1].start)} - ${formatTime(result[result.length - 1].end)}`;
+                                        start: currentStart,
+                                        end: currentEnd,
+                                        text: `${formatTime(currentStart)} - ${formatTime(currentEnd)}`,
+                                        hora: formatTime(currentStart),
+                                    }
+                                    freeSlots.push(newDisp);
                                 }
+                                currentStart = currentEnd;
                             }
-                            intervalos = result;
-                        }
-    
-                        intervalos.sort((a, b) => new Date(a.start) - new Date(b.start));
+                        });
+                        intervalos = intervalos.concat(freeSlots)
+                        // Sort by start time
+                        intervalos.sort((a, b) => a.start - b.start);
                         return { ...dia, intervalos };
                     } else {
                         //caso el turno se cambio de dia entonces si esta en el dia filtrado lo borramos
                         if (turnoOld) {
                             dia.intervalos = dia.intervalos.filter(intervalo => !((intervalo.tipo === "turno" || intervalo.tipo === "sobreturno") && intervalo.id == turno.id));
-    
+                            let diasNombres = [ 'lunes','martes','miércoles','jueves','viernes','sábado','domingo' ]
+                            let diaNombre = diasNombres[diaDate.getDay() - 1]
                             horarios.forEach(horario => {
+                                if(diaNombre.toLowerCase() !== horario.dia.toLowerCase())
+                                    return
                                 if(turnoOld.start instanceof Date){
                                     turnoOld.start = turnoOld.start.toISOString();
                                 }
