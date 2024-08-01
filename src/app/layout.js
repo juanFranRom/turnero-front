@@ -24,7 +24,7 @@ export default function RootLayout({ children }) {
         <meta name="description" content={metadata.description}/>
         <link rel="icon" href={metadata.icon}/>
       </head>
-      <body className={openSans.className}>
+      <body translate='no' className={openSans.className}>
         <UserContextProvider>
           {children}
         </UserContextProvider>
