@@ -169,7 +169,7 @@ const TableAux = () => {
 
     debounceTimeout.current = setTimeout(() => {
       getPacientes();
-    }, 300);
+    }, 100);
     
     return () => {
       if (debounceTimeout.current) {
@@ -178,7 +178,6 @@ const TableAux = () => {
   };
   }, [user, paginado.page, paginado.pageSize, paginado.filtro]);
   
-  console.log(paginado);
   return (
     <>
       {
