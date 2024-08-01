@@ -161,7 +161,6 @@ const TableAux = () => {
     }
   }
 
-  
   useEffect(() => {
     if (debounceTimeout.current) {
       clearTimeout(debounceTimeout.current);
@@ -173,9 +172,9 @@ const TableAux = () => {
     
     return () => {
       if (debounceTimeout.current) {
-          clearTimeout(debounceTimeout.current);
+        clearTimeout(debounceTimeout.current);
       }
-  };
+    }
   }, [user, paginado.page, paginado.pageSize, paginado.filtro]);
   
   return (
