@@ -31,10 +31,10 @@ const Table = ({
     setContextMenu = null,
     onClick = null,
     noFiltro = false,
-    totalPages = 1,
-    realPage = 0,
+    totalPages = null,
+    realPage = null,
     changePage = null,
-    realSize = {id: 1, value: 5},
+    realSize = null,
     changeSize = null,
     filtro = null,
     setFiltro = null,
@@ -231,7 +231,6 @@ const Table = ({
     
             if(globalFilter && globalFilter !== '')
             {
-                console.log('entro 2');
                 _rows = _rows.filter((val) => {
                     let add = false
                     for(const column of columns)

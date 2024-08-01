@@ -168,6 +168,22 @@ const TableAux = () => {
 
     debounceTimeout.current = setTimeout(() => {
       getPacientes();
+    }, 200);
+    
+    return () => {
+      if (debounceTimeout.current) {
+        clearTimeout(debounceTimeout.current);
+      }
+    }
+  }, [user, paginado.page, paginado.pageSize]);
+
+  useEffect(() => {
+    if (debounceTimeout.current) {
+      clearTimeout(debounceTimeout.current);
+    }
+
+    debounceTimeout.current = setTimeout(() => {
+      getPacientes();
     }, 100);
     
     return () => {
@@ -175,7 +191,7 @@ const TableAux = () => {
         clearTimeout(debounceTimeout.current);
       }
     }
-  }, [user, paginado.page, paginado.pageSize, paginado.filtro]);
+  }, [paginado.filtro]);
   
   return (
     <>
