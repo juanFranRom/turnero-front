@@ -8,7 +8,8 @@ const Tooltip = ({ children, text, className }) => {
     const childRef = useRef(null);
 
     const showTooltip = () => {
-        if (childRef.current && tooltipRef.current) {
+        if (childRef.current && tooltipRef.current) 
+        {
             const childRect = childRef.current.getBoundingClientRect();
             const tooltipRect = tooltipRef.current.getBoundingClientRect();
 
@@ -19,28 +20,25 @@ const Tooltip = ({ children, text, className }) => {
             let top = childRect.top - tooltipHeight;
             let direction = 'up';
 
-            if (top < 0) {
+            if (top < 0) 
+            {
                 top = childRect.top - childHeight + 10;
                 direction = 'down';
             }
 
             let left = childRect.left + (childWidth / 2) - (tooltipRect.width / 2);
 
-            // Adjust if tooltip overflows the viewport to the left
             if(openCalendar)
             {
                 if (left - 300 < 0) {
-                    left = 300; // Padding from the left edge
+                    left = 300; 
                 }
             }
-            else if (left < 0) {
-                left = 10; // Padding from the left edge
-            }
+            else if (left < 0)
+                left = 10; 
 
-            // Adjust if tooltip overflows the viewport to the right
-            if (left + tooltipRect.width > window.innerWidth) {
-                left = window.innerWidth - tooltipRect.width - 10; // Padding from the right edge
-            }
+            if (left + tooltipRect.width > window.innerWidth)
+                left = window.innerWidth - tooltipRect.width - 10;
 
             setPosition({
                 top: top + window.scrollY,

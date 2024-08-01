@@ -64,46 +64,110 @@ export const WebSocketProvider = ({ children }) => {
             const bloqueoEnd = new Date(bloqueo.end);
             const daysArray = getDaysArray(bloqueoStart, bloqueoEnd);
 
-            return prev.dias.map(dia => {
-                let diaDate = new Date(dia.fecha);
-                let diaString = diaDate.toDateString();
-                let inBloqueoRange = daysArray.some(day => day.toDateString() === diaString);
-
-                if (inBloqueoRange) {
-                    let bloqueoOld = dia.intervalos.find(intervalo => intervalo.tipo === "bloqueo" && intervalo.id == bloqueo.id);
-                    let intervalos = dia.intervalos.filter(intervalo => {
-                        if (intervalo.id === bloqueo.id) return false;
-
-                        let intervaloStart = new Date(intervalo.start);
-                        let intervaloEnd = new Date(intervalo.end);
-
-                        return (
-                            !(
-                                (intervalo.tipo === "disponibilidad" &&
-                                    (intervaloStart < new Date(bloqueo.end) && intervaloEnd > new Date(bloqueo.start))) ||
-                                (intervalo.tipo === "disponibilidad" &&
-                                    (intervaloStart == new Date(bloqueo.start).toISOString() && intervaloEnd == new Date(bloqueo.end).toISOString()))
-                            )
-                        );
-                    });
-                    if (operation === "delete" && bloqueoOld) {
-                        horarios.forEach(horario => {
-                            if (horario.dia === diaDate.toLocaleDateString('es-ES', { weekday: 'long' })) {
-                                let horarioInicio = new Date(`${diaString} ${horario.hora_inicio}`);
-                                let horarioFin = new Date(`${diaString} ${horario.hora_fin}`);
-                                let bloqueoInicio = new Date(bloqueoOld.start);
-                                let bloqueoFin = new Date(bloqueoOld.end);
-                        
-                                // Crear intervalos de disponibilidad según el día y la hora del bloqueo
-                                if (bloqueoInicio.toDateString() === diaDate.toDateString() && bloqueoFin.toDateString() === diaDate.toDateString()) {
-                                    // El bloqueo empieza y termina el mismo día
-                                    if (bloqueoInicio <= horarioFin && bloqueoFin >= horarioInicio) {
-                                        if (bloqueoInicio > horarioInicio) {
-                                            horarioInicio = bloqueoInicio;
+            return {
+                ...prev,
+                dias: prev.dias.map(dia => {
+                    let diaDate = new Date(dia.fecha);
+                    let diaString = diaDate.toDateString();
+                    let inBloqueoRange = daysArray.some(day => day.toDateString() === diaString);
+    
+                    if (inBloqueoRange) {
+                        let bloqueoOld = dia.intervalos.find(intervalo => intervalo.tipo === "bloqueo" && intervalo.id == bloqueo.id);
+                        let intervalos = dia.intervalos.filter(intervalo => {
+                            if (intervalo.id === bloqueo.id) return false;
+    
+                            let intervaloStart = new Date(intervalo.start);
+                            let intervaloEnd = new Date(intervalo.end);
+    
+                            return (
+                                !(
+                                    (intervalo.tipo === "disponibilidad" &&
+                                        (intervaloStart < new Date(bloqueo.end) && intervaloEnd > new Date(bloqueo.start))) ||
+                                    (intervalo.tipo === "disponibilidad" &&
+                                        (intervaloStart == new Date(bloqueo.start).toISOString() && intervaloEnd == new Date(bloqueo.end).toISOString()))
+                                )
+                            );
+                        });
+                        if (operation === "delete" && bloqueoOld) {
+                            horarios.forEach(horario => {
+                                if (horario.dia === diaDate.toLocaleDateString('es-ES', { weekday: 'long' })) {
+                                    let horarioInicio = new Date(`${diaString} ${horario.hora_inicio}`);
+                                    let horarioFin = new Date(`${diaString} ${horario.hora_fin}`);
+                                    let bloqueoInicio = new Date(bloqueoOld.start);
+                                    let bloqueoFin = new Date(bloqueoOld.end);
+                            
+                                    // Crear intervalos de disponibilidad según el día y la hora del bloqueo
+                                    if (bloqueoInicio.toDateString() === diaDate.toDateString() && bloqueoFin.toDateString() === diaDate.toDateString()) {
+                                        // El bloqueo empieza y termina el mismo día
+                                        if (bloqueoInicio <= horarioFin && bloqueoFin >= horarioInicio) {
+                                            if (bloqueoInicio > horarioInicio) {
+                                                horarioInicio = bloqueoInicio;
+                                            }
+                                            if (bloqueoFin < horarioFin) {
+                                                horarioFin = bloqueoFin;
+                                            }
+                                            while (horarioInicio < horarioFin) {
+                                                let disponibilidadFin = new Date(horarioInicio.getTime() + practica * 60000);
+                                                if (disponibilidadFin > horarioFin) {
+                                                    disponibilidadFin = new Date(horarioFin);
+                                                }
+                                                intervalos.push({
+                                                    tipo: "disponibilidad",
+                                                    duracion: practica,
+                                                    start: horarioInicio,
+                                                    end: disponibilidadFin,
+                                                    text: `${formatTime(horarioInicio)} - ${formatTime(disponibilidadFin)}`,
+                                                    hora: formatTime(horarioInicio),
+                                                });
+                                                horarioInicio = new Date(disponibilidadFin);
+                                            }
                                         }
-                                        if (bloqueoFin < horarioFin) {
-                                            horarioFin = bloqueoFin;
+                                    } else if (bloqueoInicio.toDateString() === diaDate.toDateString()) {
+                                        // El bloqueo empieza en este día pero termina después
+                                        if (bloqueoInicio <= horarioFin) {
+                                            if (bloqueoInicio > horarioInicio) {
+                                                horarioInicio = bloqueoInicio;
+                                            }
+                                            while (horarioInicio < horarioFin) {
+                                                let disponibilidadFin = new Date(horarioInicio.getTime() + practica * 60000);
+                                                if (disponibilidadFin > horarioFin) {
+                                                    disponibilidadFin = new Date(horarioFin);
+                                                }
+                                                intervalos.push({
+                                                    tipo: "disponibilidad",
+                                                    duracion: practica,
+                                                    start: horarioInicio,
+                                                    end: disponibilidadFin,
+                                                    text: `${formatTime(horarioInicio)} - ${formatTime(disponibilidadFin)}`,
+                                                    hora: formatTime(horarioInicio),
+                                                });
+                                                horarioInicio = new Date(disponibilidadFin);
+                                            }
                                         }
+                                    } else if (bloqueoFin.toDateString() === diaDate.toDateString()) {
+                                        // El bloqueo termina en este día pero empieza antes
+                                        if (bloqueoFin >= horarioInicio) {
+                                            if (bloqueoFin < horarioFin) {
+                                                horarioFin = bloqueoFin;
+                                            }
+                                            while (horarioInicio < horarioFin) {
+                                                let disponibilidadFin = new Date(horarioInicio.getTime() + practica * 60000);
+                                                if (disponibilidadFin > horarioFin) {
+                                                    disponibilidadFin = new Date(horarioFin);
+                                                }
+                                                intervalos.push({
+                                                    tipo: "disponibilidad",
+                                                    duracion: practica,
+                                                    start: horarioInicio,
+                                                    end: disponibilidadFin,
+                                                    text: `${formatTime(horarioInicio)} - ${formatTime(disponibilidadFin)}`,
+                                                    hora: formatTime(horarioInicio),
+                                                });
+                                                horarioInicio = new Date(disponibilidadFin);
+                                            }
+                                        }
+                                    } else {
+                                        // El bloqueo ni empieza ni termina en este día, crear disponibilidad para todo el día
                                         while (horarioInicio < horarioFin) {
                                             let disponibilidadFin = new Date(horarioInicio.getTime() + practica * 60000);
                                             if (disponibilidadFin > horarioFin) {
@@ -119,84 +183,23 @@ export const WebSocketProvider = ({ children }) => {
                                             });
                                             horarioInicio = new Date(disponibilidadFin);
                                         }
-                                    }
-                                } else if (bloqueoInicio.toDateString() === diaDate.toDateString()) {
-                                    // El bloqueo empieza en este día pero termina después
-                                    if (bloqueoInicio <= horarioFin) {
-                                        if (bloqueoInicio > horarioInicio) {
-                                            horarioInicio = bloqueoInicio;
-                                        }
-                                        while (horarioInicio < horarioFin) {
-                                            let disponibilidadFin = new Date(horarioInicio.getTime() + practica * 60000);
-                                            if (disponibilidadFin > horarioFin) {
-                                                disponibilidadFin = new Date(horarioFin);
-                                            }
-                                            intervalos.push({
-                                                tipo: "disponibilidad",
-                                                duracion: practica,
-                                                start: horarioInicio,
-                                                end: disponibilidadFin,
-                                                text: `${formatTime(horarioInicio)} - ${formatTime(disponibilidadFin)}`,
-                                                hora: formatTime(horarioInicio),
-                                            });
-                                            horarioInicio = new Date(disponibilidadFin);
-                                        }
-                                    }
-                                } else if (bloqueoFin.toDateString() === diaDate.toDateString()) {
-                                    // El bloqueo termina en este día pero empieza antes
-                                    if (bloqueoFin >= horarioInicio) {
-                                        if (bloqueoFin < horarioFin) {
-                                            horarioFin = bloqueoFin;
-                                        }
-                                        while (horarioInicio < horarioFin) {
-                                            let disponibilidadFin = new Date(horarioInicio.getTime() + practica * 60000);
-                                            if (disponibilidadFin > horarioFin) {
-                                                disponibilidadFin = new Date(horarioFin);
-                                            }
-                                            intervalos.push({
-                                                tipo: "disponibilidad",
-                                                duracion: practica,
-                                                start: horarioInicio,
-                                                end: disponibilidadFin,
-                                                text: `${formatTime(horarioInicio)} - ${formatTime(disponibilidadFin)}`,
-                                                hora: formatTime(horarioInicio),
-                                            });
-                                            horarioInicio = new Date(disponibilidadFin);
-                                        }
-                                    }
-                                } else {
-                                    // El bloqueo ni empieza ni termina en este día, crear disponibilidad para todo el día
-                                    while (horarioInicio < horarioFin) {
-                                        let disponibilidadFin = new Date(horarioInicio.getTime() + practica * 60000);
-                                        if (disponibilidadFin > horarioFin) {
-                                            disponibilidadFin = new Date(horarioFin);
-                                        }
-                                        intervalos.push({
-                                            tipo: "disponibilidad",
-                                            duracion: practica,
-                                            start: horarioInicio,
-                                            end: disponibilidadFin,
-                                            text: `${formatTime(horarioInicio)} - ${formatTime(disponibilidadFin)}`,
-                                            hora: formatTime(horarioInicio),
-                                        });
-                                        horarioInicio = new Date(disponibilidadFin);
                                     }
                                 }
+                            });
+                            
+                            
+                        } else {
+                            if (operation === 'create' || operation === 'update') {
+                                intervalos.push(bloqueo);
                             }
-                        });
-                        
-                        
-                    } else {
-                        if (operation === 'create' || operation === 'update') {
-                            intervalos.push(bloqueo);
                         }
+                        intervalos.sort((a, b) => new Date(a.start) - new Date(b.start));
+    
+                        return { ...dia, intervalos };
                     }
-                    intervalos.sort((a, b) => new Date(a.start) - new Date(b.start));
-
-                    return { ...dia, intervalos };
-                }
-                return dia;
-            });
+                    return dia;
+                })
+            }
         });
     }
 
