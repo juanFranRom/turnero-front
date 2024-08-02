@@ -48,7 +48,7 @@ const Turno = ({ data = null, onlyView = false }) => {
 
         return result.trim()
     }
-
+    
     const haceTanto = (date) => {
         const now = new Date();
         const past = new Date(date);
@@ -133,6 +133,7 @@ const Turno = ({ data = null, onlyView = false }) => {
     }
 
     const handleModificarTurno = () => {
+        console.log(dataTurno);
         let aux = {
             fecha: date,
             hora: dataTurno.horario,
@@ -143,9 +144,10 @@ const Turno = ({ data = null, onlyView = false }) => {
             nota: dataTurno.nota,
             tipo: dataTurno.tipo,
             estado: dataTurno.estado,
-            onlyView: true,
             profesional_id: dataTurno.profesional_id,
             practica_id: dataTurno.practica_id,
+            idPaciente: dataTurno.idPaciente,
+            onlyView: true,
         }
         setTurno((prev) => {
             return({
@@ -155,6 +157,7 @@ const Turno = ({ data = null, onlyView = false }) => {
         })
         setOpenTurno(true)
     }
+    
 
     const generateHistorial = () => {
         return(
@@ -243,7 +246,7 @@ const Turno = ({ data = null, onlyView = false }) => {
     useEffect(() => {
         setDataTurno(data)
     }, [data])
-
+    
     return (
         <>
             {
