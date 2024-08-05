@@ -212,7 +212,7 @@ export const WebSocketProvider = ({ children }) => {
             text: `${turno.horario} - ${formatTime(new Date(new Date(turno.fecha).getTime() + turno.duracion * 60000))}`,
             estado: turno.estado
         };
-
+        
         // Función para obtener el rango de días entre dos fechas
         function getDaysArray(start, end) {
             let arr = [];
@@ -257,9 +257,9 @@ export const WebSocketProvider = ({ children }) => {
                         horarios.forEach(horario => {
                             if(diaNombre.toLowerCase() !== horario.dia.toLowerCase())
                                 return
-                            let start = new Date(date);
+                            let start = new Date(dia.fecha);
                             start.setHours(...horario.hora_inicio.split(':'), 0);
-                            let end = new Date(date);
+                            let end = new Date(dia.fecha);
                             end.setHours(...horario.hora_fin.split(':'), 0);
 
                             let currentStart = start;
