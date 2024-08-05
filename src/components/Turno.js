@@ -195,7 +195,7 @@ const Turno = ({ data = null, onlyView = false }) => {
     }
 
     const mensajeWhatsApp = () => {
-        return `Hola, ${primeraLetraMayus(dataTurno.nombre)}! Recuerda que el ${fechaFormateada} ${dataTurno.horario} hs tienes un turno con ${primeraLetraMayus(dataTurno.doctor)}.%0A%0AAdjunto los detalles del turno:%0A%0APráctica: ${primeraLetraMayus(dataTurno.practica)}%0ADirección: - 377. Juan Martín de Pueyrredón - Juan W. Gez - San Luis.%0A%0A¡Muchas gracias!`;
+        return `Hola, ${primeraLetraMayus(dataTurno.nombre)}! Recuerda que el ${fechaFormateada} ${dataTurno.horario} hs tienes un turno con ${primeraLetraMayus(dataTurno.doctor)}.%0A%0AAdjunto los detalles del turno:%0A%0APráctica: ${primeraLetraMayus(dataTurno.practica)}%0ADirección: Juan W. Gez 377. - Juan Martín de Pueyrredón - San Luis.%0A%0A¡Muchas gracias!`;
     }
 
     useEffect(() => {
