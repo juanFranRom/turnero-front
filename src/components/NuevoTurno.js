@@ -114,9 +114,14 @@ const NuevoTurno = () => {
             if (json.status === "SUCCESS") {
                 if(json.data[ruta].length && json.data[ruta].length > 0)
                     setter(json.data)
+                else
+                    setter({pacientes: []})
             } 
+            else
+                setter({pacientes: []})
         } catch (error) {
             console.log(error)
+            setter({pacientes: []})
         }
     }
 
