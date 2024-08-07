@@ -201,7 +201,6 @@ const NuevoTurno = () => {
             try {
                 setLoading(true)
                 let turnoListo = turnoParaEnviar(turno)
-                debugger;
                 if(!validar(turnoListo))
                 {
                     setLoading(false)
