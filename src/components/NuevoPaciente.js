@@ -96,7 +96,6 @@ const NuevoPaciente = ({ id = null, toClose = false }) => {
         return true
     }
 
-    console.log(paciente);
     const crear = async (object) => {
         setAccion({
             text: 'Creando paciente...',
@@ -126,8 +125,8 @@ const NuevoPaciente = ({ id = null, toClose = false }) => {
             if(objectToSend.genero)
                 objectToSend.genero = object.genero.value ? object.genero.value : object.genero
 
-            if(objectToSend.obraSocial && objectToSend.obraSocial.length > 0)
-                objectToSend.coberturas.push({ nombre: objectToSend.obraSocial, numero: objectToSend.obraSocialNum })
+            if(objectToSend.obraSocial && objectToSend.obraSocial !== '')
+                objectToSend.coberturas.push({ nombre: objectToSend.obraSocial, numero: objectToSend.obraSocialNum ?? '' })
             
             if(objectToSend.telefonos.length > 0 && objectToSend.telefonos[0] !== '')
                 objectToSend.contactos = objectToSend.contactos.concat(objectToSend.telefonos.map(el => { return({ tipo: 'telefono', valor: el }) }))
@@ -175,6 +174,8 @@ const NuevoPaciente = ({ id = null, toClose = false }) => {
         })
     }
 
+    console.log(paciente);
+    
     const editar = async (object) => {
         setAccion({
             text: 'Editando paciente...',
@@ -202,8 +203,9 @@ const NuevoPaciente = ({ id = null, toClose = false }) => {
                 coberturas: [], 
             }
 
-            if(objectToSend.obraSocial && objectToSend.obraSocial.length > 0)
-                objectToSend.coberturas.push({ nombre: objectToSend.obraSocial, numero: objectToSend.obraSocialNum })
+            if(objectToSend.obraSocial && objectToSend.obraSocial !== '')
+                objectToSend.coberturas.push({ nombre: objectToSend.obraSocial, numero: objectToSend.obraSocialNum ?? '' })
+
             objectToSend.contactos = objectToSend.contactos.concat(objectToSend.telefonos.map(el => { return({ tipo: 'telefono', valor: el }) }))
             objectToSend.contactos = objectToSend.contactos.concat(objectToSend.emails.map(el => { return({ tipo: 'email', valor: el }) }))
 
@@ -439,7 +441,7 @@ const NuevoPaciente = ({ id = null, toClose = false }) => {
                     :
                         !loading?
                             <div className='c-nuevo_paciente__item c-nuevo_paciente__item--right u-m4--top'>
-                                <Button text={ id ? 'Editar Paciente' : 'Crear Paciente'} clickHandler={id ? () => editar(paciente) : () => crear(paciente)}/>
+                                <Button text={ id || paciente.id ? 'Editar Paciente' : 'Crear Paciente'} clickHandler={ id || paciente.id ? () => editar(paciente) : () => crear(paciente)}/>
                             </div>
                         :
                             <></>

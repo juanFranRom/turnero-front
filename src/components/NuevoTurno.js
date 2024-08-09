@@ -407,7 +407,8 @@ const NuevoTurno = () => {
                     coberturaText: '',
                     cobertura: null,
                     fecha: null,
-                    hora: null
+                    hora: null,
+                    nota:  '',
                 })
             }
         }
