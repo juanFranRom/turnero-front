@@ -494,36 +494,50 @@ export const WebSocketProvider = ({ children }) => {
     }
 
     useEffect(() => {
-        if (user && user['wsToken']) {
-            const newSocket = new WebSocket(`${process.env.WS_APP_BASE_URL}?token=${user['wsToken']}`);
-
-            newSocket.onopen = () => {
-                console.log('WebSocket connected');
-            };
-
-            newSocket.onmessage = async (event) => {
-                const { codigo, data } = JSON.parse(event.data); //por ahora el codigo es turno sino es el modulo que afecta ahr
-
-                try {
-                    if (data.modelo === "turno")
-                        await processTurno(data);
-                    if (data.modelo === "bloqueo")
-                        await processBloqueo(data);
-                } catch (error) {
-                    console.error('Error fetching turno:', error);
-                }
-            };
-
-            newSocket.onclose = () => {
-                console.log('WebSocket disconnected');
-            };
-
-            setSocket(newSocket);
-
-            return () => {
+        let newSocket;
+    
+        const connectWebSocket = () => {
+            if (user && user['wsToken']) {
+                const newSocket = new WebSocket(`${process.env.WS_APP_BASE_URL}?token=${user['wsToken']}`);
+    
+                newSocket.onopen = () => {
+                    console.log('WebSocket connected');
+                };
+    
+                newSocket.onmessage = async (event) => {
+                    const { codigo, data } = JSON.parse(event.data); //por ahora el codigo es turno sino es el modulo que afecta ahr
+    
+                    try {
+                        if (data.modelo === "turno")
+                            await processTurno(data);
+                        if (data.modelo === "bloqueo")
+                            await processBloqueo(data);
+                    } catch (error) {
+                        console.error('Error fetching turno:', error);
+                    }
+                };
+    
+                newSocket.onclose = () => {
+                    console.log('WebSocket disconnected. Attempting to reconnect...');
+                    setTimeout(connectWebSocket, 5000); // Intentar reconectar después de 5 segundos
+                };
+    
+                newSocket.onerror = (error) => {
+                    console.error('WebSocket error:', error);
+                    newSocket.close(); // Cierra el WebSocket en caso de error, lo que desencadenará el onclose
+                };
+    
+                setSocket(newSocket);
+            }
+        };
+    
+        connectWebSocket();
+    
+        return () => {
+            if (newSocket) {
                 newSocket.close();
-            };
-        }
+            }
+        };
     }, [user]);
 
     const closeWebSocket = () => {
