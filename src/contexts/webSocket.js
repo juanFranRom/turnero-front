@@ -230,7 +230,7 @@ export const WebSocketProvider = ({ children }) => {
         
         setDias(prev => {
             if (!prev) return prev;
-            if (!prev.profesional || (prev.profesional && prev.profesional.id !== turno.profesional_id)) return prev;
+            if (prev.profesional && prev.profesional.id !== turno.profesional_id) return prev;
             return {
                 ...prev,
                 dias: prev.dias.map(dia => {
@@ -371,7 +371,7 @@ export const WebSocketProvider = ({ children }) => {
         // Update setTurnos
         setTurnos(prev => {
             if (!prev) return prev;
-            if (!prev.profesional || (prev.profesional && prev.profesional.id !== turno.profesional_id)) return prev;
+            if (prev.profesional && prev.profesional.id !== turno.profesional_id) return prev;
             
             let aux = {...prev}
             // Filtrar turnos previos
