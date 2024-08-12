@@ -1,7 +1,7 @@
 'use client'
 // React
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 
 // context
 import { usePacienteContext } from '@/contexts/paciente'
@@ -10,13 +10,16 @@ import { useUserContext } from '@/contexts/user'
 // Icons
 import { IoMdClose } from "react-icons/io"
 
+// Utils
+import { checkFetch } from '@/utils/checkFetch'
+
 // components
 import Button from '@/components_UI/Button'
 import Input from '@/components_UI/Input'
 import Select from '@/components_UI/Select'
 import Loader from '@/components_UI/Loader'
 import Turno from './Turno'
-import { checkFetch } from '@/utils/checkFetch'
+import { useTurnoContext } from '@/contexts/turno'
 
 
 const NuevoPaciente = ({ id = null, toClose = false }) => {
@@ -41,7 +44,9 @@ const NuevoPaciente = ({ id = null, toClose = false }) => {
     })
     const [loading, setLoading] = useState( id ? true : false )
     const { openPaciente, setOpenPaciente } = usePacienteContext()
+    const { setTurno } = useTurnoContext()
     const { user, logOut } = useUserContext()
+    const pathname = usePathname()
     const router = useRouter()
 
     const handleChange = (val, key) => {
@@ -152,7 +157,21 @@ const NuevoPaciente = ({ id = null, toClose = false }) => {
                 if(openPaciente)
                     setOpenPaciente(false)
                 else
-                    router.push("/paciente");
+                {
+                    if(pathname.includes('paciente'))
+                        router.push("/paciente")
+                    else
+                    {
+                        setTurno(prev => ({
+                            ...prev,
+                            paciente: json.data,
+                            pacienteText: `${objectToSend.apellido}, ${objectToSend.nombre} ${objectToSend.dni ? `(${objectToSend.dni})` : ''}`,
+                            cobertura: null,
+                            coberturaText: '',
+                        }))
+                        setOpenPaciente(null)
+                    }
+                }
             }
             else
             {
@@ -174,8 +193,6 @@ const NuevoPaciente = ({ id = null, toClose = false }) => {
         })
     }
 
-    console.log(paciente);
-    
     const editar = async (object) => {
         setAccion({
             text: 'Editando paciente...',
@@ -209,7 +226,6 @@ const NuevoPaciente = ({ id = null, toClose = false }) => {
             objectToSend.contactos = objectToSend.contactos.concat(objectToSend.telefonos.map(el => { return({ tipo: 'telefono', valor: el }) }))
             objectToSend.contactos = objectToSend.contactos.concat(objectToSend.emails.map(el => { return({ tipo: 'email', valor: el }) }))
 
-            console.log(objectToSend);
             const response = await fetch(`${process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL }/pacientes/${paciente.id}`,
               {
                 method: "PUT",
@@ -224,7 +240,21 @@ const NuevoPaciente = ({ id = null, toClose = false }) => {
             const json = await response.json();
             checkFetch(json, logOut)
             if(json.status === 'SUCCESS')
-                router.push("/paciente");
+            {
+                if(pathname.includes('paciente'))
+                    router.push("/paciente")
+                else
+                {
+                    setTurno(prev => ({
+                        ...prev,
+                        paciente: json.data,
+                        pacienteText: `${objectToSend.apellido}, ${objectToSend.nombre} ${objectToSend.dni ? `(${objectToSend.dni})` : ''}`,
+                        cobertura: null,
+                        coberturaText: '',
+                    }))
+                    setOpenPaciente(null)
+                }
+            }
             else
             {
                 setError({
@@ -278,7 +308,10 @@ const NuevoPaciente = ({ id = null, toClose = false }) => {
             }
             else
             {
-                router.push("/paciente");
+                if(pathname.includes('paciente'))
+                    router.push("/paciente")
+                else
+                    setOpenPaciente(null)
             }
         } catch (error) {
             console.log(error);

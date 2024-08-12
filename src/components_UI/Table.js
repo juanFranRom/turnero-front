@@ -243,7 +243,6 @@ const Table = ({
                     }
                     return add
                 })
-                console.log(_rows);
             }
     
             setFilteredRows(_rows)

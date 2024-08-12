@@ -133,7 +133,6 @@ const Turno = ({ data = null, onlyView = false }) => {
     }
 
     const handleModificarTurno = () => {
-        console.log(dataTurno);
         let aux = {
             fecha: date,
             hora: dataTurno.horario,

@@ -522,45 +522,29 @@ const NuevoTurno = () => {
                         <div className='c-nuevo_turno__item'>
                             <div className='u-flex-column-center-start'>
                                 <span>Paciente</span>
-                                {
-                                    turno.id ?
-                                        <div className='u-1/1 u-flex-center-center'>
+                                <div className='u-1/1 u-flex-center-center'>
+                                    {
+                                        turno.id ?
                                             <Input className={'u-flex--1'} defaultValue={turno.nombrePaciente} isReadOnly={true}/>
-                                            <Button 
-                                                text={'Editar'} 
-                                                clickHandler={() => {
-                                                    setOpenPaciente(turno.idPaciente)
-                                                    setTurno({
-                                                        ...turno,
-                                                        paciente: null,
-                                                        pacienteText: '',
-                                                    })
-                                                }}
-                                            />
-                                        </div>
-                                    :
-                                        <div className='u-1/1 u-flex-center-center'>
-                                            <Datalist
-                                                className={'u-1/1'}
-                                                list={ turno.pacienteList } 
-                                                defaultOption={ { value: turno.pacienteText } } 
-                                                setter={(val) => handleDatalist(val, "paciente")}
-                                                filter={false}
-                                            />
-                                            <IoMdClose className='u-color--red u-cursor--pointer' onClick={() => handleDatalist(null, "paciente")}/>
-                                            <Button 
-                                                text={'Crear'} 
-                                                clickHandler={() => {
-                                                    setOpenPaciente(true)
-                                                    setTurno({
-                                                        ...turno,
-                                                        paciente: null,
-                                                        pacienteText: '',
-                                                    })
-                                                }}
-                                            />
-                                        </div>
-                                }
+                                        :
+                                            <>
+                                                <Datalist
+                                                    className={'u-1/1'}
+                                                    list={ turno.pacienteList } 
+                                                    defaultOption={ { value: turno.pacienteText } } 
+                                                    setter={(val) => handleDatalist(val, "paciente")}
+                                                    filter={false}
+                                                />
+                                                <IoMdClose className='u-color--red u-cursor--pointer' onClick={() => handleDatalist(null, "paciente")}/>
+                                            </>
+                                    }
+                                    <Button 
+                                        text={ (turno.paciente && turno.paciente.id) || turno.idPaciente ? 'Editar' : 'Crear'} 
+                                        clickHandler={() => {
+                                            (turno.paciente && turno.paciente.id) || turno.idPaciente ? setOpenPaciente(turno.idPaciente ?? turno.paciente.id) : setOpenPaciente(true)
+                                        }}
+                                    />
+                                </div>
                             </div>
                         </div>
                         {
