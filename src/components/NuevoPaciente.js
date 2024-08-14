@@ -6,9 +6,11 @@ import { usePathname, useRouter } from 'next/navigation'
 // context
 import { usePacienteContext } from '@/contexts/paciente'
 import { useUserContext } from '@/contexts/user'
+import { useTurnoContext } from '@/contexts/turno'
 
 // Icons
 import { IoMdClose } from "react-icons/io"
+import { FaWhatsapp } from "react-icons/fa";
 
 // Utils
 import { checkFetch } from '@/utils/checkFetch'
@@ -19,7 +21,6 @@ import Input from '@/components_UI/Input'
 import Select from '@/components_UI/Select'
 import Loader from '@/components_UI/Loader'
 import Turno from './Turno'
-import { useTurnoContext } from '@/contexts/turno'
 
 
 const NuevoPaciente = ({ id = null, toClose = false }) => {
@@ -68,19 +69,32 @@ const NuevoPaciente = ({ id = null, toClose = false }) => {
         for(let i = 0; i < cantInputs; i++)
         {
             result.push(
-                <div className='u-1/1 u-flex-start-center u-m3--vertical' key={i}>
-                    <Input className='u-1/1' type={type} placeholder={`${placeholder} ${i + 1}`} handleChange={(val) => handleChange(val, i)} defaultValue={values[i] ?? null}/>
-                    <div style={{ width: '75px' }}>
+                <div className='u-1/1 u-flex-column-center-start u-m2--vertical' key={i}>
+                    <div className='u-flex-center-center'>
+                        <p className='u-text--0'>
+                            {`${placeholder} ${i + 1}`}
+                        </p>
                         {
-                            cantInputs > 1 && 
-                            <Button text={'-'} clickHandler={() => setCantInputs(i)}/>
+                            values[i] && placeholder.trim().toLowerCase().includes('telefono') &&
+                            <a href={`http://web.whatsapp.com/send?phone=${values[i]}`} target="_blank">
+                                <FaWhatsapp/>
+                            </a>
                         }
                     </div>
-                    <div style={{ width: '75px' }}>
-                        {
-                            i === cantInputs - 1 &&
-                            <Button text={'+'} clickHandler={() => setCantInputs(i + 1)}/>
-                        }
+                    <div className='u-1/1 u-flex-start-center'>
+                        <Input className='u-1/1' handleChange={(val) => handleChange(val, i)} defaultValue={values[i] ?? null}/>
+                        <div style={{ width: '75px' }}>
+                            {
+                                cantInputs > 1 && 
+                                <Button text={'-'} clickHandler={() => setCantInputs(i)}/>
+                            }
+                        </div>
+                        <div style={{ width: '75px' }}>
+                            {
+                                i === cantInputs - 1 &&
+                                <Button text={'+'} clickHandler={() => setCantInputs(i + 1)}/>
+                            }
+                        </div>
                     </div>
                 </div>
             )
