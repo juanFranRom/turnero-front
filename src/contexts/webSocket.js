@@ -387,7 +387,51 @@ export const WebSocketProvider = ({ children }) => {
             return aux;
         });
     }
-
+    async function processPaciente(cambios) {
+        setDias(prev => {
+            if (!prev) return prev;
+    
+            return {
+                ...prev,
+                dias: prev.dias.map(dia => {
+                    return {
+                        ...dia,
+                        intervalos: dia.intervalos.map(intervalo => {
+                            if ((intervalo.tipo === "turno" || intervalo.tipo === "sobreturno") && intervalo.idPaciente === cambios.idPaciente) {
+                                return {
+                                    ...intervalo,
+                                    nombre: cambios.nombre,
+                                    obraSocial: cambios.cobertura,
+                                    telefono: cambios.telefono
+                                };
+                            }
+                            return intervalo;
+                        })
+                    };
+                })
+            };
+        });
+    
+        setTurnos(prev => {
+            if (!prev) return prev;
+    
+            return {
+                ...prev,
+                turnos: prev.turnos.map(turno => {
+                    if (turno.idPaciente === cambios.idPaciente) {
+                        return {
+                            ...turno,
+                            nombre: cambios.nombre,
+                            obraSocial: cambios.cobertura,
+                            telefono: cambios.telefono
+                        };
+                    }
+                    return turno;
+                })
+            };
+        });
+    }
+    
     async function processTurno(data) {
         const response = await fetch(`${process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL}/turnos/${data.turnoId}`, {
             method: "GET",
@@ -512,6 +556,8 @@ export const WebSocketProvider = ({ children }) => {
                             await processTurno(data);
                         if (data.modelo === "bloqueo")
                             await processBloqueo(data);
+                        if (data.modelo === "paciente")
+                            await processPaciente(data.cambios)
                     } catch (error) {
                         console.error('Error fetching turno:', error);
                     }
