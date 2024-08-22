@@ -163,6 +163,8 @@ const Turno = ({ data = null, onlyView = false }) => {
             <div className='u-p1--vertical u-p2--horizontal'>
                 {
                     dataTurno.historial_cambios.sort((a, b) => new Date(a.fecha) - new Date(b.fecha)).map( cambio => {
+                        console.log(cambio);
+                        
                         if(cambio.campo_modificado === 'fecha_hora')
                             return(
                                 <div className='c-turno__cambio'>
@@ -176,7 +178,7 @@ const Turno = ({ data = null, onlyView = false }) => {
                             return(
                                 <div className='c-turno__cambio'>
                                     <p className='c-turno__cambio--titulo'>{ cambio.campo_modificado === "Creador" ? cambio.campo_modificado : cambio.nuevo_valor }</p>
-                                    <p className='c-turno__cambio--fecha'>Fecha: { new Date(cambio.fecha).toLocaleDateString() }</p>
+                                    <p className='c-turno__cambio--fecha'>Fecha: { new Date(cambio.fecha).toLocaleDateString() } { new Date(cambio.fecha).toLocaleTimeString() }</p>
                                     <p className='c-turno__cambio--usuario'>Usuario: { cambio.usuario.nombre && cambio.usuario.nombre !== '' ? cambio.usuario.nombre : cambio.usuario.username }</p>
                                 </div>
                         )

@@ -224,7 +224,6 @@ const NuevoTurno = () => {
                 if (json.status === "SUCCESS") 
                 {
                     setOpenTurno( prev => !prev )
-                    //if(window) window.location.reload()
                 }
                 else
                 {
@@ -275,7 +274,6 @@ const NuevoTurno = () => {
                 if (json.status === "SUCCESS")
                 {
                     setOpenTurno( prev => !prev )
-                    //if(window) window.location.reload()
                 }
                 else
                 {
@@ -366,51 +364,34 @@ const NuevoTurno = () => {
     useEffect(() => {
         if(!turno.id)
         {
+            let aux = {
+                pacienteText: '',
+                pacienteList: [],
+                paciente: null,
+                profesionalText: '',
+                profesionalList: [],
+                profesional: null,
+                practicaText: '',
+                practica: null,
+                coberturaText: '',
+                cobertura: null,
+                fecha: null,
+                hora: null,
+                nota:  '',
+                tipo: 'turno'
+            }
+
             if(profesional)
             {
-                setTurno({
-                    ...turno,
-                    profesional: profesional,
-                    paciente: null,
-                    pacienteText: '',
-                    nota: turno.id ? turno.nota : '',
-                    tipo: turno.id ? turno.tipo : 'turno',
-                    practicaText: '',
-                    practica: null,
-                })
+                aux.profesional = profesional
             }
             else if(filtros && filtros.profesional)
             {
-                setTurno({
-                    ...turno,
-                    profesional: filtros.profesional,
-                    profesionalText: filtros.profesional.value,
-                    paciente: null,
-                    pacienteText: '',
-                    practicaText: '',
-                    practica: null,
-                    nota: turno.id ? turno.nota : '',
-                    tipo: turno.id ? turno.tipo : 'turno',
-                })
+                aux.profesional = filtros.profesional
+                aux.profesionalText = filtros.profesional.value
             }
-            else
-            {
-                setTurno({
-                    pacienteText: '',
-                    pacienteList: [],
-                    paciente: null,
-                    profesionalText: '',
-                    profesionalList: [],
-                    profesional: null,
-                    practicaText: '',
-                    practica: null,
-                    coberturaText: '',
-                    cobertura: null,
-                    fecha: null,
-                    hora: null,
-                    nota:  '',
-                })
-            }
+
+            setTurno(aux)
         }
         else
         {
@@ -429,6 +410,7 @@ const NuevoTurno = () => {
             })
 
         }
+
         setError({
             value: false,
             mensaje: ''
@@ -443,6 +425,12 @@ const NuevoTurno = () => {
             setEsSobreTurno(true)
         else if(openTurno && turno)
             setEsSobreTurno(false)
+
+        if(!openTurno)
+            setTurno((prev) => ({
+                ...prev,
+                id: null,
+            }))
     }, [openTurno])
     
     return (

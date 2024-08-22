@@ -29,7 +29,7 @@ const Header = ({ blocked }) => {
         y: null
     })
     const { logOut,user } = useUserContext()
-    const { setOpenTurno, setOpenCalendar, openCalendar, reiniciarTurno } = useTurnoContext()
+    const { setOpenTurno, setOpenCalendar, openCalendar } = useTurnoContext()
     const { setOpenPaciente } = usePacienteContext()
     const { closeWebSocket  } = useWebSocketContext()
     const pathname = usePathname()
@@ -90,7 +90,7 @@ const Header = ({ blocked }) => {
                 {
                     menuTurno &&
                     <ContextMenu x={coordenadas.x} y={coordenadas.y} setContextMenu={setMenuTurno}>
-                        <div className="c-context_menu--item" onClick={() => { setOpenTurno(prev => !prev); reiniciarTurno(); setMenuTurno(prev => !prev); }}>
+                        <div className="c-context_menu--item" onClick={() => { setOpenTurno(prev => !prev); setMenuTurno(prev => !prev); }}>
                             <span className="u-6/7">Nuevo Turno</span>
                         </div>
                         <div className="c-context_menu--item" onClick={() => { setOpenPaciente(prev => !prev); setMenuTurno(prev => !prev); }}>

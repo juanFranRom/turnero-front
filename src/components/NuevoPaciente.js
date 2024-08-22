@@ -168,23 +168,18 @@ const NuevoPaciente = ({ id = null, toClose = false }) => {
             checkFetch(json, logOut)
             if(json.status === 'SUCCESS')
             {
-                if(openPaciente)
-                    setOpenPaciente(false)
+                if(pathname.includes('paciente'))
+                    router.push("/paciente")
                 else
                 {
-                    if(pathname.includes('paciente'))
-                        router.push("/paciente")
-                    else
-                    {
-                        setTurno(prev => ({
-                            ...prev,
-                            paciente: json.data,
-                            pacienteText: `${objectToSend.apellido}, ${objectToSend.nombre} ${objectToSend.dni ? `(${objectToSend.dni})` : ''}`,
-                            cobertura: null,
-                            coberturaText: '',
-                        }))
-                        setOpenPaciente(null)
-                    }
+                    setTurno(prev => ({
+                        ...prev,
+                        paciente: json.data,
+                        pacienteText: `${objectToSend.apellido}, ${objectToSend.nombre} ${objectToSend.dni ? `(${objectToSend.dni})` : ''}`,
+                        cobertura: null,
+                        coberturaText: '',
+                    }))
+                    setOpenPaciente(false)
                 }
             }
             else
