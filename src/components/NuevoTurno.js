@@ -365,6 +365,8 @@ const NuevoTurno = () => {
         if(!turno.id)
         {
             let aux = {
+                fecha: turno.fecha,
+                hora: turno.hora,
                 pacienteText: '',
                 pacienteList: [],
                 paciente: null,
@@ -418,6 +420,8 @@ const NuevoTurno = () => {
         setCambioFecha(false)
     }, [filtros, openTurno, profesional])
 
+    console.log(turno);
+    
     useEffect(() => {
         if(openTurno && turno && turno.tipo === 'sobreturno')
             setEsSobreTurno(true)

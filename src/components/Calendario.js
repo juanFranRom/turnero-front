@@ -29,6 +29,7 @@ const Calendario = () => {
 
     const handleTurno = (day, interval) => {
         setOpenBloqueo(false)
+        
         if(interval.tipo === 'disponibilidad')
         {
             setTurno((prev) => {
@@ -36,7 +37,7 @@ const Calendario = () => {
                     {
                         ...prev,
                         fecha: day.fecha,
-                        hora: interval.hora,
+                        hora: interval.hora ?? interval.text,
                         id: null,
                     }
                 )
