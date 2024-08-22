@@ -375,8 +375,6 @@ const NuevoTurno = () => {
                 practica: null,
                 coberturaText: '',
                 cobertura: null,
-                fecha: null,
-                hora: null,
                 nota:  '',
                 tipo: 'turno'
             }
@@ -430,6 +428,8 @@ const NuevoTurno = () => {
             setTurno((prev) => ({
                 ...prev,
                 id: null,
+                fecha: null,
+                hora: null,
             }))
     }, [openTurno])
     
