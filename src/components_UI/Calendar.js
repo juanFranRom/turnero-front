@@ -157,7 +157,7 @@ const Calendar = ( ) => {
                             {[...Array(currentMonthDays).keys()].map((day) => (
                                 <div 
                                     key={`day-${day + 1}`} 
-                                    className={`c-calendar__day c-calendar__day ${ day + 1 === date.getDate() && 'c-calendar__day--selected' }`}
+                                    className={`c-calendar__day c-calendar__day ${ day + 1 === new Date().getDate() && date.getMonth() === new Date().getMonth() && 'c-calendar__day--actual' } ${ day + 1 === date.getDate() && 'c-calendar__day--selected' }`}
                                     onClick={() => setDate(new Date(date.getFullYear(), date.getMonth(), day + 1))}
                                 >
                                     {day + 1}

@@ -347,20 +347,27 @@ export const WebSocketProvider = ({ children }) => {
                                     horarioInicio = new Date(disponibilidadFin);
                                 } 
                             });
-    
+
+                            let intervalos = dia.intervalos.filter( intervalo => intervalo.tipo !== "sobreturno")
+                            let sobreturnos = dia.intervalos.filter( intervalo => intervalo.tipo === "sobreturno")
+
                             // Asegurarse de que los intervalos estén ordenados
-                            dia.intervalos.sort((a, b) => new Date(a.start) - new Date(b.start));
+                            intervalos.sort((a, b) => new Date(a.start) - new Date(b.start));
+                            
+                            debugger;
                             // Eliminar intervalos duplicados o solapados
                             let result = [];
-                            for (let i = 0; i < dia.intervalos.length; i++) {
-                                if (i === 0 || new Date(dia.intervalos[i].start) >= new Date(result[result.length - 1].end)) {
-                                    result.push(dia.intervalos[i]);
-                                } else {
-                                    result[result.length - 1].end = new Date(Math.max(new Date(result[result.length - 1].end), new Date(dia.intervalos[i].end)));
-                                    result[result.length - 1].text = `${formatTime(result[result.length - 1].start)} - ${formatTime(result[result.length - 1].end)}`;
-                                }
+                            for (let i = 0; i < intervalos.length; i++) {
+                                let fechaAControlar = intervalos[i].tipo !== "disponibilidad" ? new Date(new Date(intervalos[i].start).getTime()) : new Date(intervalos[i].start)
+                                let segundaFecha = result.length > 0 ? new Date(result[result.length - 1].end) : null
+                                if (i === 0 || fechaAControlar >= segundaFecha) {
+                                    result.push(intervalos[i]);
+                                } 
                             }
-                            dia.intervalos = result;
+                            dia.intervalos = result.concat(sobreturnos);
+
+                            // Asegurarse de que los intervalos estén ordenados
+                            dia.intervalos.sort((a, b) => new Date(a.start) - new Date(b.start));
                         }
                     }
                     return dia;

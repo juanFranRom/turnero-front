@@ -35,6 +35,10 @@
         background-color: #ccc;
     }
 
+    &--actual{
+        background-color: rgba(255, 193, 7, 0.25);
+    }
+
     &--selected{
         background-color: $global-primary-color;
         color: white;

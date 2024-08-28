@@ -419,8 +419,6 @@ const NuevoTurno = () => {
         setCambioFecha(false)
     }, [filtros, openTurno, profesional])
 
-    console.log(turno);
-    
     useEffect(() => {
         if(openTurno && turno && turno.tipo === 'sobreturno')
             setEsSobreTurno(true)
