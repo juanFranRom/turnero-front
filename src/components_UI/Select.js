@@ -174,7 +174,10 @@ const Select = ({ className, options = [], placeholder = null, defaultOption = n
                 `c-select u-flex-center-space-between u-cursor ${placeholder ? `c-select--placeholder` : ''} ${className}` 
             } 
             onClick={handleOpen}
-            onFocus={handleOpen}
+            onFocus={() => {
+                if(open)
+                    handleOpen()
+            }}
             tabIndex={0}
             onKeyDown={handleKeyDown}
         >
