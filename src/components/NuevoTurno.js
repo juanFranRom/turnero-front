@@ -400,6 +400,9 @@ const NuevoTurno = () => {
             else
                 profesionalAux = profesionales.find( el => el.id === turno.profesional_id)
             let practicaAux = profesionalAux.practicas.find( el => turno.practica_id === el.id )
+            
+            if( practicaAux === undefined)
+                practicaAux = profesionalAux.practicas.find( el => turno.practica_nombre.trim().toLowerCase() === el.nombre.trim().toLowerCase() )
 
             setTurno({
                 ...turno,

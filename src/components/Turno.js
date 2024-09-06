@@ -145,6 +145,7 @@ const Turno = ({ data = null, onlyView = false }) => {
             estado: dataTurno.estado,
             profesional_id: dataTurno.profesional_id,
             practica_id: dataTurno.practica_id,
+            practica_nombre: dataTurno.practica,
             idPaciente: dataTurno.idPaciente,
             onlyView: true,
         }
@@ -163,8 +164,6 @@ const Turno = ({ data = null, onlyView = false }) => {
             <div className='u-p1--vertical u-p2--horizontal'>
                 {
                     dataTurno.historial_cambios.sort((a, b) => new Date(a.fecha) - new Date(b.fecha)).map( cambio => {
-                        console.log(cambio);
-                        
                         if(cambio.campo_modificado === 'fecha_hora')
                             return(
                                 <div className='c-turno__cambio'>
