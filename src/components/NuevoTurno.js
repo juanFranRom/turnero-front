@@ -401,15 +401,27 @@ const NuevoTurno = () => {
                 profesionalAux = profesionales.find( el => el.id === turno.profesional_id)
             let practicaAux = profesionalAux.practicas.find( el => turno.practica_id === el.id )
             
-            if( practicaAux === undefined)
+            if(practicaAux === undefined)
                 practicaAux = profesionalAux.practicas.find( el => turno.practica_nombre.trim().toLowerCase() === el.nombre.trim().toLowerCase() )
 
-            setTurno({
-                ...turno,
-                profesional: profesionalAux,
-                practica: { ...practicaAux, value: `${practicaAux.nombre} (${practicaAux.duracion_moda})` },
-                practicaText: `${practicaAux.nombre} (${practicaAux.duracion_moda})`
-            })
+            if(practicaAux !== undefined)
+            {
+                setTurno({
+                    ...turno,
+                    profesional: profesionalAux,
+                    practica: { ...practicaAux, value: `${practicaAux.nombre} (${practicaAux.duracion_moda})` },
+                    practicaText: `${practicaAux.nombre} (${practicaAux.duracion_moda})`
+                })
+            }
+            else
+            {
+                setTurno({
+                    ...turno,
+                    profesional: profesionalAux,
+                    practica: null,
+                    practicaText: ``
+                })
+            }
 
         }
 
@@ -495,7 +507,7 @@ const NuevoTurno = () => {
                             </div>
                         }
                         {
-                            (turno.profesional || turno.id) &&
+                            (turno.profesional || (turno.id && turno.practica)) &&
                             <div className='c-nuevo_turno__item'>
                                 <div className='u-flex-column-center-start'>
                                     <span>Practica</span>

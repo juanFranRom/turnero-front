@@ -62,6 +62,7 @@ const Calendario = () => {
                         idPaciente: interval.idPaciente,
                         practica_id: interval.practica_id,
                         profesional_id: interval.profesional_id,
+                        practica_nombre: interval.practica,
                     }
                 )
             })
