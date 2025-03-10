@@ -96,7 +96,7 @@ const TableAux = () => {
 
   const deleteData = async (id) => {
     try {
-      const response = await fetch(`${process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL }/pacientes/${id}`,
+      const response = await fetch(`${process.env.SERVER_APP_BASE_URL ? process.env.SERVER_APP_BASE_URL : process.env.REACT_APP_BASE_URL }/usuarios/${id}`,
         {
           method: "DELETE",
           headers: {
@@ -121,7 +121,7 @@ const TableAux = () => {
       }
       setDeleting(null)
     } catch (error) {
-      router.push("/pacientes");
+      router.push("/usuario");
     }
   }
 
